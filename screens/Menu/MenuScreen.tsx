@@ -144,7 +144,7 @@ const MenuScreen = () => {
       case "Track Order":
         navigation.navigate("QRScanner");
         break;
-      case "Logistic Order":
+      case "Switch Theme":
         navigation.navigate("Appearance");
         break;
     }

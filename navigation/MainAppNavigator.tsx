@@ -12,6 +12,9 @@ import { tabCountManager } from "../utils/tabCountManager";
 import { PublicStackParamList, PublicTabParamList } from "../types/publicTypes";
 import DashboardScreen from "@/screens/Home/DashboardScreen";
 import MenuScreen from "@/screens/Menu/MenuScreen";
+import AppearanceScreen from "@/screens/Menu/components/AppearanceScreen";
+import QRScannerScreen from "@/screens/Menu/components/TrackOrder";
+import TrackOrderScreen from "@/screens/Menu/components/TrackOrder";
 
 const Tab = createBottomTabNavigator<PublicTabParamList>();
 const Stack = createNativeStackNavigator<PublicStackParamList>();
@@ -150,6 +153,16 @@ const MainAppNavigator = () => {
           name="PublicTabs"
           component={MainTabNavigator}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Appearance"
+          component={AppearanceScreen}
+          options={{ title: "Appearance" }}
+        />
+        <Stack.Screen
+          name="QRScanner"
+          component={TrackOrderScreen}
+          options={{ title: "Track Order", headerShown: false }}
         />
         {/* <Stack.Screen
           name="CampaignDetail"
