@@ -1,0 +1,86 @@
+{
+  "expo": {
+    "name": "CAN International Customer",
+    "slug": "can-international-customer",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/app/canLogo1.png",
+    "scheme": "can-international-customer",
+    "userInterfaceStyle": "automatic",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.canlogistic.internationalcustomer",
+      "buildNumber": "1",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses camera for QR code scanning and product photos",
+        "NSPhotoLibraryUsageDescription": "This app needs access to photo library to select product images",
+        "NSLocationWhenInUseUsageDescription": "This app uses location for nearby stores and delivery tracking",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "./assets/app/canLogo1.png",
+        "backgroundImage": "./assets/app/canLogo1.png",
+        "monochromeImage": "./assets/app/canLogo1.png"
+      },
+      "versionCode": 2,
+      "package": "com.canlogistic.internationalcustomer",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.ACCESS_COARSE_LOCATION"
+      ]
+    },
+    "web": {
+      "output": "static",
+      "favicon": "./assets/app/canLogo1.png"
+    },
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/app/canLogo1.png",
+          "imageWidth": 200,
+          "resizeMode": "contain",
+          "dark": {
+            "image": "./assets/app/canLogo1.png",
+            "backgroundColor": "#000000"
+          },
+          "backgroundColor": "#232323"
+        }
+      ],
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow CAN International Customer to access your camera for QR code scanning"
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Allow CAN International Customer to access your photo library to select images"
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow CAN International Customer to use your location for nearby stores and delivery tracking"
+        }
+      ],
+      "expo-router",
+      "expo-web-browser"
+    ],
+    "extra": {
+      "router": {},
+      "eas": {}
+    }
+  }
+}
