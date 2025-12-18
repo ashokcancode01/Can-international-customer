@@ -41,7 +41,9 @@ const DashboardScreen = ({ navigation }: DashboardScreenProps) => {
           scrollEventThrottle={16}
           refreshControl={<RefreshControl refreshing={refreshing} />}
         >
-          <ThemedText>Dashboard Content Goes Here</ThemedText>
+          <ThemedText>
+            
+          </ThemedText>
         </ScrollView>
       </View>
     </>
