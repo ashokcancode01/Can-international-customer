@@ -5,7 +5,6 @@ import authReducer, {
   initFromStorage,
 } from "./auth/authSlice";
 import { baseApi, invalidateAllTags, resetBaseApiState } from "../api/baseApi";
-import { homeApi } from "../api/homeApi";
 import { authApi, resetAuthApiState } from "./auth/authApi";
 import { listenerMiddleware } from "./auth/listenerMiddleware";
 import { clearAuthData, loadAuthData } from "../api/asyncStorage";
@@ -13,7 +12,6 @@ import { clearAuthData, loadAuthData } from "../api/asyncStorage";
 // Root reducer combining all slice reducers
 const rootReducer = combineReducers({
   [baseApi.reducerPath]: baseApi.reducer,
-  [homeApi.reducerPath]: homeApi.reducer,
   [authApi.reducerPath]: authApi.reducer,
   auth: authReducer,
 });
@@ -30,7 +28,6 @@ export const store = configureStore({
       },
     }).concat(
       baseApi.middleware,
-      homeApi.middleware,
       authApi.middleware,
       listenerMiddleware.middleware
     ),
@@ -70,7 +67,7 @@ export const useAuthSessionManager = () => {
       dispatch(invalidateAllTags());
       dispatch(clearPreviousSession());
     } catch (error) {
-      console.error("Failed to prepare for new login:", error); 
+      console.error("Failed to prepare for new login:", error);
       throw error;
     }
   };

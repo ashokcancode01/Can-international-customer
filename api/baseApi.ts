@@ -1,7 +1,7 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import type { RootState } from "../store/store";
 
-export const BASE_URL = "https://can-logistic-vluop.ondigitalocean.app/api";
+export const BASE_URL = "https://app.international.nepalcan.com/api";
 
 export const baseApi = createApi({
   reducerPath: "baseApi",
@@ -18,42 +18,12 @@ export const baseApi = createApi({
       return headers;
     },
   }),
-  tagTypes: [
-    "Order",
-    "VendorOrder",
-    "CanId",
-    "Profile",
-    "Marketplace",
-    "Notifications",
-    "Comments",
-    "Documents",
-    "Announcements",
-    "DigitalStamp",
-    "Voucher",
-    "CategoryFilter",
-    "CustomerAddress",
-    "VendorStoreReview",
-  ],
+  tagTypes: ["Home", "TrackOrder", "Menu", "Profile"],
   endpoints: () => ({}),
 });
 
 export const invalidateAllTags = () => {
-  return baseApi.util.invalidateTags([
-    "Order",
-    "VendorOrder",
-    "CanId",
-    "Profile",
-    "Marketplace",
-    "Notifications",
-    "Comments",
-    "Documents",
-    "Announcements",
-    "DigitalStamp",
-    "Voucher",
-    "CategoryFilter",
-    "CustomerAddress",
-    "VendorStoreReview",
-  ]);
+  return baseApi.util.invalidateTags(["Home", "TrackOrder", "Menu", "Profile"]);
 };
 
 export const { resetApiState: resetBaseApiState } = baseApi.util;
