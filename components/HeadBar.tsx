@@ -1,3 +1,0 @@
-type HeadBarProps = {
-    name: String
-}
