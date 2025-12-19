@@ -4,8 +4,6 @@ import {
   Dimensions,
   View,
   TextInput,
-  TouchableOpacity,
-  Text,
   KeyboardAvoidingView,
   Platform,
   TouchableWithoutFeedback,
@@ -14,31 +12,112 @@ import {
 } from "react-native";
 import { useTheme } from "../../theme/ThemeProvider";
 import ThemedText from "@/components/themed/ThemedText";
-import ThemedView from "@/components/themed/ThemedView";
+import { ThemedView } from "@/components/themed/ThemedView";
 import Ionicons from "@expo/vector-icons/Ionicons";
-import FontAwesome5 from '@expo/vector-icons/FontAwesome5';
-
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import Entypo from "@expo/vector-icons/Entypo";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import { ThemedTouchableOpacity } from "@/components/themed/ThemedTouchableOpacity";
+import DotIndicator from "@/components/DotIndicator";
+import { useNavigation } from "@react-navigation/native";
+import TrustedProvidersScreen from "./components/TrustedProviders";
+import { LinearGradient } from 'expo-linear-gradient';
 
 const { width } = Dimensions.get("window");
+
+const CLIENT_CARD_WIDTH = width * 0.85;
+
+const QUICK_ACTIONS = [
+  {
+    label: "Fast & Reliable",
+    description: "Experience quick, efficient and dependable shipping every time.",
+    icon: (color: string) => <FontAwesome5 name="truck" size={36} color={color} />,
+  },
+  {
+    label: "Worldwide Delivery",
+    description: "Delivering to over 200+ destinations around the world.",
+    icon: (color: string) => <Entypo name="globe" size={36} color={color} />,
+  },
+  {
+    label: "Business Friendly",
+    description: "Tailor-made logistic solutions for professionals and companies.",
+    icon: (color: string) => <MaterialIcons name="business-center" size={36} color={color} />,
+  },
+];
+
+const WHY_CHOOSE_US = [
+  {
+    label: "50k+",
+    description: "Deliveries completed monthly",
+  },
+  {
+    label: "24/7",
+    description: "Customer support availability",
+  },
+  {
+    label: "15 yrs",
+    description: "Industry experience & expertise",
+  },
+];
+
+const TRUSTED_PROVIDERS = [
+  "Blue Star Express",
+  "Curvex",
+  "DHL Express",
+  "DTDC",
+];
+
+const OUR_CLIENTS_SAY = [
+  {
+    description: "Best international logistics partner. Very fast customs clearance and excellent support.",
+    name: "Ramesh Kumar",
+    address: "Exporter, Mumbai",
+    countryCode: "🇮🇳",
+  },
+  {
+    description: "The cargo arrived on time in perfect condition. Highly trusted service!",
+    name: "Sofia Mendes",
+    address: "Business Owner, Nepal",
+    countryCode: "🇳🇵",
+  },
+  {
+    description: "Professional team and smooth documentation process. Strongly recommend!",
+    name: "Jonathan Lee",
+    address: "Logistics Head, Denmark",
+    countryCode: "🇩🇰",
+  },
+  {
+    description: "Best pricing and reliable tracking updates. Amazing support staff!",
+    name: "Shreya Mehta",
+    address: "Importer, Delhi",
+    countryCode: "🇮🇳",
+  },
+  {
+    description: "Fast and transparent process. Packaging and handling quality is superb.",
+    name: "Carlos Martinez",
+    address: "Retailer, Spain",
+    countryCode: "🇪🇸",
+  },
+];
 
 const DashboardHeader = () => {
   const { theme } = useTheme();
   const [trackingNumber, setTrackingNumber] = useState("");
   const [isFocused, setIsFocused] = useState(false);
+  const navigation = useNavigation();
 
   return (
     <KeyboardAvoidingView
-      style={{ flex: 1 }}
+      style={styles.flex}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <ThemedView style={{ flex: 1, backgroundColor: theme.colors.background }}>
-
-
+        <ThemedView style={[styles.flex, { backgroundColor: theme.colors.background }]}>
+          {/* Header */}
           <View style={[styles.headerContainer, { backgroundColor: theme.colors.background }]}>
             <View style={styles.headerRow}>
               <View style={styles.profileContainer}>
-                <Ionicons name="person-circle-outline" size={48} color={theme.colors.brandColor} />
+                <Ionicons name="person-circle-outline" size={48} color={theme.colors.brandColor!} />
                 <View style={styles.textContainer}>
                   <ThemedText style={[styles.greetingText, { color: theme.colors.textSecondary }]}>
                     Good Morning,
@@ -48,29 +127,29 @@ const DashboardHeader = () => {
                   </ThemedText>
                 </View>
               </View>
-              <Ionicons name="notifications-circle" size={36} color={theme.colors.brandColor} />
+              <Ionicons name="notifications-circle" size={36} color={theme.colors.brandColor!} />
             </View>
           </View>
 
-          <ScrollView
-            contentContainerStyle={{ paddingTop: 10, paddingBottom: 20 }}
-            showsVerticalScrollIndicator={false}
-          >
-
-            <View style={[styles.trackingCard, { backgroundColor: theme.colors.card, marginHorizontal: 20 }]}>
-              <Text style={[styles.trackingTitle, { color: theme.colors.text }]}>Track your package</Text>
-              <Text style={[styles.trackingSubtitle, { color: theme.colors.brandColor + "CC" }]}>
+          <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+            {/* Tracking Card */}
+            <View style={[styles.trackingCard, { backgroundColor: theme.colors.card }]}>
+              <ThemedText style={[styles.trackingTitle, { color: theme.colors.text }]}>
+                Track your package
+              </ThemedText>
+              <ThemedText style={[styles.trackingSubtitle, { color: theme.colors.brandColor! + "CC" }]}>
                 Enter receipt number to track globally
-              </Text>
+              </ThemedText>
 
-              <View
+              <ThemedTouchableOpacity
                 style={[
                   styles.inputContainer,
                   {
-                    borderColor: isFocused ? theme.colors.brandColor : "#613b3b33",
+                    borderColor: isFocused ? theme.colors.brandColor! : "#613b3b33",
                     backgroundColor: isFocused ? "#FFFFFF20" : "#FFFFFF1A",
                   },
                 ]}
+                activeOpacity={1}
               >
                 <Ionicons name="search" size={20} color="#888" style={{ marginRight: 8 }} />
                 <TextInput
@@ -82,32 +161,169 @@ const DashboardHeader = () => {
                   onFocus={() => setIsFocused(true)}
                   onBlur={() => setIsFocused(false)}
                 />
-                <TouchableOpacity>
-                  <Ionicons name="qr-code-outline" size={20} color="#888" />
-                </TouchableOpacity>
-              </View>
+                <Ionicons name="qr-code-outline" size={20} color="#888" />
+              </ThemedTouchableOpacity>
 
-              <TouchableOpacity
-                style={[styles.trackButton, { backgroundColor: theme.colors.brandColor }]}
+              <ThemedTouchableOpacity
+                style={[styles.trackButton, { backgroundColor: theme.colors.brandColor! }]}
               >
-                <Text style={styles.trackButtonText}>Track Shipment</Text>
+                <ThemedText style={styles.trackButtonText}>Track Shipment</ThemedText>
                 <Ionicons name="arrow-forward-outline" size={16} color="#fff" />
-              </TouchableOpacity>
+              </ThemedTouchableOpacity>
             </View>
 
-            <View style={styles.quickActionsContainer}>
-              {[
-                { icon: "truck", label: "Fast & Reliable" },
-                { icon: "globe", label: "Worldwide Delivery" },
-                { icon: "bag", label: "Business Friendly" },
-              ].map((action, index) => (
-                <View key={index} style={styles.actionCard}>
-                  <TouchableOpacity style={[styles.actionButton, { backgroundColor: theme.colors.card }]}>
-                    <FontAwesome5 name={action.icon} size={28} color={theme.colors.brandColor} />
-                  </TouchableOpacity>
-                  <Text style={[styles.actionLabel, { color: theme.colors.textSecondary }]}>{action.label}</Text>
+            {/* Our Services */}
+            <View style={{ marginHorizontal: 20, marginTop: 30 }}>
+              <ThemedText style={[styles.servicesTitle, { color: theme.colors.text }]}>
+                Our Services
+              </ThemedText>
+              <ThemedText style={[styles.servicesSubtitle, { color: theme.colors.textSecondary }]}>
+                Explore what Nepal Can International offers to customers and businesses.
+              </ThemedText>
+
+              <View style={[styles.servicesCard, { backgroundColor: theme.colors.card }]}>
+                <DotIndicator cardWidth={220} activeColor={theme.colors.brandColor!}>
+                  {QUICK_ACTIONS.map((action, index) => (
+                    <View key={index} style={styles.actionCard}>
+                      <ThemedTouchableOpacity style={styles.actionButton}>
+                        {action.icon(theme.colors.brandColor!)}
+                        <ThemedText style={[styles.actionLabel, { color: theme.colors.text }]}>
+                          {action.label}
+                        </ThemedText>
+                        <ThemedText
+                          style={[styles.actionDescription, { color: theme.colors.textSecondary }]}
+                        >
+                          {action.description}
+                        </ThemedText>
+                      </ThemedTouchableOpacity>
+                    </View>
+                  ))}
+                </DotIndicator>
+              </View>
+            </View>
+
+            {/* Why Choose Us */}
+            <View style={{ marginHorizontal: 20, marginTop: 30 }}>
+              <ThemedText style={[styles.servicesTitle, { color: theme.colors.text }]}>
+                Why Choose Us
+              </ThemedText>
+              <ThemedText style={[styles.servicesSubtitle, { color: theme.colors.textSecondary }]}>
+                We&apos;re not just a logistics company—we&apos;re your trusted partner in keeping your business moving forward globally.
+              </ThemedText>
+
+              <View style={[styles.servicesCard, { backgroundColor: theme.colors.card }]}>
+                <DotIndicator cardWidth={180} activeColor={theme.colors.brandColor!}>
+                  {WHY_CHOOSE_US.map((item, index) => (
+                    <View key={index} style={[styles.whyChooseCard, { width: 160 }]}>
+                      <ThemedTouchableOpacity style={styles.whyChooseButton}>
+                        <ThemedText style={[styles.whyChooseLabel, { color: theme.colors.brandColor! }]}>
+                          {item.label}
+                        </ThemedText>
+                        <ThemedText
+                          style={[
+                            styles.whyChooseDescription,
+                            { color: theme.colors.textSecondary },
+                          ]}
+                        >
+                          {item.description}
+                        </ThemedText>
+                      </ThemedTouchableOpacity>
+                    </View>
+                  ))}
+                </DotIndicator>
+              </View>
+            </View>
+
+            {/* Our Trusted Providers */}
+            <View style={{ marginHorizontal: 20, marginTop: 30, marginBottom: 30 }}>
+              <ThemedText style={[styles.servicesTitle, { color: theme.colors.text }]}>
+                Our Trusted Providers
+              </ThemedText>
+              <ThemedText style={[styles.servicesSubtitle, { color: theme.colors.textSecondary }]}>
+                We collaborate with reliable logistics providers to ensure fast and secure delivery.
+              </ThemedText>
+
+              <View style={[styles.servicesCard, { backgroundColor: theme.colors.card }]}>
+                <View style={styles.providersContainer}>
+                  {TRUSTED_PROVIDERS.map((provider, index) => (
+                    <ThemedTouchableOpacity key={index} style={styles.providerButton}>
+                      <ThemedView
+                        style={[
+                          styles.providerInner,
+                          {
+                            backgroundColor: theme.dark ? theme.colors.brandColor! : theme.colors.card,
+                          }
+                        ]}
+                      >
+                        <ThemedText
+                          style={[
+                            styles.providerLabel,
+                            { color: theme.dark ? "#fff" : theme.colors.brandColor! },
+                          ]}
+                        >
+                          {provider}
+                        </ThemedText>
+                      </ThemedView>
+                    </ThemedTouchableOpacity>
+                  ))}
                 </View>
-              ))}
+
+                <View style={{ alignItems: "flex-end", marginTop: 8 }}>
+                  <ThemedTouchableOpacity onPress={() => navigation.navigate("OurTrustedProviders")}>
+                    <ThemedText
+                      style={{
+                        fontSize: 12,
+                        fontFamily: "Montserrat-Bold",
+                        color: theme.colors.brandColor!,
+                        textDecorationLine: "underline",
+                      }}
+                    >
+                      View All
+                    </ThemedText>
+                  </ThemedTouchableOpacity>
+                </View>
+              </View>
+            </View>
+
+            {/* What Our Clients Say */}
+            <View style={{ marginHorizontal: 20, marginTop: 10, marginBottom: 30 }}>
+              <ThemedText style={[styles.servicesTitle, { color: theme.colors.text }]}>
+                What Our Clients Say
+              </ThemedText>
+              <View style={[styles.servicesCard, { backgroundColor: theme.colors.card }]}>
+                <DotIndicator cardWidth={CLIENT_CARD_WIDTH} activeColor={theme.colors.brandColor!}>
+                  {OUR_CLIENTS_SAY.map((client, index) => (
+                    <View
+                      key={index}
+                      style={[
+                        styles.clientCard,
+                        {
+                          width: CLIENT_CARD_WIDTH,
+                        },
+                      ]}
+                    >
+                      <ThemedTouchableOpacity style={styles.clientCardButton}>
+                        <LinearGradient
+                          colors={['rgba(255,0,0,0.6)', '#FFFFFF']}
+                          start={{ x: 0.5, y: 0 }}
+                          end={{ x: 0.5, y: 1 }}
+                          style={styles.gradientBackground}
+                        >
+                          <ThemedText style={[styles.clientDescription, { color: '#000' }]}>
+                            &quot;{client.description}&quot;
+                          </ThemedText>
+                          <ThemedText style={[styles.clientName, { color: '#000' }]}>
+                            - {client.name}
+                          </ThemedText>
+                          <ThemedText style={[styles.clientAddress, { color: '#000' }]}>
+                            {client.countryCode} {client.address}
+                          </ThemedText>
+                        </LinearGradient>
+                      </ThemedTouchableOpacity>
+                    </View>
+                  ))}
+                </DotIndicator>
+              </View>
             </View>
 
           </ScrollView>
@@ -118,10 +334,16 @@ const DashboardHeader = () => {
 };
 
 const styles = StyleSheet.create({
+  flex: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 30,
+  },
   headerContainer: {
     width: width,
     paddingHorizontal: 20,
-    paddingVertical: 10,
+    paddingVertical: 12,
   },
   headerRow: {
     flexDirection: "row",
@@ -136,48 +358,49 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   greetingText: {
-    fontSize: 15,
+    fontSize: 16,
     fontFamily: "Montserrat-Bold",
     fontWeight: "700",
   },
   nameText: {
-    fontSize: 18,
+    fontSize: 20,
     fontFamily: "Montserrat-SemiBold",
     fontWeight: "600",
   },
   trackingCard: {
-    padding: 16,
-    borderRadius: 12,
+    padding: 18,
+    borderRadius: 16,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
     elevation: 3,
     marginTop: 10,
+    marginHorizontal: 20,
   },
   trackingTitle: {
     fontSize: 18,
     fontFamily: "Montserrat-Bold",
-    marginBottom: 5,
+    marginBottom: 6,
   },
   trackingSubtitle: {
     fontSize: 13,
     fontFamily: "Montserrat-Medium",
-    marginBottom: 25,
+    marginBottom: 20,
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
     borderRadius: 50,
     borderWidth: 2,
-    paddingHorizontal: 12,
-    paddingVertical: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 8,
     marginBottom: 15,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 2,
   },
   input: {
     flex: 1,
@@ -203,17 +426,63 @@ const styles = StyleSheet.create({
     fontFamily: "Montserrat-Bold",
     fontSize: 16,
   },
-  quickActionsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginTop: 20,
-    marginHorizontal: 20,
+  servicesCard: {
+    marginTop: 16,
+    padding: 16,
+    borderRadius: 16,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 3,
   },
-
+  servicesTitle: {
+    fontSize: 20,
+    fontFamily: "Montserrat-Bold",
+    marginBottom: 6,
+  },
+  servicesSubtitle: {
+    fontSize: 13,
+    fontFamily: "Montserrat-Medium",
+    lineHeight: 18,
+    marginBottom: 6,
+  },
   actionCard: {
-    width: (width - 80) / 3,
+    width: 220,
     alignItems: "center",
-    backgroundColor: "#FFFFFF10",
+    borderRadius: 20,
+    paddingVertical: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  actionButton: {
+    width: "100%",
+    height: 160,
+    borderRadius: 16,
+    justifyContent: "flex-start",
+    alignItems: "center",
+    paddingTop: 16,
+    paddingHorizontal: 8,
+  },
+  actionLabel: {
+    fontSize: 14,
+    fontFamily: "Montserrat-Bold",
+    textAlign: "center",
+    marginTop: 12,
+  },
+  actionDescription: {
+    fontSize: 12,
+    fontFamily: "Montserrat-Medium",
+    textAlign: "center",
+    marginTop: 6,
+    lineHeight: 18,
+  },
+  whyChooseCard: {
+    width: 160,
+    alignItems: "center",
     borderRadius: 16,
     paddingVertical: 16,
     shadowColor: "#000",
@@ -222,22 +491,81 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 2,
   },
-
-  actionButton: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+  whyChooseButton: {
+    width: "100%",
+    height: 120,
+    borderRadius: 16,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: 8,
+    paddingHorizontal: 8,
   },
-
-  actionLabel: {
+  whyChooseLabel: {
+    fontSize: 18,
+    fontFamily: "Montserrat-Bold",
+    textAlign: "center",
+    marginTop: 8,
+  },
+  whyChooseDescription: {
     fontSize: 12,
     fontFamily: "Montserrat-Medium",
     textAlign: "center",
+    marginTop: 4,
+    lineHeight: 16,
   },
-
+  providersContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
+  providerButton: {
+    width: 140,
+    height: 50,
+    borderRadius: 16,
+    marginVertical: 6,
+    backgroundColor: "transparent",
+  },
+  providerInner: {
+    flex: 1,
+    borderRadius: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  providerLabel: {
+    fontSize: 12,
+    fontFamily: "Montserrat-Bold",
+    textAlign: "center",
+  },
+  clientCard: {
+    borderRadius: 16,
+    overflow: "hidden",
+    padding: 12,
+  },
+  clientCardButton: {
+    borderRadius: 16,
+    overflow: "hidden",
+  },
+  gradientBackground: {
+    borderRadius: 16,
+    padding: 16,
+  },
+  clientDescription: {
+    fontSize: 14,
+    fontFamily: "Montserrat-Medium",
+    marginBottom: 12,
+  },
+  clientName: {
+    fontSize: 12,
+    fontFamily: "Montserrat-Bold",
+  },
+  clientAddress: {
+    fontSize: 12,
+    fontFamily: "Montserrat-Medium",
+  },
 });
 
 export default DashboardHeader;
