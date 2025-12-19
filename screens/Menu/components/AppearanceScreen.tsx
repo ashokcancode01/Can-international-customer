@@ -240,7 +240,7 @@ const AppearanceScreen = () => {
         </View>
         <ThemedText style={[styles.infoText, { color: colors.textSecondary }]}>
           System default automatically adjusts the app appearance based on your
-          device's current theme settings.
+          device&apos;s current theme settings.
         </ThemedText>
       </View>
     </ScrollView>
