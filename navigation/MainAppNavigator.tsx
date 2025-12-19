@@ -15,6 +15,7 @@ import MenuScreen from "@/screens/Menu/MenuScreen";
 import AppearanceScreen from "@/screens/Menu/components/AppearanceScreen";
 import QRScannerScreen from "@/screens/Menu/components/TrackOrder";
 import TrackOrderScreen from "@/screens/Menu/components/TrackOrder";
+import TrustedProvidersScreen from "@/screens/Home/components/TrustedProviders";
 
 const Tab = createBottomTabNavigator<PublicTabParamList>();
 const Stack = createNativeStackNavigator<PublicStackParamList>();
@@ -163,6 +164,11 @@ const MainAppNavigator = () => {
           name="QRScanner"
           component={TrackOrderScreen}
           options={{ title: "Track Order", headerShown: false }}
+        />
+         <Stack.Screen
+          name="OurTrustedProviders"
+          component={TrustedProvidersScreen}
+          options={{ title: "Our Trusted Providers"}}
         />
         {/* <Stack.Screen
           name="CampaignDetail"
