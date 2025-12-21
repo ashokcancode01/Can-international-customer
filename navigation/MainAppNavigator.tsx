@@ -19,6 +19,13 @@ import TrustedProvidersScreen from "@/screens/Home/components/TrustedProviders";
 import PricingScreen from "@/screens/Pricing/PricingScreen";
 import AboutUs from "@/screens/Menu/components/AboutUs";
 import FAQs from "@/screens/Menu/components/FAQs";
+import ContactUs from "@/screens/Menu/components/ContactUs";
+import AirFreight from "@/screens/Menu/components/OurServices/AirFreight";
+import OceanFreight from "@/screens/Menu/components/OurServices/OceanFreight";
+import LandTransport from "@/screens/Menu/components/OurServices/LandTransport";
+import CustomsClearance from "@/screens/Menu/components/OurServices/CustomsClearance";
+import CustomerSupport from "@/screens/Menu/components/OurServices/CustomerSupport";
+import RealTimeTracking from "@/screens/Menu/components/OurServices/RealTimeTracking";
 
 const Tab = createBottomTabNavigator<PublicTabParamList>();
 const Stack = createNativeStackNavigator<PublicStackParamList>();
@@ -182,6 +189,41 @@ const MainAppNavigator = () => {
           name="FAQs"
           component={FAQs}
           options={{ title: "FAQs"}}
+        />
+        <Stack.Screen
+          name="ContactUs"
+          component={ContactUs}
+          options={{ title: "Contact Us"}}
+        />
+        <Stack.Screen
+          name="AirFreight"
+          component={AirFreight}
+          options={{ title: "Air Freight"}}
+        />
+        <Stack.Screen
+          name="OceanFreight"
+          component={OceanFreight}
+          options={{ title: "Ocean Freight"}}
+        />
+        <Stack.Screen
+          name="LandTransport"
+          component={LandTransport}
+          options={{ title: "Land Transport"}}
+        />
+        <Stack.Screen
+          name="CustomsClearance"
+          component={CustomsClearance}
+          options={{ title: "Customs Clearance"}}
+        />
+        <Stack.Screen
+          name="CustomerSupport"
+          component={CustomerSupport}
+          options={{ title: " 24/7 Customer Support"}}
+        />
+        <Stack.Screen
+          name="RealTimeTracking"
+          component={RealTimeTracking}
+          options={{ title: "Real-Time Tracking"}}
         />
         {/* <Stack.Screen
           name="CampaignDetail"

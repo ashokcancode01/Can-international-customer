@@ -41,7 +41,7 @@ interface SelectedValue {
 interface CustomFormDropdownProps<T extends FieldValues> {
   as?: typeof MaterialIcons | typeof MaterialCommunityIcons | typeof Ionicons;
   iconName?: string;
-  options: Option[];
+  options: Option[any];
   name: Path<T>;
   label?: string;
   control: Control<T>;

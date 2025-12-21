@@ -78,6 +78,13 @@ export type PublicStackParamList = {
   OurTrustedProviders: undefined;
   AboutUs: undefined;
   FAQs: undefined;
+  ContactUs: undefined;
+  AirFreight: undefined;
+  OceanFreight: undefined;
+  LandTransport: undefined;
+  CustomerSupport: undefined;
+  CustomsClearance: undefined;
+  RealTimeTracking: undefined;
 };
 
 export type PublicTabParamList = {

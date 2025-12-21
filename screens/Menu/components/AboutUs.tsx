@@ -5,8 +5,9 @@ import { ThemedView } from "@/components/themed/ThemedView";
 import ThemedText from "@/components/themed/ThemedText";
 import { MaterialIcons } from "@expo/vector-icons";
 
-import AboutUsImage1 from "@/assets/app/AboutUs.png";
-import AboutUsImage2 from "@/assets/app/AboutUs1.png";
+const AboutUsImage1 = require("../../../assets/app/AboutUs.png");
+const AboutUsImage2 = require("../../../assets/app/AboutUs1.png");
+
 
 const AboutUs = () => {
   const { theme } = useTheme();

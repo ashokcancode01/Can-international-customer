@@ -1,12 +1,21 @@
 import { RootState, store } from "../store";
 import { baseApi } from "@/api/baseApi";
 
-interface DropdownItem {
+export interface DropdownItem {
   _id?: string;
   name?: string;
 }
+export interface DropdownCountryItem {
+  _id?: string;
+  name?: string;
+  cca2?: string;
+  flagUrl: {
+    png?: string
+    svg?: string
+  }
+}
 
-interface Branch {
+export interface Branch {
   _id: string;
   name: string;
   areasCovered: string;
@@ -18,6 +27,20 @@ interface Branch {
 
 export const dropdwonApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
+        getCountryList: builder.query<DropdownCountryItem[], void>({
+      query: () => ({
+        url: "/public/country/ddl",
+        method: "GET",
+      }),
+      transformResponse: (response: any) => {
+        const transformedResponse = response?.map((item: any) => ({
+          _id: item._id,
+          name: item.name,
+        }));
+        return transformedResponse;
+      },
+    }),
+
     getCustomerList: builder.query<DropdownItem[], void>({
       query: (params) => {
         const state = store.getState() as RootState;
@@ -64,7 +87,7 @@ export const dropdwonApi = baseApi.injectEndpoints({
           },
         };
       },
-      providesTags: [{ type: "Order", id: "LIST" }],
+      providesTags: [{ type: "TrackOrder", id: "LIST" }],
       transformResponse: (response: DropdownItem[]) => {
         const transformedResponse = response?.map((item: DropdownItem) => ({
           _id: item?._id,
@@ -146,4 +169,5 @@ export const {
   useGetAccountListQuery,
   useGetServiceProvidersDdlQuery,
   useGetPackageTypeDdlQuery,
+  useGetCountryListQuery
 } = dropdwonApi;

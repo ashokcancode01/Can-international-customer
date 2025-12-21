@@ -7,7 +7,8 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  FlatList 
+  FlatList,
+  ColorValue,
 } from "react-native";
 import { useTheme } from "../../theme/ThemeProvider";
 import ThemedText from "@/components/themed/ThemedText";
@@ -103,6 +104,8 @@ const DashboardHeader = () => {
   const [trackingNumber, setTrackingNumber] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const navigation = useNavigation<any>();
+
+  const CARD_GRADIENT_COLORS: [ColorValue, ColorValue] = ['#FF4D4D', '#FF9999'];
 
   const clientFlatListRef = useRef<FlatList>(null);
   const [currentClientIndex, setCurrentClientIndex] = useState(0);
@@ -328,20 +331,19 @@ const DashboardHeader = () => {
               contentContainerStyle={{ paddingLeft: 0, paddingRight: 10 }}
               keyExtractor={(item, index) => index.toString()}
               renderItem={({ item }) => (
-                <View
-                  style={[styles.clientCard, { width: CLIENT_CARD_WIDTH, marginRight: 10 }]}
-                >
+                <View style={[styles.clientCard, { width: CLIENT_CARD_WIDTH, marginRight: 10 }]}>
                   <ThemedTouchableOpacity style={styles.clientCardButton}>
                     <LinearGradient
-                      colors={['rgba(255,0,0,0.6)', '#FFFFFF']}
-                      start={{ x: 0.5, y: 0 }}
-                      end={{ x: 0.5, y: 1 }}
-                      style={[styles.gradientBackground, { justifyContent: 'center', alignItems: 'center' }]}
+                      colors={CARD_GRADIENT_COLORS}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 0, y: 1 }}
+                      style={styles.gradientBackground}
                     >
                       <ThemedText style={[styles.clientDescription, { color: '#000', textAlign: 'center' }]}>
                         &quot;{item.description}&quot;
                       </ThemedText>
-                      <View style={{ alignItems: 'center', marginTop: 8 }}>
+
+                      <View style={{ alignItems: 'center', marginTop: 12 }}>
                         <ThemedText style={[styles.clientName, { color: '#000', textAlign: 'center' }]}>
                           - {item.name}
                         </ThemedText>
@@ -580,9 +582,13 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   gradientBackground: {
+    flex: 1,
     borderRadius: 16,
-    padding: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 16,
   },
+
   clientDescription: {
     fontSize: 14,
     fontFamily: "Montserrat-Medium",
