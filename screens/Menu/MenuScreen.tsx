@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   RefreshControl,
   Alert,
-  Image,
   ActivityIndicator,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
@@ -19,7 +18,6 @@ import { selectIsAuthenticated } from "../../store/auth/authSlice";
 import { useLogoutMutation } from "../../store/auth/authApi";
 import {
   useChangeProfileImageMutation,
-  useGetCustomerByIdQuery,
   useGetProfileByIdQuery,
 } from "../../store/slices/profile";
 import {
@@ -29,6 +27,7 @@ import {
 import { toastManager } from "../../utils/toastManager";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { PublicStackParamList } from "../../types/publicTypes";
+import { FontAwesome5 } from '@expo/vector-icons';
 
 type MenuScreenNavigationProp = NativeStackNavigationProp<PublicStackParamList>;
 
@@ -38,11 +37,9 @@ const MenuScreen = () => {
   const isAuthenticated = useSelector(selectIsAuthenticated);
   const [logout, { isLoading: isLoggingOut }] = useLogoutMutation();
 
-  // State
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isUpdatingImage, setIsUpdatingImage] = useState(false);
 
-  // RTK Query hooks for profile data
   const {
     data: profileRes,
     refetch: refetchProfile,
@@ -50,22 +47,11 @@ const MenuScreen = () => {
     isFetching: isProfileFetching,
   } = useGetProfileByIdQuery();
 
-  const { data: customerRes, isLoading: isCustomerLoading } =
-    useGetCustomerByIdQuery(profileRes?.typeRef || "", {
-      skip: !profileRes?.typeRef,
-    });
-
   const [uploadDoSpace] = useUploadToDoSpaceMutation();
   const [deleteDoSpace] = useDeleteFromDoSpaceMutation();
   const [updateProfile] = useChangeProfileImageMutation();
 
-  const defaultAvatarPath = require("../../assets/images/defaultUser.png");
-
-  const isInitialLoading =
-    isProfileFetching ||
-    isRefreshing ||
-    isProfileLoading ||
-    (profileRes?.typeRef && isCustomerLoading);
+  const isInitialLoading = isProfileFetching || isProfileLoading;
 
   const handleRefresh = useCallback(async () => {
     setIsRefreshing(true);
@@ -75,6 +61,49 @@ const MenuScreen = () => {
       setIsRefreshing(false);
     }
   }, [refetchProfile]);
+
+  const handleUpdateImage = useCallback(
+    async (profileImage: any) => {
+      if (!profileImage) return;
+      try {
+        setIsUpdatingImage(true);
+
+        const uploadRes = await uploadDoSpace({
+          file: {
+            uri: profileImage?.uri,
+            name: profileImage?.name || "Profile-image",
+            type: profileImage?.mimeType,
+          },
+          accountId: "Customer",
+          filePath: `${profileRes?.typeRef}/user`,
+        }).unwrap();
+
+        await updateProfile({
+          _id: profileRes?._id || "",
+          avatar: {
+            ...uploadRes,
+            url: uploadRes?.url,
+            type: uploadRes?.type || profileImage?.type,
+          },
+        }).unwrap();
+
+        if (profileRes?.avatar?.publicId) {
+          await deleteDoSpace({
+            accountId: "Customer",
+            publicId: profileRes?.avatar.publicId,
+          }).unwrap();
+        }
+
+        toastManager.success("Success", "Profile photo updated successfully");
+      } catch (err) {
+        console.error("Update image error:", err);
+        toastManager.error("Error", "Failed to update profile photo");
+      } finally {
+        setIsUpdatingImage(false);
+      }
+    },
+    [profileRes, deleteDoSpace, uploadDoSpace, updateProfile]
+  );
 
   const pickImage = useCallback(async () => {
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -98,47 +127,6 @@ const MenuScreen = () => {
     }
   }, [handleUpdateImage]);
 
-  const handleUpdateImage = async (profileImage: any) => {
-    if (!profileImage) return;
-
-    try {
-      setIsUpdatingImage(true);
-      if (profileRes?.avatar) {
-        await deleteDoSpace({
-          accountId: "Customer",
-          publicId: profileRes?.avatar?.publicId,
-        }).unwrap();
-      }
-
-      const uploadRes = await uploadDoSpace({
-        file: {
-          uri: profileImage?.uri,
-          name: profileImage?.name || "Profile-image",
-          type: profileImage?.mimeType,
-        },
-        accountId: "Customer",
-        filePath: `${profileRes?.typeRef}/user`,
-      }).unwrap();
-
-      await updateProfile({
-        _id: profileRes?._id || "",
-        avatar: {
-          ...uploadRes,
-          url: uploadRes?.url,
-          type: uploadRes?.type || profileImage?.type,
-        },
-      }).unwrap();
-
-      toastManager.success("Success", "Profile photo updated successfully");
-    } catch (error) {
-      console.error("Update image error:", error);
-      toastManager.error("Error", "Failed to update profile photo");
-    } finally {
-      setIsUpdatingImage(false);
-    }
-  };
-
-  // Navigation handlers
   const handleLogisticsNavigation = (title: string) => {
     switch (title) {
       case "Track Order":
@@ -147,22 +135,25 @@ const MenuScreen = () => {
       case "Switch Theme":
         navigation.navigate("Appearance");
         break;
+      case "About Us":
+        navigation.navigate("AboutUs");
+        break;
+      case "FAQs":
+        navigation.navigate("FAQs");
+      default:
     }
   };
 
-  const handleSignInPress = () => {
-    navigation.getParent()?.navigate("Auth");
-  };
-  const handleRegisterPress = () => {
-    navigation.getParent()?.navigate("Auth");
-  };
+  const handleSignInPress = () => navigation.getParent()?.navigate("Auth");
+  const handleRegisterPress = () => navigation.getParent()?.navigate("Auth");
 
   const handleSignOut = async () => {
     try {
       await logout().unwrap();
       toastManager.success("Logged Out", "Successfully signed out");
-    } catch (error) {
-      toastManager.success("Logged Out", "Successfully signed out");
+    } catch (err) {
+      console.error("Logout error:", err);
+      toastManager.error("Error", "Failed to sign out");
     }
   };
 
@@ -181,205 +172,167 @@ const MenuScreen = () => {
   }
 
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-      showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.scrollContainer}
-      refreshControl={
-        <RefreshControl
-          refreshing={isRefreshing}
-          onRefresh={handleRefresh}
-          colors={[theme.colors.brandColor || "#dc1e3e"]}
-          tintColor={theme.colors.brandColor || "#dc1e3e"}
-        />
-      }
-    >
-      <View style={styles.welcomeSection}>
-        <Text
-          style={[
-            styles.welcomeSubtitle,
-            { color: theme.colors.textSecondary },
-          ]}
-        >
-          Hello, Welcome to CAN International !
-        </Text>
-      </View>
-
-      <View style={styles.authSection}>
-        <View style={styles.authButtonsRow}>
-          <TouchableOpacity
-            style={[
-              styles.authButton,
-              { backgroundColor: theme.colors.brandColor },
-            ]}
-            onPress={handleSignInPress}
-          >
-            <Text style={styles.authButtonText}>Login</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.authButton,
-              {
-                borderWidth: 1,
-                borderColor: theme.colors.brandColor,
-              },
-            ]}
-            onPress={handleRegisterPress}
-          >
-            <Text
-              style={[
-                styles.registerButtonText,
-                {
-                  color: theme.colors.brandColor,
-                },
-              ]}
-            >
-              Sign Up
-            </Text>
-          </TouchableOpacity>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContainer}
+        refreshControl={
+          <RefreshControl
+            refreshing={isRefreshing}
+            onRefresh={handleRefresh}
+            colors={[theme.colors.brandColor || "#dc1e3e"]}
+            tintColor={theme.colors.brandColor || "#dc1e3e"}
+          />
+        }
+      >
+        {/* Welcome */}
+        <View style={styles.welcomeSection}>
+          <Text style={[styles.welcomeSubtitle, { color: theme.colors.textSecondary }]}>
+            Hello, Welcome to CAN International!
+          </Text>
         </View>
-      </View>
 
-      <View style={styles.featuresSection}>
-        <View style={styles.actionsList}>
+        {/* Auth Buttons */}
+        <View style={styles.authSection}>
+          <View style={styles.authButtonsRow}>
+            <TouchableOpacity
+              style={[styles.authButton, { backgroundColor: theme.colors.brandColor }]}
+              onPress={handleSignInPress}
+            >
+              <Text style={styles.authButtonText}>Login</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.authButton, { borderWidth: 1, borderColor: theme.colors.brandColor }]}
+              onPress={handleRegisterPress}
+            >
+              <Text style={[styles.registerButtonText, { color: theme.colors.brandColor }]}>
+                Sign Up
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        {/* Profile Card */}
+        <View style={[styles.profileCard, { backgroundColor: theme.colors.card, marginTop: 12 }]}>
+          <View style={styles.profileRow}>
+            <View style={[styles.profileIconContainer, { backgroundColor: "#9C27B0" + "20" }]}>
+              <Ionicons name="person-outline" size={30} color="#9C27B0" />
+            </View>
+
+            <View style={styles.profileInfo}>
+              <Text style={[styles.profileName, { color: theme.colors.text }]}>Alex Johnson</Text>
+              <Text style={[styles.profileSubtitle, { color: theme.colors.textSecondary }]}>Verified customer</Text>
+            </View>
+            <TouchableOpacity
+              style={[styles.editButton, { backgroundColor: theme.colors.brandColor }]}
+            >
+              <Text style={styles.editButtonText}>Edit</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Accounts & Activity Card */}
+        <View style={[styles.card, { backgroundColor: theme.colors.card, marginTop: 12 }]}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.textSecondary }]}>
+            Accounts & Activity
+          </Text>
           {[
-            {
-              title: "Track Order",
-              subtitle: "Track your orders using QR codes",
-              icon: "qr-code-outline",
-              color: "#9C27B0",
-            },
-            {
-              title: "Switch Theme",
-              subtitle: "Change app appearance",
-              icon: "moon-outline",
-              color: "#9C27B0",
-              actionType: "Switch Theme",
-            },
+            { title: "Profile Settings", subtitle: "Address, Payment, Security", icon: "person-outline", color: "#9C27B0" },
+            { title: "Track Order", subtitle: "Track your orders using QR codes", icon: "qr-code-outline", color: "#9C27B0" },
           ].map((item, index) => (
             <TouchableOpacity
               key={index}
-              style={[
-                styles.actionItem,
-                {
-                  backgroundColor: theme.colors.card,
-                  borderColor: "rgba(0, 0, 0, 0.05)",
-                },
-              ]}
+              style={[styles.actionItem, { backgroundColor: theme.colors.card }]}
               onPress={() => handleLogisticsNavigation(item.title)}
             >
-              <View
-                style={[
-                  styles.actionIconContainer,
-                  { backgroundColor: item.color + "12" },
-                ]}
-              >
-                <Ionicons
-                  name={item.icon as any}
-                  size={18}
-                  color={item.color}
-                />
+              <View style={[styles.actionIconContainer, { backgroundColor: item.color + "12" }]}>
+                <Ionicons name={item.icon as any} size={18} color={item.color} />
               </View>
               <View style={styles.actionContent}>
-                <Text
-                  style={[styles.actionTitle, { color: theme.colors.text }]}
-                >
-                  {item.title}
-                </Text>
-                <Text
-                  style={[
-                    styles.actionSubtitle,
-                    { color: theme.colors.textSecondary },
-                  ]}
-                >
-                  {item.subtitle}
-                </Text>
+                <Text style={[styles.actionTitle, { color: theme.colors.text }]}>{item.title}</Text>
+                <Text style={[styles.actionSubtitle, { color: theme.colors.textSecondary }]}>{item.subtitle}</Text>
               </View>
-              <View
-                style={[
-                  styles.chevronContainer,
-                  { backgroundColor: theme.colors.background + "50" },
-                ]}
-              >
-                <Ionicons
-                  name="chevron-forward"
-                  size={16}
-                  color={theme.colors.text}
-                />
+              <View style={[styles.chevronContainer, { backgroundColor: theme.colors.background + "50" }]}>
+                <Ionicons name="chevron-forward" size={16} color={theme.colors.text} />
               </View>
             </TouchableOpacity>
           ))}
         </View>
-      </View>
 
-      {/* Logout Section */}
-      <View style={styles.logoutSection}>
+        {/* Other Features Card */}
+        <View style={[styles.card, { backgroundColor: theme.colors.card, marginTop: 12 }]}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.textSecondary }]}>
+            Other Features
+          </Text>
+          {[
+            { title: "Switch Theme", subtitle: "Change app appearance", icon: "moon-outline", color: "#9C27B0" },
+            { title: "About Us", subtitle: "Company overview and   mission", icon: "information-circle-outline", color: "#9C27B0" },
+            { title: "FAQs", subtitle: null, icon: "help-circle-outline", color: "#9C27B0" },
+            { title: "More", subtitle: null, icon: "ellipsis-horizontal", color: "#9C27B0" },
+          ].map((item, index) => (
+            <TouchableOpacity
+              key={index}
+              style={[styles.actionItem, { backgroundColor: theme.colors.card }]}
+              onPress={() => handleLogisticsNavigation(item.title)}
+            >
+              <View style={[styles.actionIconContainer, { backgroundColor: item.color + "12" }]}>
+                <Ionicons name={item.icon as any} size={18} color={item.color} />
+              </View>
+              <View style={[styles.actionContent, !item.subtitle && { justifyContent: "center" }]}>
+                <Text style={[styles.actionTitle, { color: theme.colors.text }]}>{item.title}</Text>
+                {item.subtitle && (
+                  <Text style={[styles.actionSubtitle, { color: theme.colors.textSecondary }]}>{item.subtitle}</Text>
+                )}
+              </View>
+              <View style={[styles.chevronContainer, { backgroundColor: theme.colors.background + "50" }]}>
+                <Ionicons name="chevron-forward" size={16} color={theme.colors.text} />
+              </View>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        {/* Logout */}
         <TouchableOpacity
-          style={[styles.logoutCard, { backgroundColor: theme.colors.card }]}
-          onPress={() => {
+          style={[styles.logoutCard, { backgroundColor: theme.colors.brandColor, marginTop: 12 }]}
+          onPress={() =>
             Alert.alert(
               "Log out Confirmation",
               "Are you sure you want to log out?",
               [
-                {
-                  text: "Cancel",
-                  style: "cancel",
-                },
-                {
-                  text: "Log out",
-                  onPress: handleSignOut,
-                  style: "destructive",
-                },
+                { text: "Cancel", style: "cancel" },
+                { text: "Log out", onPress: handleSignOut, style: "destructive" },
               ],
               { cancelable: true }
-            );
-          }}
+            )
+          }
           disabled={isLoggingOut}
         >
-          <View
-            style={[
-              styles.logoutIconContainer,
-              { backgroundColor: "#FF5722" + "15" },
-            ]}
-          >
-            <Ionicons name="log-out-outline" size={20} color="#FF5722" />
-          </View>
           <View style={styles.logoutContent}>
-            <Text style={[styles.logoutTitle, { color: "#FF5722" }]}>
-              Log out
-            </Text>
-            <Text
-              style={[
-                styles.logoutSubtitle,
-                { color: theme.colors.textSecondary },
-              ]}
-            >
-              Sign out of your account
-            </Text>
-          </View>
-          <View
-            style={[
-              styles.chevronContainer,
-              { backgroundColor: theme.colors.background + "50" },
-            ]}
-          >
-            <Ionicons
-              name="chevron-forward"
-              size={16}
-              color={theme.colors.text}
-            />
+            <Text style={[styles.logoutTitle, { color: "#fff" }]}><Ionicons name="log-out-outline" size={20} color="#fff" />  Log out</Text>
           </View>
         </TouchableOpacity>
-      </View>
+        
+        {/* Footer Section */}
+        <View style={styles.footerContainer}>
+          <FontAwesome5 name="truck" size={25} color={theme.colors.textSecondary} />
+          <Text style={[styles.footerText, { color: theme.colors.textSecondary }]}>
+            CAN International Logistic
+          </Text>
+          <Text style={[styles.footerVersion, { color: theme.colors.textSecondary }]}>
+            Version 21.0
+          </Text>
+        </View>
 
-      <View style={styles.bottomSpacer} />
-    </ScrollView>
+        <View style={styles.bottomSpacer} />
+      </ScrollView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingHorizontal: 12,
+    paddingTop: 20,
   },
   scrollContainer: {
     flexGrow: 1,
@@ -391,7 +344,6 @@ const styles = StyleSheet.create({
   welcomeSection: {
     alignItems: "center",
     marginBottom: 20,
-    paddingTop: 20,
   },
   welcomeSubtitle: {
     fontSize: 15,
@@ -399,7 +351,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontWeight: "700",
   },
-
   authSection: {
     alignItems: "center",
     marginBottom: 20,
@@ -427,24 +378,60 @@ const styles = StyleSheet.create({
     fontFamily: "Montserrat-SemiBold",
     fontWeight: "600",
   },
-  featuresSection: {
-    paddingHorizontal: 12,
-    marginBottom: 20,
+  profileCard: {
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.05)",
   },
-  sectionTitle: {
+  profileRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  profileIconContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  profileInfo: {
+    flex: 1,
+    justifyContent: "center",
+  },
+  profileName: {
     fontSize: 15,
     fontFamily: "Montserrat-Bold",
     fontWeight: "700",
-    marginBottom: 4,
   },
-  sectionSubtitle: {
-    fontSize: 11,
+  profileSubtitle: {
+    fontSize: 12,
     fontFamily: "Montserrat-Medium",
-    fontWeight: "500",
-    marginBottom: 16,
   },
-  actionsList: {
-    gap: 12,
+  editButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    borderRadius: 8,
+  },
+  editButtonText: {
+    color: "#fff",
+    fontSize: 12,
+    fontFamily: "Montserrat-SemiBold",
+    fontWeight: "600",
+  },
+  card: {
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.05)",
+  },
+  sectionTitle: {
+    fontSize: 13,
+    fontFamily: "Montserrat-Bold",
+    fontWeight: "700",
+    marginBottom: 8,
+    paddingHorizontal: 4,
   },
   actionItem: {
     flexDirection: "row",
@@ -452,6 +439,8 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 10,
     borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.05)",
+    marginBottom: 8,
   },
   actionIconContainer: {
     width: 30,
@@ -485,12 +474,6 @@ const styles = StyleSheet.create({
   bottomSpacer: {
     height: 20,
   },
-  // Logout section styles
-  logoutSection: {
-    paddingHorizontal: 12,
-    paddingBottom: 20,
-    marginTop: 10,
-  },
   logoutCard: {
     flexDirection: "row",
     alignItems: "center",
@@ -499,16 +482,9 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#FF572220",
   },
-  logoutIconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
   logoutContent: {
     flex: 1,
+    alignItems: "center"
   },
   logoutTitle: {
     fontSize: 15,
@@ -516,11 +492,22 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: 2,
   },
-  logoutSubtitle: {
-    fontSize: 12,
-    fontFamily: "Montserrat-Medium",
-    fontWeight: "500",
+  footerContainer: {
+    alignItems: "center",
+    marginTop: 20,
+    marginBottom: 20,
   },
+  footerText: {
+    fontSize: 10,
+    fontFamily: "Montserrat-Medium",
+    marginTop: 6,
+  },
+  footerVersion: {
+    fontSize: 8,
+    fontFamily: "Montserrat-Medium",
+    marginTop: 2,
+  },
+
 });
 
 export default MenuScreen;

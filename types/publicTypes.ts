@@ -75,6 +75,9 @@ export type PublicStackParamList = {
   QRScanner: undefined;
   VendorOrder: undefined;
   "All Reviews": { productId: string };
+  OurTrustedProviders: undefined;
+  AboutUs: undefined;
+  FAQs: undefined;
 };
 
 export type PublicTabParamList = {
