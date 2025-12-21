@@ -133,7 +133,7 @@ export default function ThemedTextField<T extends FieldValues = any>({
     },
     input: {
       flex: 1,
-      color: editable ? theme.colors.text : getDisabledColor(),
+      color: inputStyle?.color || (editable ? theme.colors.text : getDisabledColor()),
       fontFamily: theme.fonts.regular,
       fontSize: theme.fontSizes.md,
       paddingHorizontal: multiline ? 0 : 10,

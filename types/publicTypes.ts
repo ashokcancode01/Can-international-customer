@@ -76,6 +76,8 @@ export type PublicStackParamList = {
   VendorOrder: undefined;
   "All Reviews": { productId: string };
   OurTrustedProviders: undefined;
+  AboutUs: undefined;
+  FAQs: undefined;
 };
 
 export type PublicTabParamList = {

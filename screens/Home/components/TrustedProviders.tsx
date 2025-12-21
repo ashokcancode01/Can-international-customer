@@ -19,11 +19,7 @@ const TrustedProvidersScreen = () => {
   const colors = theme.colors;
 
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: colors.background }]}
-      contentContainerStyle={styles.contentContainer}
-      showsVerticalScrollIndicator={false}
-    >
+    <View style={[styles.container, { backgroundColor: colors.background }]}>
       {/* Section Header */}
       <View style={styles.sectionHeader}>
         <ThemedText style={[styles.sectionTitle, { color: colors.text }]}>
@@ -33,36 +29,40 @@ const TrustedProvidersScreen = () => {
           We collaborate with reliable logistics providers to ensure fast and secure delivery.
         </ThemedText>
       </View>
-
-      {/* Providers Card */}
-      <View style={[styles.card, { backgroundColor: colors.card }]}>
-        <View style={styles.providersContainer}>
-          {TRUSTED_PROVIDERS.map((provider, index) => (
-            <ThemedTouchableOpacity
-              key={index}
-              style={[
-                styles.providerButton,
-                {
-                  backgroundColor: theme.dark ? "#000" : "#fff", // black in dark mode
-                  borderColor: theme.dark ? "#000" : colors.brandColor,
-                  shadowColor: theme.dark ? "#000" : colors.brandColor,
-                },
-              ]}
-              activeOpacity={0.8}
-            >
-              <ThemedText
+      <ScrollView
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Providers Card */}
+        <View style={[styles.card, { backgroundColor: colors.card, shadowColor: colors.textSecondary }]}>
+          <View style={styles.providersContainer}>
+            {TRUSTED_PROVIDERS.map((provider, index) => (
+              <ThemedTouchableOpacity
+                key={index}
                 style={[
-                  styles.providerLabel,
-                  { color: theme.dark ? "#fff" : colors.text }, // white text in dark mode
+                  styles.providerButton,
+                  {
+                    backgroundColor: theme.dark ? "#1E1E1E" : "#fff",
+                    borderColor: theme.dark ? "#333" : colors.brandColor,
+                    shadowColor: theme.dark ? "#000" : colors.brandColor,
+                  },
                 ]}
+                activeOpacity={0.8}
               >
-                {provider}
-              </ThemedText>
-            </ThemedTouchableOpacity>
-          ))}
+                <ThemedText
+                  style={[
+                    styles.providerLabel,
+                    { color: theme.dark ? "#fff" : colors.text },
+                  ]}
+                >
+                  {provider}
+                </ThemedText>
+              </ThemedTouchableOpacity>
+            ))}
+          </View>
         </View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -71,34 +71,37 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   contentContainer: {
-    paddingTop: 10,
-    paddingBottom: 20,
-    paddingHorizontal: 12,
+    paddingTop: 16,
+    paddingBottom: 24,
+    paddingHorizontal: 16,
   },
 
   sectionHeader: {
-    marginBottom: 10,
-    marginHorizontal: 0,
+    marginBottom: 16,
+    paddingHorizontal: 16,
+    paddingTop: 16,
   },
   sectionTitle: {
     fontSize: 15,
     fontWeight: "600",
     marginBottom: 4,
+    fontFamily: "Montserrat-SemiBold",
   },
   headerSubtitle: {
     fontSize: 13,
     fontWeight: "400",
     lineHeight: 18,
     opacity: 0.8,
+    fontFamily: "Montserrat-Regular",
   },
 
   card: {
     padding: 16,
     borderRadius: 16,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowOpacity: 0.1,
+    shadowRadius: 6,
+    elevation: 4,
   },
   providersContainer: {
     flexDirection: "row",
@@ -108,21 +111,22 @@ const styles = StyleSheet.create({
   },
   providerButton: {
     width: "48%",
-    height: 50,
+    height: 52,
     borderRadius: 12,
     borderWidth: 1,
     justifyContent: "center",
     alignItems: "center",
     marginBottom: 12,
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.15,
     shadowRadius: 6,
-    elevation: 5,
+    elevation: 4,
   },
   providerLabel: {
     fontSize: 14,
     fontWeight: "600",
     textAlign: "center",
+    fontFamily: "Montserrat-SemiBold",
   },
 });
 

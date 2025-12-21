@@ -296,7 +296,7 @@ function CustomFormDropdownBase<T extends FieldValues>(
               setSearchText("");
             }}
           >
-            <Text style={styles.addNewButtonText}>Add "{searchText}"</Text>
+            <Text style={styles.addNewButtonText}>Add &quot;{searchText}&quot;</Text>
           </TouchableOpacity>
         )}
       </View>

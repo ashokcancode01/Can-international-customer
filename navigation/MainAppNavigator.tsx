@@ -16,6 +16,9 @@ import AppearanceScreen from "@/screens/Menu/components/AppearanceScreen";
 import QRScannerScreen from "@/screens/Menu/components/TrackOrder";
 import TrackOrderScreen from "@/screens/Menu/components/TrackOrder";
 import TrustedProvidersScreen from "@/screens/Home/components/TrustedProviders";
+import PricingScreen from "@/screens/Pricing/PricingScreen";
+import AboutUs from "@/screens/Menu/components/AboutUs";
+import FAQs from "@/screens/Menu/components/FAQs";
 
 const Tab = createBottomTabNavigator<PublicTabParamList>();
 const Stack = createNativeStackNavigator<PublicStackParamList>();
@@ -91,9 +94,9 @@ const MainTabNavigator = () => {
               name === "Home"
                 ? DashboardScreen
                 : name === "Pricing"
-                ? DashboardScreen
+                ? PricingScreen
                 : name === "TrackOrder"
-                ? DashboardScreen
+                ? TrackOrderScreen
                 : name === "Menu"
                 ? MenuScreen
                 : DashboardScreen
@@ -114,9 +117,9 @@ const MainAppNavigator = () => {
     <>
       <Stack.Navigator
         screenOptions={{
-          headerStyle: { backgroundColor: "red" },
-          headerTintColor: theme.colors.text,
-          headerTitleStyle: { fontWeight: "600", fontSize: 15 },
+          headerStyle: { backgroundColor: theme.colors.cardBackground },
+          headerTintColor: theme.dark ? "#fff" : theme.colors.text,
+          headerTitleStyle: { fontWeight: "600", fontSize: 15, color: theme.dark ? "#fff" : theme.colors.text },
           header: ({ navigation, route, options, back }) => (
             <View
               style={{
@@ -135,15 +138,15 @@ const MainAppNavigator = () => {
                 style={{
                   height: "100%",
                   justifyContent: "center",
-
                   width: 30,
                   alignItems: "center",
                 }}
                 onPress={() => navigation.goBack()}
               >
-                <AntDesign name="arrow-left" size={16} color="black" />
+                {/* Back icon adjusts for dark theme */}
+                <AntDesign name="arrow-left" size={16} color={theme.dark ? "#fff" : "black"} />
               </TouchableOpacity>
-              <Text style={{ fontWeight: "500", fontSize: 15 }}>
+              <Text style={{ fontWeight: "500", fontSize: 15, color: theme.dark ? "#fff" : theme.colors.text }}>
                 {options.title ?? route.name}
               </Text>
             </View>
@@ -165,10 +168,20 @@ const MainAppNavigator = () => {
           component={TrackOrderScreen}
           options={{ title: "Track Order", headerShown: false }}
         />
-         <Stack.Screen
+        <Stack.Screen
           name="OurTrustedProviders"
           component={TrustedProvidersScreen}
           options={{ title: "Our Trusted Providers"}}
+        />
+        <Stack.Screen
+          name="AboutUs"
+          component={AboutUs}
+          options={{ title: "About Us"}}
+        />
+        <Stack.Screen
+          name="FAQs"
+          component={FAQs}
+          options={{ title: "FAQs"}}
         />
         {/* <Stack.Screen
           name="CampaignDetail"
