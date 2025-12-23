@@ -23,7 +23,7 @@ export const baseApi = createApi({
 });
 
 export const invalidateAllTags = () => {
-  return baseApi.util.invalidateTags(["Home", "TrackOrder", "Menu", "Profile"]);
+  return baseApi.util.invalidateTags(["Home", "TrackOrder", "Menu", "Profile", "TrackOrder"]);
 };
 
 export const { resetApiState: resetBaseApiState } = baseApi.util;

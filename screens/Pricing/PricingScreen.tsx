@@ -4,11 +4,13 @@ import { useForm } from "react-hook-form";
 import { useTheme } from "../../theme/ThemeProvider";
 
 import ThemedText from "@/components/themed/ThemedText";
-import ThemedView from "@/components/themed/ThemedView";
-import ThemedCard from "@/components/themed/ThemedCard";
+import { ThemedView }from "@/components/themed/ThemedView";
+import { ThemedCard } from "@/components/themed/ThemedCard";
 import ThemedButton from "@/components/themedComponent/ThemedButton";
 import ThemedTextField from "@/components/themedComponent/ThemedTextField";
 import { CustomFormDropdown } from "@/components/themedComponent/CustomFormDropdown";
+import { useGetCountryListQuery } from "@/store/slices/dropdown";
+import { ServiceType, ShipmentType } from "@/constants/dropdowns";
 
 type FormData = {
     origin: string;
@@ -23,10 +25,10 @@ const PricingScreen = () => {
 
     const { control, handleSubmit } = useForm<FormData>({
         defaultValues: {
-            origin: "Nepal 🇳🇵",
-            destination: { _id: "AF", name: "🇦🇫 Afghanistan" },
-            shipmentType: "document",
-            serviceType: "express",
+            origin: "Nepal",
+            destination: { name: "Afghanistan" },
+            shipmentType: "Document",
+            serviceType: "Express",
             weight: "",
         },
     });
@@ -35,6 +37,8 @@ const PricingScreen = () => {
         console.log("Pricing Form Data:", data);
     };
 
+    const{data: countryList} =useGetCountryListQuery();
+    
     return (
         <ThemedView style={{ flex: 1, backgroundColor: theme.colors.background }}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -70,11 +74,8 @@ const PricingScreen = () => {
                         name="destination"
                         label="Destination Country"
                         storeFullObject
-                        options={[
-                            { _id: "AF", name: "🇦🇫 Afghanistan" },
-                            { _id: "IN", name: "🇮🇳 India" },
-                        ]}
-                        defaultValue={{ _id: "AF", name: "🇦🇫 Afghanistan" }}
+                        options={countryList}
+                        placeholder="Select country name"
                     />
 
                     {/* SHIPMENT TYPE */}
@@ -82,10 +83,7 @@ const PricingScreen = () => {
                         control={control}
                         name="shipmentType"
                         label="Shipment Type"
-                        options={[
-                            { _id: "document", name: "Document" },
-                            { _id: "parcel", name: "Parcel" },
-                        ]}
+                        options={ShipmentType}
                         defaultValue="document"
                     />
 
@@ -94,11 +92,8 @@ const PricingScreen = () => {
                         control={control}
                         name="serviceType"
                         label="Service Type"
-                        options={[
-                            { _id: "express", name: "Express" },
-                            { _id: "standard", name: "Standard" },
-                        ]}
-                        defaultValue="express"
+                        options={ServiceType}
+                        defaultValue="Express"
                     />
 
                     {/* WEIGHT */}

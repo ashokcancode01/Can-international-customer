@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
 import { useTheme } from "../../theme/ThemeProvider";
 import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
@@ -27,7 +27,7 @@ import {
 import { toastManager } from "../../utils/toastManager";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { PublicStackParamList } from "../../types/publicTypes";
-import { FontAwesome5 } from '@expo/vector-icons';
+
 
 type MenuScreenNavigationProp = NativeStackNavigationProp<PublicStackParamList>;
 
@@ -39,6 +39,7 @@ const MenuScreen = () => {
 
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [isUpdatingImage, setIsUpdatingImage] = useState(false);
+  const [servicesDropdownOpen, setServicesDropdownOpen] = useState(false);
 
   const {
     data: profileRes,
@@ -50,6 +51,7 @@ const MenuScreen = () => {
   const [uploadDoSpace] = useUploadToDoSpaceMutation();
   const [deleteDoSpace] = useDeleteFromDoSpaceMutation();
   const [updateProfile] = useChangeProfileImageMutation();
+
 
   const isInitialLoading = isProfileFetching || isProfileLoading;
 
@@ -140,8 +142,22 @@ const MenuScreen = () => {
         break;
       case "FAQs":
         navigation.navigate("FAQs");
+        break;
+      case "Contact Us":
+        navigation.navigate("ContactUs");
+        break;
       default:
     }
+  };
+
+
+  const submenuNavigationMap: Record<string, string> = {
+    "Air Freight": "AirFreight",
+    "Ocean Freight": "OceanFreight",
+    "Land Transport": "LandTransport",
+    "Customs Clearance": "CustomsClearance",
+    "24/7 Customer Support": "CustomerSupport",
+    "Real-Time Tracking": "RealTimeTracking",
   };
 
   const handleSignInPress = () => navigation.getParent()?.navigate("Auth");
@@ -265,29 +281,79 @@ const MenuScreen = () => {
           </Text>
           {[
             { title: "Switch Theme", subtitle: "Change app appearance", icon: "moon-outline", color: "#9C27B0" },
-            { title: "About Us", subtitle: "Company overview and   mission", icon: "information-circle-outline", color: "#9C27B0" },
+            { title: "About Us", subtitle: "Company overview and mission", icon: "information-circle-outline", color: "#9C27B0" },
+            { title: "Our Services", subtitle: null, icon: "briefcase-outline", color: "#9C27B0", isDropdown: true },
             { title: "FAQs", subtitle: null, icon: "help-circle-outline", color: "#9C27B0" },
-            { title: "More", subtitle: null, icon: "ellipsis-horizontal", color: "#9C27B0" },
+            { title: "Contact Us", subtitle: null, icon: "call-outline", color: "#9C27B0" },
           ].map((item, index) => (
-            <TouchableOpacity
-              key={index}
-              style={[styles.actionItem, { backgroundColor: theme.colors.card }]}
-              onPress={() => handleLogisticsNavigation(item.title)}
-            >
-              <View style={[styles.actionIconContainer, { backgroundColor: item.color + "12" }]}>
-                <Ionicons name={item.icon as any} size={18} color={item.color} />
-              </View>
-              <View style={[styles.actionContent, !item.subtitle && { justifyContent: "center" }]}>
-                <Text style={[styles.actionTitle, { color: theme.colors.text }]}>{item.title}</Text>
-                {item.subtitle && (
-                  <Text style={[styles.actionSubtitle, { color: theme.colors.textSecondary }]}>{item.subtitle}</Text>
-                )}
-              </View>
-              <View style={[styles.chevronContainer, { backgroundColor: theme.colors.background + "50" }]}>
-                <Ionicons name="chevron-forward" size={16} color={theme.colors.text} />
-              </View>
-            </TouchableOpacity>
+            <View key={index}>
+              <TouchableOpacity
+                style={[styles.actionItem, { backgroundColor: theme.colors.card }]}
+                onPress={() => {
+                  if (item.isDropdown) {
+                    setServicesDropdownOpen(prev => !prev);
+                  } else {
+                    handleLogisticsNavigation(item.title);
+                  }
+                }}
+              >
+                <View style={[styles.actionIconContainer, { backgroundColor: item.color + "12" }]}>
+                  <Ionicons name={item.icon as any} size={18} color={item.color} />
+                </View>
+                <View style={[styles.actionContent, !item.subtitle && { justifyContent: "center" }]}>
+                  <Text style={[styles.actionTitle, { color: theme.colors.text }]}>{item.title}</Text>
+                  {item.subtitle && (
+                    <Text style={[styles.actionSubtitle, { color: theme.colors.textSecondary }]}>{item.subtitle}</Text>
+                  )}
+                </View>
+                <View style={[styles.chevronContainer, { backgroundColor: theme.colors.background + "50" }]}>
+                  <Ionicons
+                    name={item.isDropdown ? (servicesDropdownOpen ? "chevron-up" : "chevron-down") : "chevron-forward"}
+                    size={16}
+                    color={theme.colors.text}
+                  />
+                </View>
+              </TouchableOpacity>
+
+              {/* Dropdown submenu */}
+              {item.isDropdown && servicesDropdownOpen && (
+                <View style={{ marginBottom: 8, paddingLeft: 10 }}>
+                  {[
+                    { title: "Air Freight", subtitle: null, icon: "airplane-outline", color: "#7B1FA2" },
+                    { title: "Ocean Freight", subtitle: null, icon: "water-outline", color: "#7B1FA2" },
+                    { title: "Land Transport", subtitle: null, icon: "bus-outline", color: "#7B1FA2" },
+                    { title: "Customs Clearance", subtitle: null, icon: "document-text-outline", color: "#7B1FA2" },
+                    { title: "24/7 Customer Support", subtitle: null, icon: "headset-outline", color: "#7B1FA2" },
+                    { title: "Real-Time Tracking", subtitle: null, icon: "locate-outline", color: "#7B1FA2" },
+                  ].map((subItem, subIndex) => {
+                    const screenName = submenuNavigationMap[subItem.title]; 
+                    return (
+                      <TouchableOpacity
+                        key={subIndex}
+                        style={[styles.actionItem, { backgroundColor: theme.colors.card }]}
+                        onPress={() => {
+                          if (screenName) navigation.navigate<any>(screenName);
+                        }}
+                      >
+                        <View style={[styles.actionIconContainer, { backgroundColor: subItem.color + "12" }]}>
+                          <Ionicons name={subItem.icon as any} size={18} color={subItem.color} />
+                        </View>
+                        <View style={styles.actionContent}>
+                          <Text style={[styles.actionTitle, { color: theme.colors.text }]}>{subItem.title}</Text>
+                        </View>
+                        <View style={[styles.chevronContainer, { backgroundColor: theme.colors.background + "50" }]}>
+                          <Ionicons name="chevron-forward" size={16} color={theme.colors.text} />
+                        </View>
+                      </TouchableOpacity>
+                    )
+                  })}
+                </View>
+              )}
+
+
+            </View>
           ))}
+
         </View>
 
         {/* Logout */}
@@ -310,7 +376,7 @@ const MenuScreen = () => {
             <Text style={[styles.logoutTitle, { color: "#fff" }]}><Ionicons name="log-out-outline" size={20} color="#fff" />  Log out</Text>
           </View>
         </TouchableOpacity>
-        
+
         {/* Footer Section */}
         <View style={styles.footerContainer}>
           <FontAwesome5 name="truck" size={25} color={theme.colors.textSecondary} />

@@ -175,6 +175,7 @@ export const darkTheme: Theme = {
 };
 
 interface ThemeContextType {
+  colors: any;
   theme: Theme;
   toggleTheme: () => void;
   themeMode: ThemeMode;
