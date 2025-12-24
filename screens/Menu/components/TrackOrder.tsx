@@ -39,7 +39,7 @@ const TrackOrderScreen = () => {
  
           <View
             style={[
-              styles.iconContainer,
+              styles.iconContainer,       
               { backgroundColor: theme.colors.brandColor + "20" },
             ]}
           >
@@ -49,14 +49,12 @@ const TrackOrderScreen = () => {
               color={theme.colors.brandColor}
             />
           </View>
-
           <ThemedText
             type="cardHeader"
             style={{ fontSize: 18, textAlign: "center", marginBottom: 8 }}
           >
             Track Your Order
           </ThemedText>
-
 
           <ThemedText
             type="cardLabel"
@@ -70,7 +68,6 @@ const TrackOrderScreen = () => {
             Enter your Order ID below to see the current status and delivery
             timeline.
           </ThemedText>
-
 
           <View
             style={[
@@ -101,7 +98,6 @@ const TrackOrderScreen = () => {
             <Ionicons name="qr-code-outline" size={20} color="#888" />
           </View>
 
-
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => setSubmittedId(trackingNumber.trim())}
@@ -127,13 +123,11 @@ const TrackOrderScreen = () => {
             </ThemedCard>
           </TouchableOpacity>
 
-
           {isLoading && (
             <ThemedText style={{ marginTop: 12, textAlign: "center" }}>
               Loading...
             </ThemedText>
           )}
-
 
           {error && (
             <ThemedText
@@ -147,7 +141,6 @@ const TrackOrderScreen = () => {
             </ThemedText>
           )}
 
-  
           {TrackOrder?.message && (
             <ThemedText
               style={{

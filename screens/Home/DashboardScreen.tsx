@@ -20,12 +20,21 @@ import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedTouchableOpacity } from "@/components/themed/ThemedTouchableOpacity";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from 'expo-linear-gradient';
+import SectionCard from "./components/SectionCard";
+import HorizontalSection from "./components/HorizontalSection";
 
-
-
+//Get the full screen width
 const { width } = Dimensions.get("window");
-
 const CLIENT_CARD_WIDTH = width * 0.9;
+
+// Returns a greeting message based on the current hour of the day
+const getGreeting = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good Morning";
+  else if (hour < 17) return "Good Afternoon";
+  else return "Good Evening";
+};
+
 
 const QUICK_ACTIONS = [
   {
@@ -105,12 +114,11 @@ const DashboardHeader = () => {
   const [trackingNumber, setTrackingNumber] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const navigation = useNavigation<any>();
-
   const CARD_GRADIENT_COLORS: [ColorValue, ColorValue] = ['#FF4D4D', '#FF9999'];
-
   const clientFlatListRef = useRef<FlatList>(null);
   const [currentClientIndex, setCurrentClientIndex] = useState(0);
 
+  // For auto Scroll of what our client says
   useEffect(() => {
     const interval = setInterval(() => {
       const nextIndex = (currentClientIndex + 1) % OUR_CLIENTS_SAY.length;
@@ -120,7 +128,6 @@ const DashboardHeader = () => {
         animated: true,
       });
     }, 4000);
-
     return () => clearInterval(interval);
   }, [currentClientIndex]);
 
@@ -132,34 +139,42 @@ const DashboardHeader = () => {
     >
       <ThemedView style={[styles.flex, { backgroundColor: theme.colors.background }]}>
         {/* Header */}
-        <View style={[styles.headerContainer, { backgroundColor: theme.colors.background }]}>
-          <View style={styles.headerRow}>
+        <View style={[styles.topHeader, { backgroundColor: theme.colors.card }]}>
+          <View style={[styles.headerRow, { marginLeft: 16 }]}>
             <View style={styles.profileContainer}>
               <Ionicons name="person-circle-outline" size={48} color={theme.colors.brandColor!} />
               <View style={styles.textContainer}>
                 <ThemedText style={[styles.greetingText, { color: theme.colors.textSecondary }]}>
-                  Good Morning,
+                  {getGreeting()},
                 </ThemedText>
+
                 <ThemedText style={[styles.nameText, { color: theme.colors.text }]}>
-                  Alex
+                  TestUser
                 </ThemedText>
               </View>
             </View>
-            <Ionicons name="notifications-circle" size={36} color={theme.colors.brandColor!} />
           </View>
         </View>
 
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+          {/* Welcome Section */}
+          <View style={styles.welcomeContainer}>
+            <ThemedText style={[styles.WelcomeTitle, { color: theme.colors.text }]}>
+              Welcome to{" "}
+              <ThemedText style={[styles.WelcomeTitle, { color: theme.colors.brandColor! }]}>
+                Nepal Can International
+              </ThemedText>
+            </ThemedText>
+          </View>
+
           {/* Tracking Card */}
-          <View style={[styles.trackingCard, { backgroundColor: theme.colors.card }]}>
+          <SectionCard>
             <ThemedText style={[styles.trackingTitle, { color: theme.colors.text }]}>
-              Track Your order
+              Track Your Order
             </ThemedText>
             <ThemedText style={[styles.trackingSubtitle, { color: theme.colors.textSecondary }]}>
-              Enter your Order ID below to see the current status and delivery
-              timeline.
+              Enter your Order ID below to see the current status and delivery timeline.
             </ThemedText>
-
             <ThemedTouchableOpacity
               style={[
                 styles.inputContainer,
@@ -182,206 +197,93 @@ const DashboardHeader = () => {
               />
               <Ionicons name="qr-code-outline" size={20} color="#888" />
             </ThemedTouchableOpacity>
-
             <ThemedTouchableOpacity
               style={[styles.trackButton, { backgroundColor: theme.colors.brandColor! }]}
             >
               <ThemedText style={styles.trackButtonText}>Track</ThemedText>
-
             </ThemedTouchableOpacity>
-          </View>
+          </SectionCard>
 
           {/* Our Services */}
-          <View style={{ marginHorizontal: 12, marginTop: 30 }}>
-            <View style={{ marginHorizontal: 5 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
-                <Ionicons
-                  name="briefcase"
-                  size={30}
-                  color={theme.colors.brandColor!}
-                />
-                <ThemedText
-                  style={[
-                    styles.servicesTitle,
-                    { color: theme.colors.text, marginLeft: 8, lineHeight: 30 }
-                  ]}
-                >
-                  Our Services
-                </ThemedText>
-              </View>
-              <ThemedText style={[styles.servicesSubtitle, { color: theme.colors.textSecondary }]}>
-                Explore what Nepal Can International offers to customers and businesses.
-              </ThemedText>
-            </View>
-
-            <View >
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{
-                  paddingLeft: 12,
-                  paddingRight: 12,
-                }}
-              >
-                {QUICK_ACTIONS.map((action, index) => (
-                  <View key={index} style={[styles.actionCard, { marginRight: 12 }]}>
-                    <ThemedTouchableOpacity style={styles.actionButton}>
-                      {action.icon(theme.colors.brandColor!)}
-                      <ThemedText style={[styles.actionLabel, { color: theme.colors.text }]}>
-                        {action.label}
-                      </ThemedText>
-                      <ThemedText style={[styles.actionDescription, { color: theme.colors.textSecondary }]}>
-                        {action.description}
-                      </ThemedText>
-                    </ThemedTouchableOpacity>
-                  </View>
-                ))}
-              </ScrollView>
-
-            </View>
-          </View>
-
-          {/* Why Choose Us */}
-          <View style={{ marginHorizontal: 12, marginTop: 30 }}>
-            <View style={{ marginHorizontal: 5 }}>
-              <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4 }}>
-                <Ionicons
-                  name="shield-checkmark"
-                  size={30}
-                  color={theme.colors.brandColor!}
-                />
-                <ThemedText
-                  style={[
-                    styles.servicesTitle,
-                    { color: theme.colors.text, marginLeft: 8, lineHeight: 30 }
-                  ]}
-                >
-                  Why Choose Us
-                </ThemedText>
-              </View>
-              <ThemedText style={[styles.servicesSubtitle, { color: theme.colors.textSecondary }]}>
-                We&apos;re not just a logistics company—we&apos;re your trusted partner in keeping your business moving forward globally.
-              </ThemedText>
-            </View>
-
-            <View >
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={{
-                  paddingLeft: 12,
-                  paddingRight: 12,
-                }}
-              >
-                {WHY_CHOOSE_US.map((item, index) => (
-                  <View key={index} style={[styles.whyChooseCard, { width: 160, marginRight: 12 }]}>
-                    <ThemedTouchableOpacity style={styles.whyChooseButton}>
-                      <ThemedText style={[styles.whyChooseLabel, { color: theme.colors.brandColor! }]}>
-                        {item.label}
-                      </ThemedText>
-                      <ThemedText
-                        style={[styles.whyChooseDescription, { color: theme.colors.textSecondary }]}
-                      >
-                        {item.description}
-                      </ThemedText>
-                    </ThemedTouchableOpacity>
-                  </View>
-                ))}
-              </ScrollView>
-            </View>
-          </View>
-
-          {/* Our Trusted Providers */}
-          <View style={{ marginTop: 30, marginBottom: 30 }}>
-            <View style={{ marginHorizontal: 12, marginTop: 20 }}>
-              <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-                <View style={{ marginHorizontal: 5 }}>
-
-                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <Ionicons
-                      name="people"
-                      size={30}
-                      color={theme.colors.brandColor!}
-                    />
-                    <ThemedText
-                      style={[
-                        styles.servicesTitle,
-                        { color: theme.colors.text, marginLeft: 8, lineHeight: 30 }
-                      ]}
-                    >
-                      Our Trusted Providers
-                    </ThemedText>
-                  </View>
-                </View>
-
-                {/* View All button */}
-                <ThemedTouchableOpacity
-                  onPress={() => navigation.navigate("OurTrustedProviders")}
-                  style={{
-                    flexDirection: "row",
-                    alignItems: "center",
-                    backgroundColor: theme.colors.brandColor,
-                    paddingHorizontal: 12,
-                    paddingVertical: 6,
-                    borderRadius: 12,
-                    marginBottom: 8
-                  }}
-                >
-                  <ThemedText
-                    style={{
-                      fontSize: 10,
-                      fontFamily: "Montserrat-Bold",
-                      color: "#fff",
-                      marginRight: 6,
-                    }}
-                  >
-                    View All
+          <HorizontalSection
+            icon={<Ionicons name="briefcase" size={30} color={theme.colors.brandColor!} />}
+            title="Our Services"
+            subtitle="Explore what Nepal Can International offers to customers and businesses."
+            data={QUICK_ACTIONS}
+            renderItem={(action) => (
+              <View style={styles.actionCard}>
+                <ThemedTouchableOpacity style={styles.actionButton}>
+                  {action.icon(theme.colors.brandColor!)}
+                  <ThemedText style={[styles.actionLabel, { color: theme.colors.text }]}>
+                    {action.label}
                   </ThemedText>
-                  <Ionicons name="arrow-forward" size={16} color="#fff" />
+                  <ThemedText style={[styles.actionDescription, { color: theme.colors.textSecondary }]}>
+                    {action.description}
+                  </ThemedText>
                 </ThemedTouchableOpacity>
               </View>
+            )}
+          />
 
-              <View style={{ marginHorizontal: 5 }}>
-                <ThemedText style={[styles.servicesSubtitle, { color: theme.colors.textSecondary, marginTop: 4 }]}>
-                  We collaborate with reliable logistics providers to ensure fast and secure delivery.
-                </ThemedText>
+          {/* Why Choose Us */}
+          <HorizontalSection
+            icon={<Ionicons name="shield-checkmark" size={30} color={theme.colors.brandColor!} />}
+            title="Why Choose Us"
+            subtitle="We’re not just a logistics company—we’re your trusted partner in keeping your business moving forward globally."
+            data={WHY_CHOOSE_US}
+            renderItem={(item) => (
+              <View style={styles.whyChooseCard}>
+                <ThemedTouchableOpacity style={styles.whyChooseButton}>
+                  <ThemedText style={[styles.whyChooseLabel, { color: theme.colors.brandColor! }]}>
+                    {item.label}
+                  </ThemedText>
+                  <ThemedText style={[styles.whyChooseDescription, { color: theme.colors.textSecondary }]}>
+                    {item.description}
+                  </ThemedText>
+                </ThemedTouchableOpacity>
               </View>
-            </View>
-            <View style={[styles.servicesCard, { backgroundColor: theme.colors.card, marginHorizontal: 12 }]}>
-              {[
-                TRUSTED_PROVIDERS.slice(0, 2),
-                TRUSTED_PROVIDERS.slice(2, 4)
-              ].map((row, rowIndex) => (
-                <View key={rowIndex} style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10 }}>
-                  {row.map((provider, index) => (
-                    <ThemedTouchableOpacity key={index} style={[styles.providerButton, { flex: 1, marginHorizontal: 5 }]}>
-                      <ThemedView
-                        style={[
-                          styles.providerInner,
-                          {
-                            backgroundColor: theme.dark ? theme.colors.brandColor! : theme.colors.card,
-                          }
-                        ]}
+            )}
+          />
+
+          {/* Our Trusted Providers */}
+          <SectionCard
+            icon={<Ionicons name="people" size={30} color={theme.colors.brandColor!} style={{ marginLeft: 8 }} />}
+            title="Our Trusted Providers"
+            viewAll
+            onViewAllPress={() => navigation.navigate("OurTrustedProviders")}
+            viewAllIcon={<Ionicons name="arrow-forward" size={16} color="#fff" />}
+          >
+            {[TRUSTED_PROVIDERS.slice(0, 2), TRUSTED_PROVIDERS.slice(2, 4)].map((row, rowIndex) => (
+              <View
+                key={rowIndex}
+                style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 10, marginLeft: 12 }}
+              >
+                {row.map((provider, index) => (
+                  <ThemedTouchableOpacity
+                    key={index}
+                    style={[styles.providerButton, { flex: 1, marginHorizontal: 5 }]}
+                  >
+                    <ThemedView
+                      style={[
+                        styles.providerInner,
+                        { backgroundColor: theme.dark ? theme.colors.brandColor! : theme.colors.card },
+                      ]}
+                    >
+                      <ThemedText
+                        style={[styles.providerLabel, { color: theme.dark ? "#fff" : theme.colors.brandColor! }]}
                       >
-                        <ThemedText
-                          style={[
-                            styles.providerLabel,
-                            { color: theme.dark ? "#fff" : theme.colors.brandColor! },
-                          ]}
-                        >
-                          {provider}
-                        </ThemedText>
-                      </ThemedView>
-                    </ThemedTouchableOpacity>
-                  ))}
-                </View>
-              ))}
-            </View>
-          </View>
+                        {provider}
+                      </ThemedText>
+                    </ThemedView>
+                  </ThemedTouchableOpacity>
+                ))}
+              </View>
+            ))}
+          </SectionCard>
 
           {/* What Our Clients Say */}
           <View style={{ marginHorizontal: 12, marginTop: 30, marginBottom: 30 }}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 5 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 8 }}>
               <Ionicons
                 name="chatbubbles"
                 size={30}
@@ -394,8 +296,6 @@ const DashboardHeader = () => {
                 What Our Clients Say
               </ThemedText>
             </View>
-
-
             <FlatList
               ref={clientFlatListRef}
               data={OUR_CLIENTS_SAY}
@@ -418,7 +318,6 @@ const DashboardHeader = () => {
                       <ThemedText style={[styles.clientDescription, { color: '#000', textAlign: 'center' }]}>
                         &quot;{item.description}&quot;
                       </ThemedText>
-
                       <View style={{ alignItems: 'center', marginTop: 12 }}>
                         <ThemedText style={[styles.clientName, { color: '#000', textAlign: 'center' }]}>
                           - {item.name}
@@ -433,8 +332,6 @@ const DashboardHeader = () => {
               )}
             />
           </View>
-
-
         </ScrollView>
       </ThemedView>
     </KeyboardAvoidingView>
@@ -448,15 +345,13 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 30,
   },
-  headerContainer: {
-    width: width,
-    paddingHorizontal: 20,
-    paddingVertical: 12,
-  },
   headerRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
+  },
+  topHeader: {
+    paddingBottom: 10,
   },
   profileContainer: {
     flexDirection: "row",
@@ -466,27 +361,24 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   greetingText: {
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: "Montserrat-Bold",
     fontWeight: "700",
   },
   nameText: {
-    fontSize: 20,
+    fontSize: 16,
     fontFamily: "Montserrat-SemiBold",
     fontWeight: "600",
   },
-  trackingCard: {
-    padding: 18,
-    borderRadius: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 3,
-    marginTop: 10,
-    marginHorizontal: 12,
+  welcomeContainer: {
+    marginTop: 16,
+    marginHorizontal: 16,
   },
-
+  WelcomeTitle: {
+    fontSize: 16,
+    fontFamily: "Montserrat-Bold",
+    lineHeight: 26,
+  },
   trackingTitle: {
     fontSize: 15,
     fontFamily: "Montserrat-Bold",
@@ -534,17 +426,6 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontFamily: "Montserrat-Bold",
     fontSize: 16,
-  },
-  servicesCard: {
-    padding: 18,
-    borderRadius: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 3,
-    marginTop: 10,
-    marginHorizontal: 12,
   },
   servicesTitle: {
     fontSize: 15,
@@ -666,7 +547,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     padding: 16,
   },
-
   clientDescription: {
     fontSize: 14,
     fontFamily: "Montserrat-Medium",

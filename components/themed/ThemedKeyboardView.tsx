@@ -15,6 +15,7 @@ interface ThemedKeyboardViewProps {
   backgroundColor?: string;
   style?: ViewStyle;
   scrollEnabled?: boolean;
+  fullWidth?: boolean; 
 }
 
 const ThemedKeyboardView: React.FC<ThemedKeyboardViewProps> = ({
@@ -23,6 +24,7 @@ const ThemedKeyboardView: React.FC<ThemedKeyboardViewProps> = ({
   backgroundColor,
   style,
   scrollEnabled = true,
+  fullWidth = false,
 }) => {
   const { theme } = useTheme();
   const colors = theme.colors;
@@ -34,10 +36,10 @@ const ThemedKeyboardView: React.FC<ThemedKeyboardViewProps> = ({
     { backgroundColor: defaultBackgroundColor },
     style,
   ];
-
   const contentStyle = [
     styles.content,
     centerContent && styles.centeredContent,
+    fullWidth && styles.fullWidthContent,
   ];
 
   return (
@@ -74,6 +76,9 @@ const styles = StyleSheet.create({
   },
   centeredContent: {
     justifyContent: "center",
+  },
+  fullWidthContent: {
+    paddingHorizontal: 0, 
   },
 });
 
