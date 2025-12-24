@@ -26,7 +26,7 @@ import CustomsClearance from "@/screens/Menu/components/OurServices/CustomsClear
 import CustomerSupport from "@/screens/Menu/components/OurServices/CustomerSupport";
 import RealTimeTracking from "@/screens/Menu/components/OurServices/RealTimeTracking";
 import ContactScreen from "@/screens/Contact/ContactScreen";
-import More from "@/screens/Menu/components/More";
+import WhyChooseUS from "@/screens/Menu/components/WhyChooseUs";
 
 const Tab = createBottomTabNavigator<PublicTabParamList>();
 const Stack = createNativeStackNavigator<PublicStackParamList>();
@@ -229,8 +229,8 @@ const MainAppNavigator = () => {
           options={{ title: "Real-Time Tracking"}}
         />
         <Stack.Screen
-          name="More"
-          component={More}
+          name="WhyChooseUs"
+          component={WhyChooseUS}
           options={{ title: "Why Choose Us"}}
         />
         {/* <Stack.Screen

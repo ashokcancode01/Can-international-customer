@@ -5,7 +5,7 @@ import ThemedText from "@/components/themed/ThemedText";
 
 const GlobalNetworkImage = require("../../../assets/app/global-network.png");
 
-const More = () => {
+const WhyChooseUS = () => {
   const { theme } = useTheme();
 
 
@@ -97,4 +97,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default More;
+export default WhyChooseUS;

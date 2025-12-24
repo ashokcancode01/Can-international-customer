@@ -4,41 +4,46 @@ import { useForm } from "react-hook-form";
 import { useTheme } from "../../theme/ThemeProvider";
 
 import ThemedText from "@/components/themed/ThemedText";
-import { ThemedView }from "@/components/themed/ThemedView";
+import { ThemedView } from "@/components/themed/ThemedView";
 import { ThemedCard } from "@/components/themed/ThemedCard";
 import ThemedButton from "@/components/themedComponent/ThemedButton";
 import ThemedTextField from "@/components/themedComponent/ThemedTextField";
 import { CustomFormDropdown } from "@/components/themedComponent/CustomFormDropdown";
 import { useGetCountryListQuery } from "@/store/slices/dropdown";
-import { ServiceType, ShipmentType } from "@/constants/dropdowns";
+import { getServiceTypeOptions, ShipmentType } from "@/constants/dropdowns";
 
 type FormData = {
     origin: string;
     destination: any;
-    shipmentType: string;
-    serviceType: string;
+    shipmentType: { _id: string; name: string } | null;
+    serviceType: { _id: string; name: string } | null;
     weight: string;
 };
 
 const PricingScreen = () => {
     const { theme } = useTheme();
 
-    const { control, handleSubmit } = useForm<FormData>({
+    const { control, handleSubmit, watch } = useForm<FormData>({
         defaultValues: {
             origin: "Nepal",
             destination: { name: "Afghanistan" },
-            shipmentType: "Document",
-            serviceType: "Express",
+            shipmentType: null,
+            serviceType: null,
             weight: "",
         },
     });
+
+    const selectedShipmentType = watch("shipmentType");
+
+    // Change the service type dropdowm dynamically for shipment type document and parcel
+    const serviceOptions = getServiceTypeOptions(selectedShipmentType);
 
     const onSubmit = (data: FormData) => {
         console.log("Pricing Form Data:", data);
     };
 
-    const{data: countryList} =useGetCountryListQuery();
-    
+    const { data: countryList } = useGetCountryListQuery();
+
     return (
         <ThemedView style={{ flex: 1, backgroundColor: theme.colors.background }}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -48,13 +53,12 @@ const PricingScreen = () => {
 
                 <ThemedCard
                     isCard
-                    borderColor={theme.colors.brandColor}
+                    borderColor={theme.dark ? "transparent" : theme.colors.brandColor}
                     borderWidth={1}
                     radius
                     shadow="md"
                     padding="md"
                 >
-
                     {/* ORIGIN */}
                     <ThemedTextField
                         control={control}
@@ -62,11 +66,17 @@ const PricingScreen = () => {
                         label="Origin"
                         value="Nepal"
                         editable={false}
-                        style={{ borderWidth: 0, backgroundColor: "transparent" }}
-                        inputStyle={{ color: theme.dark ? "#FFFFFF" : "#000000" }}
+                        containerStyle={{
+                            borderWidth: 1,
+                            borderColor: theme.dark ? "#FFFFFF" : theme.colors.border,
+                            backgroundColor: "transparent",
+                        }}
+                        inputStyle={{
+                            color: theme.dark ? "#FFFFFF" : "#000000",
+                        }}
+                        placeholder="Nepal"
+                        placeholderTextColor={theme.dark ? "#FFFFFF" : "#999999"}
                     />
-
-
 
                     {/* DESTINATION */}
                     <CustomFormDropdown
@@ -84,17 +94,41 @@ const PricingScreen = () => {
                         name="shipmentType"
                         label="Shipment Type"
                         options={ShipmentType}
-                        defaultValue="document"
+                        defaultValue=""
+                        placeholder="Select Shipment Type"
+                        storeFullObject={true}
+                        containerStyle={{ marginBottom: 0 }}
                     />
+                    <ThemedText
+                        style={{
+                            color: theme.colors.textSecondary,
+                            marginBottom: 12,
+                            fontSize: 10,
+                        }}
+                    >
+                        Choose what are you sending
+                    </ThemedText>
 
                     {/* SERVICE TYPE */}
                     <CustomFormDropdown
                         control={control}
                         name="serviceType"
                         label="Service Type"
-                        options={ServiceType}
-                        defaultValue="Express"
+                        options={serviceOptions}
+                        defaultValue=""
+                        placeholder="Select Shipment Type"
+                        disabled={!selectedShipmentType}
+                        containerStyle={{ marginBottom: 0 }}
                     />
+                    <ThemedText
+                        style={{
+                            color: theme.colors.textSecondary,
+                            marginBottom: 12,
+                            fontSize: 10, 
+                        }}
+                    >
+                        {selectedShipmentType ? "Choose delivery speed" : "Select Shipment Type first"}
+                    </ThemedText>
 
                     {/* WEIGHT */}
                     <ThemedTextField
