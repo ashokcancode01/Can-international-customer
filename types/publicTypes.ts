@@ -78,13 +78,13 @@ export type PublicStackParamList = {
   OurTrustedProviders: undefined;
   AboutUs: undefined;
   FAQs: undefined;
-  ContactUs: undefined;
   AirFreight: undefined;
   OceanFreight: undefined;
   LandTransport: undefined;
   CustomerSupport: undefined;
   CustomsClearance: undefined;
   RealTimeTracking: undefined;
+  More: undefined;
 };
 
 export type PublicTabParamList = {
@@ -160,10 +160,10 @@ export interface ApiProduct {
   productName: string;
   slug: string;
   productDescription: string;
-  productImages: Array<{
+  productImages: {
     url: string;
     alt?: string;
-  }>;
+  }[];
   sellingPrice: number;
   crossedPrice?: number;
   quantity: number;
@@ -271,12 +271,10 @@ export interface TrackingItem {
   product: {
     _id: string;
     productName: string;
-    productImages: Array<{
-      name: string;
-      type: string;
-      size: string;
-      url?: string;
-    }>;
+    variantOptions: any[];
+    sizeOptions: string[];
+    productImages: ProductImage[];
+
     variants: any[];
   };
   variant: any;

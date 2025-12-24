@@ -22,7 +22,7 @@ interface FormData {
   message: string;
 }
 
-const ContactUs = () => {
+const ContactScreen = () => {
   const { theme } = useTheme();
   const { control, handleSubmit, reset } = useForm<FormData>({
     defaultValues: {
@@ -204,7 +204,7 @@ const styles = StyleSheet.create({
   },
   heading: {
     fontSize: 15,
-    fontWeight: "bold",
+    fontFamily: "Montserrat-bold",
     marginBottom: 10,
   },
   infoRow: {
@@ -218,4 +218,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ContactUs;
+export default ContactScreen;

@@ -15,42 +15,41 @@ const AirFreight = () => {
   ];
 
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-      contentContainerStyle={{ padding: 16 }}
-    >
-      <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
-        <Image
-          source={require("../../../../assets/app/airfreight.png")}
-          style={styles.image}
-          resizeMode="contain"
-        />
-        <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-          Fast and reliable air cargo solutions for time-sensitive international shipments.
-        </Text>
-      </View>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
+        <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
+          <Image
+            source={require("../../../../assets/app/airfreight.png")}
+            style={styles.image}
+            resizeMode="contain"
+          />
+          <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
+            Fast and reliable air cargo solutions for time-sensitive international shipments.
+          </Text>
+        </View>
 
-      <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-          Service Overview
-        </Text>
-        <Text style={[styles.sectionContent, { color: theme.colors.textSecondary }]}>
-          Our Air Freight service provides rapid and secure transportation for your high-priority goods across global destinations. With partnerships across major airlines, optimized routes, and advanced handling processes, we ensure your cargo arrives safely and on schedule.
-        </Text>
+        <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+            Service Overview
+          </Text>
+          <Text style={[styles.sectionContent, { color: theme.colors.textSecondary }]}>
+            Our Air Freight service provides rapid and secure transportation for your high-priority goods across global destinations. With partnerships across major airlines, optimized routes, and advanced handling processes, we ensure your cargo arrives safely and on schedule.
+          </Text>
 
-        <Text style={[styles.sectionTitle, { color: theme.colors.brandColor, marginTop: 16 }]}>
-          Key Features
-        </Text>
-        {features.map((feature, idx) => (
-          <View style={styles.featureItem} key={idx}>
-            <Ionicons name="checkmark-circle-outline" size={20} color={theme.colors.brandColor} />
-            <Text style={[styles.featureText, { color: theme.colors.textSecondary }]}>
-              {feature}
-            </Text>
-          </View>
-        ))}
-      </View>
-    </ScrollView>
+          <Text style={[styles.sectionTitle, { color: theme.colors.brandColor, marginTop: 16 }]}>
+            Key Features
+          </Text>
+          {features.map((feature, idx) => (
+            <View style={styles.featureItem} key={idx}>
+              <Ionicons name="checkmark-circle-outline" size={20} color={theme.colors.brandColor} />
+              <Text style={[styles.featureText, { color: theme.colors.textSecondary }]}>
+                {feature}
+              </Text>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 

@@ -10,7 +10,8 @@ import {
   ActivityIndicator,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { Ionicons, FontAwesome5 } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
+// import {  FontAwesome5 } from "@expo/vector-icons";
 import { useTheme } from "../../theme/ThemeProvider";
 import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
@@ -27,6 +28,7 @@ import {
 import { toastManager } from "../../utils/toastManager";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { PublicStackParamList } from "../../types/publicTypes";
+import { FlatList } from "react-native";
 
 
 type MenuScreenNavigationProp = NativeStackNavigationProp<PublicStackParamList>;
@@ -143,8 +145,8 @@ const MenuScreen = () => {
       case "FAQs":
         navigation.navigate("FAQs");
         break;
-      case "Contact Us":
-        navigation.navigate("ContactUs");
+      case "More":
+        navigation.navigate("More");
         break;
       default:
     }
@@ -160,8 +162,8 @@ const MenuScreen = () => {
     "Real-Time Tracking": "RealTimeTracking",
   };
 
-  const handleSignInPress = () => navigation.getParent()?.navigate("Auth");
-  const handleRegisterPress = () => navigation.getParent()?.navigate("Auth");
+  // const handleSignInPress = () => navigation.getParent()?.navigate("Auth");
+  // const handleRegisterPress = () => navigation.getParent()?.navigate("Auth");
 
   const handleSignOut = async () => {
     try {
@@ -202,14 +204,14 @@ const MenuScreen = () => {
         }
       >
         {/* Welcome */}
-        <View style={styles.welcomeSection}>
+        {/* <View style={styles.welcomeSection}>
           <Text style={[styles.welcomeSubtitle, { color: theme.colors.textSecondary }]}>
             Hello, Welcome to CAN International!
           </Text>
-        </View>
+        </View> */}
 
         {/* Auth Buttons */}
-        <View style={styles.authSection}>
+        {/* <View style={styles.authSection}>
           <View style={styles.authButtonsRow}>
             <TouchableOpacity
               style={[styles.authButton, { backgroundColor: theme.colors.brandColor }]}
@@ -226,9 +228,9 @@ const MenuScreen = () => {
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </View> */}
         {/* Profile Card */}
-        <View style={[styles.profileCard, { backgroundColor: theme.colors.card, marginTop: 12 }]}>
+        {/* <View style={[styles.profileCard, { backgroundColor: theme.colors.card, marginTop: 12 }]}>
           <View style={styles.profileRow}>
             <View style={[styles.profileIconContainer, { backgroundColor: "#9C27B0" + "20" }]}>
               <Ionicons name="person-outline" size={30} color="#9C27B0" />
@@ -244,7 +246,7 @@ const MenuScreen = () => {
               <Text style={styles.editButtonText}>Edit</Text>
             </TouchableOpacity>
           </View>
-        </View>
+        </View> */}
 
         {/* Accounts & Activity Card */}
         <View style={[styles.card, { backgroundColor: theme.colors.card, marginTop: 12 }]}>
@@ -252,7 +254,7 @@ const MenuScreen = () => {
             Accounts & Activity
           </Text>
           {[
-            { title: "Profile Settings", subtitle: "Address, Payment, Security", icon: "person-outline", color: "#9C27B0" },
+            // { title: "Profile Settings", subtitle: "Address, Payment, Security", icon: "person-outline", color: "#9C27B0" },
             { title: "Track Order", subtitle: "Track your orders using QR codes", icon: "qr-code-outline", color: "#9C27B0" },
           ].map((item, index) => (
             <TouchableOpacity
@@ -284,7 +286,8 @@ const MenuScreen = () => {
             { title: "About Us", subtitle: "Company overview and mission", icon: "information-circle-outline", color: "#9C27B0" },
             { title: "Our Services", subtitle: null, icon: "briefcase-outline", color: "#9C27B0", isDropdown: true },
             { title: "FAQs", subtitle: null, icon: "help-circle-outline", color: "#9C27B0" },
-            { title: "Contact Us", subtitle: null, icon: "call-outline", color: "#9C27B0" },
+            { title: "More", subtitle: null, icon: "ellipsis-horizontal-outline", color: "#9C27B0" },
+
           ].map((item, index) => (
             <View key={index}>
               <TouchableOpacity
@@ -357,7 +360,7 @@ const MenuScreen = () => {
         </View>
 
         {/* Logout */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           style={[styles.logoutCard, { backgroundColor: theme.colors.brandColor, marginTop: 12 }]}
           onPress={() =>
             Alert.alert(
@@ -375,10 +378,10 @@ const MenuScreen = () => {
           <View style={styles.logoutContent}>
             <Text style={[styles.logoutTitle, { color: "#fff" }]}><Ionicons name="log-out-outline" size={20} color="#fff" />  Log out</Text>
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         {/* Footer Section */}
-        <View style={styles.footerContainer}>
+        {/* <View style={styles.footerContainer}>
           <FontAwesome5 name="truck" size={25} color={theme.colors.textSecondary} />
           <Text style={[styles.footerText, { color: theme.colors.textSecondary }]}>
             CAN International Logistic
@@ -386,7 +389,7 @@ const MenuScreen = () => {
           <Text style={[styles.footerVersion, { color: theme.colors.textSecondary }]}>
             Version 21.0
           </Text>
-        </View>
+        </View> */}
 
         <View style={styles.bottomSpacer} />
       </ScrollView>

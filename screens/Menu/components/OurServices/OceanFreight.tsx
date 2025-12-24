@@ -15,42 +15,41 @@ const OceanFreight = () => {
   ];
 
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-      contentContainerStyle={{ padding: 16 }}
-    >
-      <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
-        <Image
-          source={require("../../../../assets/app/oceanfreight.png")}
-          style={styles.image}
-          resizeMode="contain"
-        />
-        <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-          Cost-effective and reliable sea shipping solutions for large-volume cargo.
-        </Text>
-      </View>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
+        <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
+          <Image
+            source={require("../../../../assets/app/oceanfreight.png")}
+            style={styles.image}
+            resizeMode="contain"
+          />
+          <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
+            Cost-effective and reliable sea shipping solutions for large-volume cargo.
+          </Text>
+        </View>
 
-      <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-          Service Overview
-        </Text>
-        <Text style={[styles.sectionContent, { color: theme.colors.textSecondary }]}>
-          Our Ocean Freight service provides an economical option for transporting bulk goods across international waters. We offer both FCL and LCL solutions, supported by trusted carrier networks and optimized routes.
-        </Text>
+        <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+            Service Overview
+          </Text>
+          <Text style={[styles.sectionContent, { color: theme.colors.textSecondary }]}>
+            Our Ocean Freight service provides an economical option for transporting bulk goods across international waters. We offer both FCL and LCL solutions, supported by trusted carrier networks and optimized routes.
+          </Text>
 
-        <Text style={[styles.sectionTitle, { color: theme.colors.brandColor, marginTop: 16 }]}>
-          Key Features
-        </Text>
-        {features.map((feature, idx) => (
-          <View style={styles.featureItem} key={idx}>
-            <Ionicons name="checkmark-circle-outline" size={20} color={theme.colors.brandColor} />
-            <Text style={[styles.featureText, { color: theme.colors.textSecondary }]}>
-              {feature}
-            </Text>
-          </View>
-        ))}
-      </View>
-    </ScrollView>
+          <Text style={[styles.sectionTitle, { color: theme.colors.brandColor, marginTop: 16 }]}>
+            Key Features
+          </Text>
+          {features.map((feature, idx) => (
+            <View style={styles.featureItem} key={idx}>
+              <Ionicons name="checkmark-circle-outline" size={20} color={theme.colors.brandColor} />
+              <Text style={[styles.featureText, { color: theme.colors.textSecondary }]}>
+                {feature}
+              </Text>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 

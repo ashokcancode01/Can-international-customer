@@ -13,43 +13,75 @@ const RealTimeTracking = () => {
   ];
 
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-      contentContainerStyle={{ padding: 16 }}
-    >
-      <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
-        <Image
-          source={require("../../../../assets/app/realtimetracking.png")}
-          style={styles.image}
-          resizeMode="contain"
-          accessibilityLabel="Illustration of real-time tracking service"
-        />
-        <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-          Monitor your shipments in real time with our advanced tracking technology.
-        </Text>
-      </View>
-
-      <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-          Service Overview
-        </Text>
-        <Text style={[styles.sectionContent, { color: theme.colors.textSecondary }]}>
-          Our Real-Time Tracking system uses GPS and IoT sensors to provide live updates on your shipment, including alerts for delays or route deviations.
-        </Text>
-
-        <Text style={[styles.sectionTitle, { color: theme.colors.brandColor, marginTop: 16 }]}>
-          Key Features
-        </Text>
-        {features.map((feature, idx) => (
-          <View style={styles.featureItem} key={idx}>
-            <Ionicons name="checkmark-circle-outline" size={20} color={theme.colors.brandColor} />
-            <Text style={[styles.featureText, { color: theme.colors.textSecondary }]}>
-              {feature}
-            </Text>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
+        <View
+          style={[
+            styles.card,
+            {
+              backgroundColor: theme.colors.card,
+              shadowOpacity: theme.dark ? 0 : 0.1,
+              elevation: theme.dark ? 0 : 3,
+            },
+          ]}
+        >
+          <View style={styles.imageWrapper}>
+            <Image
+              source={require("../../../../assets/app/realtimetracking.png")}
+              style={styles.image}
+              resizeMode="contain"
+              accessibilityLabel="Illustration of real-time tracking service"
+            />
           </View>
-        ))}
-      </View>
-    </ScrollView>
+
+          <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
+            Monitor your shipments in real time with our advanced tracking technology.
+          </Text>
+        </View>
+
+        <View
+          style={[
+            styles.card,
+            {
+              backgroundColor: theme.colors.card,
+              shadowOpacity: theme.dark ? 0 : 0.1,
+              elevation: theme.dark ? 0 : 3,
+            },
+          ]}
+        >
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+            Service Overview
+          </Text>
+
+          <Text style={[styles.sectionContent, { color: theme.colors.textSecondary }]}>
+            Our Real-Time Tracking system uses GPS and IoT sensors to provide live
+            updates on your shipment, including alerts for delays or route deviations.
+          </Text>
+
+          <Text
+            style={[
+              styles.sectionTitle,
+              { color: theme.colors.brandColor, marginTop: 16 },
+            ]}
+          >
+            Key Features
+          </Text>
+
+          {features.map((feature, idx) => (
+            <View style={styles.featureItem} key={idx}>
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={20}
+                color={theme.colors.brandColor}
+              />
+              <Text style={[styles.featureText, { color: theme.colors.textSecondary }]}>
+                {feature}
+              </Text>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 
@@ -63,16 +95,20 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
     shadowRadius: 6,
-    elevation: 3,
+  },
+  imageWrapper: {
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    padding: 8,
+    marginBottom: 12,
   },
   image: {
     width: "100%",
     height: 200,
     borderRadius: 12,
-    marginBottom: 12,
     alignSelf: "center",
+    tintColor: undefined,
   },
   subtitle: {
     fontSize: 14,

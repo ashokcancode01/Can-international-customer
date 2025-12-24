@@ -15,43 +15,42 @@ const CustomsClearance = () => {
   ];
 
   return (
-    <ScrollView
-      style={[styles.container, { backgroundColor: theme.colors.background }]}
-      contentContainerStyle={{ padding: 16 }}
-    >
-      <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
-        <Image
-          source={require("../../../../assets/app/customsclearance.png")}
-          style={styles.image}
-          resizeMode="contain"
-          accessibilityLabel="Illustration of customs clearance service"
-        />
-        <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-          Seamless and compliant customs processing for smooth international shipping.
-        </Text>
-      </View>
+    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
+        <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
+          <Image
+            source={require("../../../../assets/app/customsclearance.png")}
+            style={styles.image}
+            resizeMode="contain"
+            accessibilityLabel="Illustration of customs clearance service"
+          />
+          <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
+            Seamless and compliant customs processing for smooth international shipping.
+          </Text>
+        </View>
 
-      <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
-        <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
-          Service Overview
-        </Text>
-        <Text style={[styles.sectionContent, { color: theme.colors.textSecondary }]}>
-          Our Customs Clearance service simplifies the complexities of international trade by handling all documentation and compliance requirements on your behalf.
-        </Text>
+        <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
+          <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+            Service Overview
+          </Text>
+          <Text style={[styles.sectionContent, { color: theme.colors.textSecondary }]}>
+            Our Customs Clearance service simplifies the complexities of international trade by handling all documentation and compliance requirements on your behalf.
+          </Text>
 
-        <Text style={[styles.sectionTitle, { color: theme.colors.brandColor, marginTop: 16 }]}>
-          Key Features
-        </Text>
-        {features.map((feature, idx) => (
-          <View style={styles.featureItem} key={idx}>
-            <Ionicons name="checkmark-circle-outline" size={20} color={theme.colors.brandColor} />
-            <Text style={[styles.featureText, { color: theme.colors.textSecondary }]}>
-              {feature}
-            </Text>
-          </View>
-        ))}
-      </View>
-    </ScrollView>
+          <Text style={[styles.sectionTitle, { color: theme.colors.brandColor, marginTop: 16 }]}>
+            Key Features
+          </Text>
+          {features.map((feature, idx) => (
+            <View style={styles.featureItem} key={idx}>
+              <Ionicons name="checkmark-circle-outline" size={20} color={theme.colors.brandColor} />
+              <Text style={[styles.featureText, { color: theme.colors.textSecondary }]}>
+                {feature}
+              </Text>
+            </View>
+          ))}
+        </View>
+      </ScrollView>
+    </View>
   );
 };
 

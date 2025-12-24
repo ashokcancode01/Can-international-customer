@@ -1,31 +1,32 @@
-import React, { useState, useCallback, useEffect, useRef } from "react";
+// import React, { useState, useCallback, useEffect, useRef } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { AntDesign, Ionicons } from "@expo/vector-icons";
 import { Image, Text, TouchableOpacity, View } from "react-native";
 import { useTheme } from "../theme/ThemeProvider";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
-import { useSelector } from "react-redux";
-import { selectIsAuthenticated } from "../store/auth/authSlice";
-import { StorageService } from "../utils/storageService";
-import { tabCountManager } from "../utils/tabCountManager";
+// import { useNavigation, } from "@react-navigation/native";
+// import { useSelector } from "react-redux";
+// import { selectIsAuthenticated } from "../store/auth/authSlice";
+// import { StorageService } from "../utils/storageService";
+// import { tabCountManager } from "../utils/tabCountManager";
 import { PublicStackParamList, PublicTabParamList } from "../types/publicTypes";
 import DashboardScreen from "@/screens/Home/DashboardScreen";
-import MenuScreen from "@/screens/Menu/MenuScreen";
+import MenuScreen  from "@/screens/Menu/MenuScreen";
 import AppearanceScreen from "@/screens/Menu/components/AppearanceScreen";
-import QRScannerScreen from "@/screens/Menu/components/TrackOrder";
+// import QRScannerScreen from "@/screens/Menu/components/TrackOrder";
 import TrackOrderScreen from "@/screens/Menu/components/TrackOrder";
 import TrustedProvidersScreen from "@/screens/Home/components/TrustedProviders";
 import PricingScreen from "@/screens/Pricing/PricingScreen";
 import AboutUs from "@/screens/Menu/components/AboutUs";
 import FAQs from "@/screens/Menu/components/FAQs";
-import ContactUs from "@/screens/Menu/components/ContactUs";
 import AirFreight from "@/screens/Menu/components/OurServices/AirFreight";
 import OceanFreight from "@/screens/Menu/components/OurServices/OceanFreight";
 import LandTransport from "@/screens/Menu/components/OurServices/LandTransport";
 import CustomsClearance from "@/screens/Menu/components/OurServices/CustomsClearance";
 import CustomerSupport from "@/screens/Menu/components/OurServices/CustomerSupport";
 import RealTimeTracking from "@/screens/Menu/components/OurServices/RealTimeTracking";
+import ContactScreen from "@/screens/Contact/ContactScreen";
+import More from "@/screens/Menu/components/More";
 
 const Tab = createBottomTabNavigator<PublicTabParamList>();
 const Stack = createNativeStackNavigator<PublicStackParamList>();
@@ -42,6 +43,11 @@ const TAB_CONFIG = {
     unfocused: "time-outline",
     title: "Track Order",
   },
+  Contact: {
+    focused: "call",
+    unfocused: "call-outline",
+    title: "Contact",
+  },
   Menu: {
     focused: "menu",
     unfocused: "menu-outline",
@@ -51,10 +57,10 @@ const TAB_CONFIG = {
 
 const MainTabNavigator = () => {
   const { theme } = useTheme();
-  const navigation = useNavigation();
+  // const navigation = useNavigation();
 
   // Fixed tabs: Home, Pricing, TrackOrder, Menu
-  const visibleTabs = ["Home", "Pricing", "TrackOrder", "Menu"];
+  const visibleTabs = ["Home", "Pricing", "TrackOrder", "Contact","Menu"];
 
   return (
     <Tab.Navigator
@@ -106,6 +112,8 @@ const MainTabNavigator = () => {
                 ? TrackOrderScreen
                 : name === "Menu"
                 ? MenuScreen
+                : name === "Contact"
+                ? ContactScreen
                 : DashboardScreen
             }
             options={{
@@ -173,7 +181,7 @@ const MainAppNavigator = () => {
         <Stack.Screen
           name="QRScanner"
           component={TrackOrderScreen}
-          options={{ title: "Track Order", headerShown: false }}
+          options={{ title: "Track Order"}}
         />
         <Stack.Screen
           name="OurTrustedProviders"
@@ -189,11 +197,6 @@ const MainAppNavigator = () => {
           name="FAQs"
           component={FAQs}
           options={{ title: "FAQs"}}
-        />
-        <Stack.Screen
-          name="ContactUs"
-          component={ContactUs}
-          options={{ title: "Contact Us"}}
         />
         <Stack.Screen
           name="AirFreight"
@@ -224,6 +227,11 @@ const MainAppNavigator = () => {
           name="RealTimeTracking"
           component={RealTimeTracking}
           options={{ title: "Real-Time Tracking"}}
+        />
+        <Stack.Screen
+          name="More"
+          component={More}
+          options={{ title: "Why Choose Us"}}
         />
         {/* <Stack.Screen
           name="CampaignDetail"
