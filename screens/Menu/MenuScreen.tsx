@@ -6,8 +6,8 @@ import {
   ScrollView,
   TouchableOpacity,
   RefreshControl,
-  Alert,
   ActivityIndicator,
+  Linking,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
@@ -28,7 +28,6 @@ import {
 import { toastManager } from "../../utils/toastManager";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { PublicStackParamList } from "../../types/publicTypes";
-import { FlatList } from "react-native";
 
 
 type MenuScreenNavigationProp = NativeStackNavigationProp<PublicStackParamList>;
@@ -145,8 +144,13 @@ const MenuScreen = () => {
       case "FAQs":
         navigation.navigate("FAQs");
         break;
-      case "More":
-        navigation.navigate("More");
+      case "Why Choose Us":
+        navigation.navigate("WhyChooseUs");
+        break;
+      case "Career":
+        Linking.openURL("https://bayupayu.com/vacancy/NCG?page=1").catch(err =>
+        console.error("Failed to open URL:", err)
+      );
         break;
       default:
     }
@@ -232,8 +236,8 @@ const MenuScreen = () => {
         {/* Profile Card */}
         {/* <View style={[styles.profileCard, { backgroundColor: theme.colors.card, marginTop: 12 }]}>
           <View style={styles.profileRow}>
-            <View style={[styles.profileIconContainer, { backgroundColor: "#9C27B0" + "20" }]}>
-              <Ionicons name="person-outline" size={30} color="#9C27B0" />
+            <View style={[styles.profileIconContainer, { backgroundColor: theme.colors.brandColor + "20" }]}>
+              <Ionicons name="person-outline" size={30} color=theme.colors.brandColor />
             </View>
 
             <View style={styles.profileInfo}>
@@ -254,8 +258,8 @@ const MenuScreen = () => {
             Accounts & Activity
           </Text>
           {[
-            // { title: "Profile Settings", subtitle: "Address, Payment, Security", icon: "person-outline", color: "#9C27B0" },
-            { title: "Track Order", subtitle: "Track your orders using QR codes", icon: "qr-code-outline", color: "#9C27B0" },
+            // { title: "Profile Settings", subtitle: "Address, Payment, Security", icon: "person-outline", color: theme.colors.brandColor },
+            { title: "Track Order", subtitle: "Track your orders using QR codes", icon: "qr-code-outline", color: theme.colors.brandColor},
           ].map((item, index) => (
             <TouchableOpacity
               key={index}
@@ -282,11 +286,12 @@ const MenuScreen = () => {
             Other Features
           </Text>
           {[
-            { title: "Switch Theme", subtitle: "Change app appearance", icon: "moon-outline", color: "#9C27B0" },
-            { title: "About Us", subtitle: "Company overview and mission", icon: "information-circle-outline", color: "#9C27B0" },
-            { title: "Our Services", subtitle: null, icon: "briefcase-outline", color: "#9C27B0", isDropdown: true },
-            { title: "FAQs", subtitle: null, icon: "help-circle-outline", color: "#9C27B0" },
-            { title: "More", subtitle: null, icon: "ellipsis-horizontal-outline", color: "#9C27B0" },
+            { title: "Switch Theme", subtitle: "Change app appearance", icon: "moon-outline", color: theme.colors.brandColor },
+            { title: "About Us", subtitle: "Company overview and mission", icon: "information-circle-outline", color: theme.colors.brandColor },
+            { title: "Our Services", subtitle: null, icon: "briefcase-outline", color: theme.colors.brandColor, isDropdown: true },
+            { title: "FAQs", subtitle: null, icon: "help-circle-outline", color: theme.colors.brandColor },
+            { title: "Why Choose Us", subtitle: null, icon: "shield-checkmark-outline", color: theme.colors.brandColor },
+            { title: "Career", subtitle: null, icon: "briefcase-outline", color: theme.colors.brandColor },
 
           ].map((item, index) => (
             <View key={index}>
@@ -322,12 +327,12 @@ const MenuScreen = () => {
               {item.isDropdown && servicesDropdownOpen && (
                 <View style={{ marginBottom: 8, paddingLeft: 10 }}>
                   {[
-                    { title: "Air Freight", subtitle: null, icon: "airplane-outline", color: "#7B1FA2" },
-                    { title: "Ocean Freight", subtitle: null, icon: "water-outline", color: "#7B1FA2" },
-                    { title: "Land Transport", subtitle: null, icon: "bus-outline", color: "#7B1FA2" },
-                    { title: "Customs Clearance", subtitle: null, icon: "document-text-outline", color: "#7B1FA2" },
-                    { title: "24/7 Customer Support", subtitle: null, icon: "headset-outline", color: "#7B1FA2" },
-                    { title: "Real-Time Tracking", subtitle: null, icon: "locate-outline", color: "#7B1FA2" },
+                    { title: "Air Freight", subtitle: null, icon: "airplane-outline", color: theme.colors.brandColor },
+                    { title: "Ocean Freight", subtitle: null, icon: "water-outline", color: theme.colors.brandColor },
+                    { title: "Land Transport", subtitle: null, icon: "bus-outline", color: theme.colors.brandColor },
+                    { title: "Customs Clearance", subtitle: null, icon: "document-text-outline", color: theme.colors.brandColor },
+                    { title: "24/7 Customer Support", subtitle: null, icon: "headset-outline", color: theme.colors.brandColor },
+                    { title: "Real-Time Tracking", subtitle: null, icon: "locate-outline", color: theme.colors.brandColor},
                   ].map((subItem, subIndex) => {
                     const screenName = submenuNavigationMap[subItem.title]; 
                     return (

@@ -84,7 +84,7 @@ export type PublicStackParamList = {
   CustomerSupport: undefined;
   CustomsClearance: undefined;
   RealTimeTracking: undefined;
-  More: undefined;
+  WhyChooseUs: undefined;
 };
 
 export type PublicTabParamList = {
