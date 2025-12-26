@@ -1,7 +1,9 @@
 import React from "react";
-import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
+import { View, Text, ScrollView, StyleSheet, Image, Dimensions } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
+
+const screenWidth = Dimensions.get("window").width;
 
 const LandTransport = () => {
   const { theme } = useTheme();
@@ -16,12 +18,16 @@ const LandTransport = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <ScrollView contentContainerStyle={{ padding: 16 }}>
+      <ScrollView contentContainerStyle={{ paddingVertical: 20 }}>
+        {/* Image Card */}
         <View
           style={[
             styles.card,
             {
+              width: screenWidth - 24,
+              alignSelf: "center",
               backgroundColor: theme.colors.card,
+              borderColor: theme.colors.border + "30",
               shadowOpacity: theme.dark ? 0 : 0.1,
               elevation: theme.dark ? 0 : 3,
             },
@@ -41,11 +47,15 @@ const LandTransport = () => {
           </Text>
         </View>
 
+        {/* Service Overview Card */}
         <View
           style={[
             styles.card,
             {
+              width: screenWidth - 24,
+              alignSelf: "center",
               backgroundColor: theme.colors.card,
+              borderColor: theme.colors.border + "30",
               shadowOpacity: theme.dark ? 0 : 0.1,
               elevation: theme.dark ? 0 : 3,
             },
@@ -112,7 +122,6 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 12,
     alignSelf: "center",
-    tintColor: undefined,
   },
   subtitle: {
     fontSize: 14,

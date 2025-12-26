@@ -1,5 +1,5 @@
 import React from "react";
-import { ScrollView, StyleSheet, View, Image } from "react-native";
+import { ScrollView, StyleSheet, View, Image, Dimensions } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import { ThemedView } from "@/components/themed/ThemedView";
 import ThemedText from "@/components/themed/ThemedText";
@@ -8,6 +8,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 const AboutUsImage1 = require("../../../assets/app/AboutUs.png");
 const AboutUsImage2 = require("../../../assets/app/AboutUs1.png");
 
+const screenWidth = Dimensions.get("window").width;
 
 const AboutUs = () => {
   const { theme } = useTheme();
@@ -29,9 +30,18 @@ const AboutUs = () => {
   return (
     <ThemedView style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-
         {/* Company Overview */}
-        <View style={[styles.card, { backgroundColor: theme.colors.card, borderColor: theme.colors.border + "30" }]}>
+        <View
+          style={[
+            styles.card,
+            {
+              width: screenWidth - 24, // full width minus 12px margin each side
+              alignSelf: "center",
+              backgroundColor: theme.colors.card,
+              borderColor: theme.colors.border + "30",
+            },
+          ]}
+        >
           <Image source={AboutUsImage1} style={styles.cardImage} resizeMode="cover" />
           <View style={styles.headingRow}>
             <MaterialIcons name="business" size={22} color={theme.colors.brandColor} />
@@ -47,7 +57,17 @@ const AboutUs = () => {
         </View>
 
         {/* Our Mission */}
-        <View style={[styles.card, { backgroundColor: theme.colors.card, borderColor: theme.colors.border + "30" }]}>
+        <View
+          style={[
+            styles.card,
+            {
+              width: screenWidth - 24,
+              alignSelf: "center",
+              backgroundColor: theme.colors.card,
+              borderColor: theme.colors.border + "30",
+            },
+          ]}
+        >
           <Image source={AboutUsImage2} style={styles.cardImage} resizeMode="cover" />
           <View style={styles.headingRow}>
             <MaterialIcons name="emoji-objects" size={22} color={theme.colors.brandColor} />
@@ -62,7 +82,6 @@ const AboutUs = () => {
           {renderPoint("24/7 Support", "Multilingual support team ready to assist anytime.")}
           {renderPoint("Competitive Rates", "Best rates negotiated directly with carriers worldwide.")}
         </View>
-
       </ScrollView>
     </ThemedView>
   );
@@ -71,7 +90,6 @@ const AboutUs = () => {
 const styles = StyleSheet.create({
   scrollContent: {
     paddingVertical: 20,
-    paddingHorizontal: 12,
   },
   card: {
     padding: 16,

@@ -260,11 +260,12 @@ export const ThemeProvider: React.FC<ThemeProviderProps> = ({ children }) => {
     () => ({
       theme,
       toggleTheme,
+      colors: theme.colors,
       themeMode,
       setTheme,
       isDark,
     }),
-    [theme, themeMode, isDark]
+    [theme, themeMode, isDark, ]
   );
 
   // Show loading state or render children with theme context

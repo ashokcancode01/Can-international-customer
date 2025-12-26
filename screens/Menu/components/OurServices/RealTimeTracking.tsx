@@ -1,7 +1,9 @@
 import React from "react";
-import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
+import { View, Text, ScrollView, StyleSheet, Image, Dimensions } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
+
+const screenWidth = Dimensions.get("window").width;
 
 const RealTimeTracking = () => {
   const { theme } = useTheme();
@@ -14,12 +16,16 @@ const RealTimeTracking = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <ScrollView contentContainerStyle={{ padding: 16 }}>
+      <ScrollView contentContainerStyle={{ paddingVertical: 20 }}>
+        {/* Image Card */}
         <View
           style={[
             styles.card,
             {
+              width: screenWidth - 24,
+              alignSelf: "center",
               backgroundColor: theme.colors.card,
+              borderColor: theme.colors.border + "30",
               shadowOpacity: theme.dark ? 0 : 0.1,
               elevation: theme.dark ? 0 : 3,
             },
@@ -39,11 +45,15 @@ const RealTimeTracking = () => {
           </Text>
         </View>
 
+        {/* Service Overview Card */}
         <View
           style={[
             styles.card,
             {
+              width: screenWidth - 24,
+              alignSelf: "center",
               backgroundColor: theme.colors.card,
+              borderColor: theme.colors.border + "30",
               shadowOpacity: theme.dark ? 0 : 0.1,
               elevation: theme.dark ? 0 : 3,
             },
@@ -52,28 +62,17 @@ const RealTimeTracking = () => {
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
             Service Overview
           </Text>
-
           <Text style={[styles.sectionContent, { color: theme.colors.textSecondary }]}>
             Our Real-Time Tracking system uses GPS and IoT sensors to provide live
             updates on your shipment, including alerts for delays or route deviations.
           </Text>
 
-          <Text
-            style={[
-              styles.sectionTitle,
-              { color: theme.colors.brandColor, marginTop: 16 },
-            ]}
-          >
+          <Text style={[styles.sectionTitle, { color: theme.colors.brandColor, marginTop: 16 }]}>
             Key Features
           </Text>
-
           {features.map((feature, idx) => (
             <View style={styles.featureItem} key={idx}>
-              <Ionicons
-                name="checkmark-circle-outline"
-                size={20}
-                color={theme.colors.brandColor}
-              />
+              <Ionicons name="checkmark-circle-outline" size={20} color={theme.colors.brandColor} />
               <Text style={[styles.featureText, { color: theme.colors.textSecondary }]}>
                 {feature}
               </Text>
@@ -108,7 +107,6 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 12,
     alignSelf: "center",
-    tintColor: undefined,
   },
   subtitle: {
     fontSize: 14,

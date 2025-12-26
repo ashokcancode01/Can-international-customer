@@ -1,7 +1,9 @@
 import React from "react";
-import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
+import { View, Text, ScrollView, StyleSheet, Image, Dimensions } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
+
+const screenWidth = Dimensions.get("window").width;
 
 const CustomerSupport = () => {
   const { theme } = useTheme();
@@ -14,13 +16,16 @@ const CustomerSupport = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
- 
-      <ScrollView contentContainerStyle={{ padding: 16 }}>
+      <ScrollView contentContainerStyle={{ paddingVertical: 20 }}>
+        {/* Image Card */}
         <View
           style={[
             styles.card,
             {
+              width: screenWidth - 24,
+              alignSelf: "center",
               backgroundColor: theme.colors.card,
+              borderColor: theme.colors.border + "30",
               shadowOpacity: theme.dark ? 0 : 0.1,
               elevation: theme.dark ? 0 : 3,
             },
@@ -34,17 +39,20 @@ const CustomerSupport = () => {
               accessibilityLabel="Illustration of 24/7 customer support service"
             />
           </View>
-
           <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
             Get round-the-clock assistance for all your logistics needs.
           </Text>
         </View>
 
+        {/* Service Overview Card */}
         <View
           style={[
             styles.card,
             {
+              width: screenWidth - 24,
+              alignSelf: "center",
               backgroundColor: theme.colors.card,
+              borderColor: theme.colors.border + "30",
               shadowOpacity: theme.dark ? 0 : 0.1,
               elevation: theme.dark ? 0 : 3,
             },
@@ -53,28 +61,17 @@ const CustomerSupport = () => {
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
             Service Overview
           </Text>
-
           <Text style={[styles.sectionContent, { color: theme.colors.textSecondary }]}>
             Our Customer Support team is available 24/7 to resolve issues, answer
             queries, and provide guidance on shipments and logistics operations.
           </Text>
 
-          <Text
-            style={[
-              styles.sectionTitle,
-              { color: theme.colors.brandColor, marginTop: 16 },
-            ]}
-          >
+          <Text style={[styles.sectionTitle, { color: theme.colors.brandColor, marginTop: 16 }]}>
             Key Features
           </Text>
-
           {features.map((feature, idx) => (
             <View style={styles.featureItem} key={idx}>
-              <Ionicons
-                name="checkmark-circle-outline"
-                size={20}
-                color={theme.colors.brandColor}
-              />
+              <Ionicons name="checkmark-circle-outline" size={20} color={theme.colors.brandColor} />
               <Text style={[styles.featureText, { color: theme.colors.textSecondary }]}>
                 {feature}
               </Text>
@@ -109,7 +106,6 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 12,
     alignSelf: "center",
-    tintColor: undefined,
   },
   subtitle: {
     fontSize: 14,

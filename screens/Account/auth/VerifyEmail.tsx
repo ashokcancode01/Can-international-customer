@@ -20,7 +20,7 @@ import { AuthStackParamList } from "./constants/paramTypes";
 import ThemedKeyboardView from "@/components/themed/ThemedKeyboardView";
 import ThemedText from "@/components/themed/ThemedText";
 import ThemedTextField from "@/components/themedComponent/ThemedTextField";
-import ThemedTouchableOpacity from "@/components/themed/ThemedTouchableOpacity";
+import { ThemedTouchableOpacity } from "@/components/themed/ThemedTouchableOpacity";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@/theme/ThemeProvider";
 import AppLogo from "@/components/AppLogo";
@@ -284,7 +284,7 @@ const VerifyEmail = () => {
                   },
                 ]}
               >
-                Check your spam folder if you don't see the email
+                Check your spam folder if you don&apos;t see the email
               </ThemedText>
             </View>
           </View>

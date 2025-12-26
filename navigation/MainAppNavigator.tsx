@@ -27,6 +27,7 @@ import CustomerSupport from "@/screens/Menu/components/OurServices/CustomerSuppo
 import RealTimeTracking from "@/screens/Menu/components/OurServices/RealTimeTracking";
 import ContactScreen from "@/screens/Contact/ContactScreen";
 import WhyChooseUS from "@/screens/Menu/components/WhyChooseUs";
+import OurBranches from "@/screens/Menu/components/OurBranches";
 
 const Tab = createBottomTabNavigator<PublicTabParamList>();
 const Stack = createNativeStackNavigator<PublicStackParamList>();
@@ -192,6 +193,11 @@ const MainAppNavigator = () => {
           name="AboutUs"
           component={AboutUs}
           options={{ title: "About Us"}}
+        />
+        <Stack.Screen
+          name="OurBranches"
+          component={OurBranches}
+          options={{ title: "Our Branches"}}
         />
         <Stack.Screen
           name="FAQs"

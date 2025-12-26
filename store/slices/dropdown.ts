@@ -15,19 +15,10 @@ export interface DropdownCountryItem {
   }
 }
 
-export interface Branch {
-  _id: string;
-  name: string;
-  areasCovered: string;
-  district?: {
-    _id?: string;
-    name?: string;
-  };
-}
 
 export const dropdwonApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
-        getCountryList: builder.query<DropdownCountryItem[], void>({
+    getCountryList: builder.query<DropdownCountryItem[], void>({
       query: () => ({
         url: "/public/country/ddl",
         method: "GET",
@@ -97,26 +88,6 @@ export const dropdwonApi = baseApi.injectEndpoints({
       },
     }),
 
-    getBranchList: builder.query<
-      DropdownItem[],
-      { account?: string; entity?: string }
-    >({
-      query: (params) => ({
-        url: "/branches/active",
-        method: "GET",
-        params,
-      }),
-      transformResponse: (response: Branch[]) => {
-        const transformedResponse = response.map((item) => ({
-          _id: item._id,
-          name: `${item.name}${
-            item.district?.name ? ` - ${item.district.name}` : ""
-          }`,
-        }));
-        return transformedResponse;
-      },
-    }),
-
     getProductList: builder.query<DropdownItem[], void>({
       query: (params) => {
         const state = store.getState() as RootState;
@@ -165,7 +136,6 @@ export const {
   useGetCustomerListQuery,
   useGetCouponListQuery,
   useGetProductListQuery,
-  useGetBranchListQuery,
   useGetAccountListQuery,
   useGetServiceProvidersDdlQuery,
   useGetPackageTypeDdlQuery,

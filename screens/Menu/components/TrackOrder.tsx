@@ -161,10 +161,10 @@ const TrackOrderScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    paddingHorizontal: 16, 
+    paddingVertical: 20,
   },
   trackingCard: {
-    width: "100%",
     marginTop: 10,
   },
   iconContainer: {
@@ -191,5 +191,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
 });
+
 
 export default TrackOrderScreen;

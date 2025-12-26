@@ -1,7 +1,9 @@
 import React from "react";
-import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
+import { View, Text, ScrollView, StyleSheet, Image, Dimensions } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
+
+const screenWidth = Dimensions.get("window").width;
 
 const AirFreight = () => {
   const { theme } = useTheme();
@@ -16,8 +18,19 @@ const AirFreight = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <ScrollView contentContainerStyle={{ padding: 16 }}>
-        <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
+      <ScrollView contentContainerStyle={{ paddingVertical: 20 }}>
+        {/* Image Card */}
+        <View
+          style={[
+            styles.card,
+            {
+              width: screenWidth - 24,
+              alignSelf: "center",
+              backgroundColor: theme.colors.card,
+              borderColor: theme.colors.border + "30",
+            },
+          ]}
+        >
           <Image
             source={require("../../../../assets/app/airfreight.png")}
             style={styles.image}
@@ -28,7 +41,18 @@ const AirFreight = () => {
           </Text>
         </View>
 
-        <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
+        {/* Service Overview Card */}
+        <View
+          style={[
+            styles.card,
+            {
+              width: screenWidth - 24,
+              alignSelf: "center",
+              backgroundColor: theme.colors.card,
+              borderColor: theme.colors.border + "30",
+            },
+          ]}
+        >
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
             Service Overview
           </Text>

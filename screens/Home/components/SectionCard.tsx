@@ -1,8 +1,8 @@
 import React, { ReactNode } from "react";
-import { View, StyleSheet, ViewStyle, StyleProp } from "react-native";
+import { View, StyleSheet, ViewStyle, StyleProp, Platform } from "react-native";
 import ThemedText from "@/components/themed/ThemedText";
 import { useTheme } from "@/theme/ThemeProvider";
-import { ThemedTouchableOpacity }from "@/components/themed/ThemedTouchableOpacity";
+import { ThemedTouchableOpacity } from "@/components/themed/ThemedTouchableOpacity";
 
 
 interface SectionCardProps {
@@ -114,11 +114,17 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 16,
     padding: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 3,
+    ...Platform.select({
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.08,
+        shadowRadius: 6,
+      },
+      android: {
+        elevation: 3,
+      }
+    })
   },
 });
 
