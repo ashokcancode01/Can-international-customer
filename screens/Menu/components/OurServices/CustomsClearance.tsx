@@ -1,7 +1,9 @@
 import React from "react";
-import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
+import { View, Text, ScrollView, StyleSheet, Image, Dimensions } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
+
+const screenWidth = Dimensions.get("window").width;
 
 const CustomsClearance = () => {
   const { theme } = useTheme();
@@ -16,8 +18,21 @@ const CustomsClearance = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <ScrollView contentContainerStyle={{ padding: 16 }}>
-        <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
+      <ScrollView contentContainerStyle={{ paddingVertical: 20 }}>
+        {/* Image Card */}
+        <View
+          style={[
+            styles.card,
+            {
+              width: screenWidth - 24,
+              alignSelf: "center",
+              backgroundColor: theme.colors.card,
+              borderColor: theme.colors.border + "30",
+              shadowOpacity: theme.dark ? 0 : 0.1,
+              elevation: theme.dark ? 0 : 3,
+            },
+          ]}
+        >
           <Image
             source={require("../../../../assets/app/customsclearance.png")}
             style={styles.image}
@@ -29,7 +44,20 @@ const CustomsClearance = () => {
           </Text>
         </View>
 
-        <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
+        {/* Service Overview Card */}
+        <View
+          style={[
+            styles.card,
+            {
+              width: screenWidth - 24,
+              alignSelf: "center",
+              backgroundColor: theme.colors.card,
+              borderColor: theme.colors.border + "30",
+              shadowOpacity: theme.dark ? 0 : 0.1,
+              elevation: theme.dark ? 0 : 3,
+            },
+          ]}
+        >
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
             Service Overview
           </Text>
@@ -64,9 +92,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
     shadowRadius: 6,
-    elevation: 3,
   },
   image: {
     width: "100%",

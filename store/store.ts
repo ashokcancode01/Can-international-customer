@@ -9,6 +9,7 @@ import { authApi, resetAuthApiState } from "./auth/authApi";
 import { listenerMiddleware } from "./auth/listenerMiddleware";
 import { clearAuthData, loadAuthData } from "../api/asyncStorage";
 
+
 // Root reducer combining all slice reducers
 const rootReducer = combineReducers({
   [baseApi.reducerPath]: baseApi.reducer,

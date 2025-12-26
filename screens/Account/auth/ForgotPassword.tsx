@@ -17,7 +17,7 @@ import { AuthStackParamList } from "./constants/paramTypes";
 import ThemedKeyboardView from "@/components/themed/ThemedKeyboardView";
 import ThemedText from "@/components/themed/ThemedText";
 import ThemedTextField from "@/components/themedComponent/ThemedTextField";
-import ThemedTouchableOpacity from "@/components/themed/ThemedTouchableOpacity";
+import { ThemedTouchableOpacity } from "@/components/themed/ThemedTouchableOpacity";
 import { LinearGradient } from "expo-linear-gradient";
 import { useForgotPasswordMutation } from "@/store/auth/authApi";
 import { useTheme } from "@/theme/ThemeProvider";
