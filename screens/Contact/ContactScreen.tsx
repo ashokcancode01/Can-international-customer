@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { View, StyleSheet } from "react-native";
 import { useForm } from "react-hook-form";
 import { Entypo, MaterialIcons } from "@expo/vector-icons";
@@ -8,6 +8,7 @@ import ThemedText from "@/components/themed/ThemedText";
 import { useTheme } from "@/theme/ThemeProvider";
 import ThemedKeyboardView from "@/components/themed/ThemedKeyboardView";
 import { ThemedView } from "@/components/themed/ThemedView";
+import { useRoute, useFocusEffect } from "@react-navigation/native";
 
 interface FormData {
   fullName: string;
@@ -19,6 +20,7 @@ interface FormData {
 
 const ContactScreen = () => {
   const { theme } = useTheme();
+  const route = useRoute<any>();
   const { control, handleSubmit, reset } = useForm<FormData>({
     defaultValues: {
       fullName: "",
@@ -34,6 +36,30 @@ const ContactScreen = () => {
     reset();
   };
 
+  useFocusEffect(
+    useCallback(() => {
+      // Always reset form first
+      reset({
+        fullName: "",
+        subject: "",
+        phone: "",
+        email: "",
+        message: "",
+      });
+
+      // If coming from Branch Details, prefill message
+      if (route.params?.prefillMessage) {
+        reset({
+          fullName: "",
+          subject: "",
+          phone: "",
+          email: "",
+          message: route.params.prefillMessage,
+        });
+      }
+    }, [route.params, reset])
+  );
+
   return (
     <ThemedKeyboardView
       scrollEnabled
@@ -41,7 +67,7 @@ const ContactScreen = () => {
       fullWidth
       style={styles.container}
     >
-      
+
       {/* Contact Info Card */}
       <ThemedView style={[styles.cardContainer, { backgroundColor: theme.colors.card }]}>
         <ThemedText type="label" style={[styles.heading, { color: theme.colors.text }]}>
@@ -118,6 +144,7 @@ const ContactScreen = () => {
           placeholder="Message"
           label="Message"
           multiline
+          scrollEnabled={true}
           placeholderTextColor={theme.colors.textSecondary}
           rules={{ required: "Message is required" }}
         />
@@ -149,7 +176,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.05,
     shadowRadius: 4,
     elevation: 3,
-    marginHorizontal: 12 
+    marginHorizontal: 12
   },
   heading: {
     fontSize: 15,

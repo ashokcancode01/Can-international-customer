@@ -15,8 +15,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/theme/ThemeProvider";
 import { useGetBranchListQuery } from "@/store/slices/branches";
 import { ThemedTouchableOpacity } from "@/components/themed/ThemedTouchableOpacity";
+import { useNavigation } from "@react-navigation/native";
+
 
 type Branch = {
+    _id: string;
     code: string;
     branch: string;
     address: string;
@@ -46,9 +49,10 @@ const TableHeader: React.FC<{ brandColor: string; headerTextColor: string }> = (
 const TableRow: React.FC<{ branch: Branch; index: number }> = ({ branch, index }) => {
     const { theme } = useTheme();
     const backgroundColor = index % 2 === 0 ? theme.colors.cardBackground : theme.colors.cardBackground;
+     const navigation = useNavigation<any>();
 
     return (
-        <ThemedTouchableOpacity>
+        <ThemedTouchableOpacity onPress={()=> navigation.navigate("BranchesDetails", {branchId: branch._id})}>
             <View style={[styles.row, { backgroundColor }]}>
                 <Text
                     style={[styles.cell, { width: 90, textAlign: "center", color: theme.colors.text }]}
@@ -87,7 +91,6 @@ const OurBranches: React.FC = () => {
     const { theme } = useTheme();
     const brandColor = theme.colors.brandColor || "#000";
     const headerTextColor = theme.dark ? "#fff" : "#fff";
-
     const [searchText, setSearchText] = useState("");
     const [active, setActive] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
@@ -98,6 +101,7 @@ const OurBranches: React.FC = () => {
     });
 
     const branchList: Branch[] = data?.data?.map((item: any) => ({
+        _id: item._id,
         code: item.code || "",
         branch: item.name || "",
         address: item.address || "",
@@ -169,7 +173,6 @@ const OurBranches: React.FC = () => {
                 </View>
             </View>
 
-
             {/* Table */}
             <View
                 style={{
@@ -177,7 +180,7 @@ const OurBranches: React.FC = () => {
                     alignSelf: "center",
                     backgroundColor: theme.colors.cardBackground,
                     borderWidth: 1,
-                    borderColor: theme.colors.border,
+                    borderColor: theme.colors.brandColor,
                     borderRadius: 16,
                     overflow: "hidden",
                 }}
@@ -217,11 +220,9 @@ const OurBranches: React.FC = () => {
                     >
                         <Text style={{ color: "#fff", fontFamily: "Montserrat-Bold" }}>Previous</Text>
                     </TouchableOpacity>
-
                     <Text style={{ fontFamily: "Montserrat-Medium", fontSize: 14, color: theme.colors.text }}>
                         Page {currentPage} of {totalPages}
                     </Text>
-
                     <TouchableOpacity
                         onPress={handleNext}
                         disabled={currentPage === totalPages}

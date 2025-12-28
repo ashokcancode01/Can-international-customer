@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback} from "react";
 import {
   StyleSheet,
   Dimensions,
@@ -18,10 +18,11 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Entypo from "@expo/vector-icons/Entypo";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedTouchableOpacity } from "@/components/themed/ThemedTouchableOpacity";
-import { useNavigation } from "@react-navigation/native";
+import { useNavigation, useFocusEffect } from "@react-navigation/native";
 import { LinearGradient } from 'expo-linear-gradient';
 import SectionCard from "./components/SectionCard";
 import HorizontalSection from "./components/HorizontalSection";
+import { useGetTrackOrderQuery } from "@/store/slices/trackorder";
 
 //Get the full screen width
 const { width } = Dimensions.get("window");
@@ -34,7 +35,6 @@ const getGreeting = () => {
   else if (hour < 17) return "Good Afternoon";
   else return "Good Evening";
 };
-
 
 const QUICK_ACTIONS = [
   {
@@ -117,6 +117,19 @@ const DashboardHeader = () => {
   const CARD_GRADIENT_COLORS: [ColorValue, ColorValue] = ['#FF4D4D', '#FF9999'];
   const clientFlatListRef = useRef<FlatList>(null);
   const [currentClientIndex, setCurrentClientIndex] = useState(0);
+  const [submittedId, setSubmittedId] = useState<string | undefined>(undefined);
+
+  // For trackOrder
+  const { data: TrackOrder, isLoading, isError } = useGetTrackOrderQuery(submittedId!, { skip: !submittedId });
+
+  // Reset tracking-related states when screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      setSubmittedId(undefined);
+      setTrackingNumber("");
+      setIsFocused(false);
+    }, [])
+  );
 
   // For auto Scroll of what our client says
   useEffect(() => {
@@ -199,9 +212,37 @@ const DashboardHeader = () => {
             </ThemedTouchableOpacity>
             <ThemedTouchableOpacity
               style={[styles.trackButton, { backgroundColor: theme.colors.brandColor! }]}
+              onPress={() => setSubmittedId(trackingNumber.trim())}
             >
               <ThemedText style={styles.trackButtonText}>Track</ThemedText>
             </ThemedTouchableOpacity>
+            {isLoading && (
+              <ThemedText style={{ marginTop: 12, textAlign: "center" }}>
+                Loading...
+              </ThemedText>
+            )}
+            {isError && (
+              <ThemedText
+                style={{
+                  marginTop: 12,
+                  textAlign: "center",
+                  color: "red",
+                }}
+              >
+                Order not found or cancelled
+              </ThemedText>
+            )}
+            {TrackOrder?.message && (
+              <ThemedText
+                style={{
+                  marginTop: 12,
+                  textAlign: "center",
+                  color: theme.colors.textSecondary,
+                }}
+              >
+                {TrackOrder.message}
+              </ThemedText>
+            )}
           </SectionCard>
 
           {/* Our Services */}
@@ -463,7 +504,7 @@ const styles = StyleSheet.create({
         shadowRadius: 6,
       },
       android: {
-        elevation: 0, 
+        elevation: 0,
       },
     })
   },
@@ -495,14 +536,14 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     paddingVertical: 16,
     ...Platform.select({
-      ios : {
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+      ios: {
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 4,
       },
-      android : {
-         elevation: 0,
+      android: {
+        elevation: 0,
       }
 
     })

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   View,
   TextInput,
@@ -14,20 +14,30 @@ import { ThemedCard } from "@/components/themed/ThemedCard";
 import ThemedText from "@/components/themed/ThemedText";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { useGetTrackOrderQuery } from "@/store/slices/trackorder";
+import { useFocusEffect } from "@react-navigation/native";
 
 const TrackOrderScreen = () => {
   const { theme } = useTheme();
   const [trackingNumber, setTrackingNumber] = useState("");
-  const [submittedId, setSubmittedId] = useState("");
+  const [submittedId, setSubmittedId] = useState<string | undefined>(undefined);
   const [isFocused, setIsFocused] = useState(false);
 
   const {
     data: TrackOrder,
     isLoading,
     error,
-  } = useGetTrackOrderQuery(submittedId, {
+  } = useGetTrackOrderQuery(submittedId!, {
     skip: !submittedId,
   });
+
+  // Reset tracking-related states when screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      setSubmittedId(undefined);
+      setTrackingNumber("");
+      setIsFocused(false);
+    }, [])
+  );
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -36,10 +46,10 @@ const TrackOrderScreen = () => {
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ThemedCard style={styles.trackingCard} padding="lg" radius shadow="md">
- 
+
           <View
             style={[
-              styles.iconContainer,       
+              styles.iconContainer,
               { backgroundColor: theme.colors.brandColor + "20" },
             ]}
           >
@@ -161,7 +171,7 @@ const TrackOrderScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16, 
+    paddingHorizontal: 16,
     paddingVertical: 20,
   },
   trackingCard: {
@@ -191,6 +201,5 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
   },
 });
-
 
 export default TrackOrderScreen;

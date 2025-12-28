@@ -28,6 +28,9 @@ import RealTimeTracking from "@/screens/Menu/components/OurServices/RealTimeTrac
 import ContactScreen from "@/screens/Contact/ContactScreen";
 import WhyChooseUS from "@/screens/Menu/components/WhyChooseUs";
 import OurBranches from "@/screens/Menu/components/OurBranches";
+import BranchesDetails from "@/screens/Menu/components/OurBranches/BranchesDetails";
+import TermsAndConditions from "@/screens/Menu/components/TermsAndConditions";
+
 
 const Tab = createBottomTabNavigator<PublicTabParamList>();
 const Stack = createNativeStackNavigator<PublicStackParamList>();
@@ -238,6 +241,16 @@ const MainAppNavigator = () => {
           name="WhyChooseUs"
           component={WhyChooseUS}
           options={{ title: "Why Choose Us"}}
+        /> 
+        <Stack.Screen
+          name="BranchesDetails"
+          component={BranchesDetails}
+          options={{ title: "Branch Details"}}
+        />
+        <Stack.Screen
+          name="TermsAndConditions"
+          component={TermsAndConditions}
+          options={{ title: "Terms & Conditions"}}
         />
         {/* <Stack.Screen
           name="CampaignDetail"

@@ -11,6 +11,14 @@ export interface Branch {
         name?: string;
     };
     areasCovered: string;
+    province?: {
+        _id?: string;
+        name?: string;
+    };
+    municipality?: {
+        _id?: string;
+        name?: string;
+    };
 }
 
 export const branchesApi = baseApi.injectEndpoints({
@@ -18,9 +26,9 @@ export const branchesApi = baseApi.injectEndpoints({
         getBranchList: builder.query<
             {
                 data: Branch[];
-                 pagination: { totalItems: number; page: number; limit: number; totalPages: number };
+                pagination: { totalItems: number; page: number; limit: number; totalPages: number };
             },
-              { account?: string; entity?: string; page?: number; search?: string }
+            { account?: string; entity?: string; page?: number; search?: string }
         >({
             query: ({ account, entity, page = 1, search = "" }) => ({
                 url: "/public/branch-list",
@@ -38,13 +46,19 @@ export const branchesApi = baseApi.injectEndpoints({
                     address: item.address,
                     phone: item.phone,
                     district: item.district,
+                    province: item.province,
+                    municipality: item.municipality,
                     areasCovered: item.areasCovered,
                 }));
 
                 return { data: transformedData, pagination };
             },
         }),
+        getBranchById: builder.query<{ data: Branch, services: any[] }, string>({
+            query: (id) => `/public/branch/${id}`,
+        }),
+
     }),
 });
 
-export const { useGetBranchListQuery } = branchesApi;
+export const { useGetBranchListQuery, useGetBranchByIdQuery } = branchesApi;

@@ -155,6 +155,9 @@ const MenuScreen = () => {
         console.error("Failed to open URL:", err)
       );
         break;
+      case "Terms & Conditions":
+        navigation.navigate("TermsAndConditions");
+        break;
       default:
     }
   };
@@ -296,6 +299,7 @@ const MenuScreen = () => {
             { title: "FAQs", subtitle: null, icon: "help-circle-outline", color: theme.colors.brandColor },
             { title: "Why Choose Us", subtitle: null, icon: "shield-checkmark-outline", color: theme.colors.brandColor },
             { title: "Career", subtitle: null, icon: "briefcase-outline", color: theme.colors.brandColor },
+            { title: "Terms & Conditions", subtitle: null, icon: "document-text-outline", color: theme.colors.brandColor },
 
           ].map((item, index) => (
             <View key={index}>

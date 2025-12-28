@@ -1,8 +1,7 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { ScrollView, StyleSheet } from "react-native";
 import { useForm } from "react-hook-form";
 import { useTheme } from "../../theme/ThemeProvider";
-
 import ThemedText from "@/components/themed/ThemedText";
 import { ThemedView } from "@/components/themed/ThemedView";
 import { ThemedCard } from "@/components/themed/ThemedCard";
@@ -11,6 +10,7 @@ import ThemedTextField from "@/components/themedComponent/ThemedTextField";
 import { CustomFormDropdown } from "@/components/themedComponent/CustomFormDropdown";
 import { useGetCountryListQuery } from "@/store/slices/dropdown";
 import { getServiceTypeOptions, ShipmentType } from "@/constants/dropdowns";
+import { useFocusEffect } from "@react-navigation/native";
 
 type FormData = {
     origin: string;
@@ -22,8 +22,7 @@ type FormData = {
 
 const PricingScreen = () => {
     const { theme } = useTheme();
-
-    const { control, handleSubmit, watch } = useForm<FormData>({
+    const { control, handleSubmit, watch, reset } = useForm<FormData>({
         defaultValues: {
             origin: "Nepal",
             destination: { name: "Afghanistan" },
@@ -43,6 +42,19 @@ const PricingScreen = () => {
     };
 
     const { data: countryList } = useGetCountryListQuery();
+
+    //Reset the pricng form 
+    useFocusEffect(
+        useCallback(() => {
+            reset({
+                origin: "Nepal",
+                destination: { name: "Afghanistan" },
+                shipmentType: null,
+                serviceType: null,
+                weight: "",
+            });
+        }, [reset])
+    );
 
     return (
         <ThemedView style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -124,7 +136,7 @@ const PricingScreen = () => {
                         style={{
                             color: theme.colors.textSecondary,
                             marginBottom: 12,
-                            fontSize: 10, 
+                            fontSize: 10,
                         }}
                     >
                         {selectedShipmentType ? "Choose delivery speed" : "Select Shipment Type first"}
