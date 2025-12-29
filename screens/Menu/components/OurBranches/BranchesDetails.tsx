@@ -8,7 +8,6 @@ import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useGetBranchByIdQuery } from '@/store/slices/branches';
 import { ThemedTouchableOpacity } from '@/components/themed/ThemedTouchableOpacity';
 
-
 const BranchesDetails = () => {
     const { theme, isDark } = useTheme();
     const navigation = useNavigation<any>();
@@ -18,6 +17,11 @@ const BranchesDetails = () => {
     const { branchId } = route.params as { branchId: string };
     const { data: branchResponse, isLoading, isError } = useGetBranchByIdQuery(branchId);
     const branch = branchResponse?.data;
+
+    const hasWorkingHours = !!branch?.workingHours && branch.workingHours.length > 0;
+    const services = branchResponse?.services ?? [];
+    const hasServices = services.length > 0;
+
 
     if (isLoading) {
         return (
@@ -44,40 +48,27 @@ const BranchesDetails = () => {
         Municipality: 'university',
     };
 
-    const InfoCard = ({ label, value }: { label: string; value: string }) => {
-        return (
-            <View style={[
-                styles.infoCard,
-                isDark && { backgroundColor: theme.colors.card, borderColor: theme.colors.border }
-            ]}>
-                <View style={styles.iconLabelRow}>
-                    <FontAwesome name={iconMap[label]} size={20} color={brandColor} />
-                    <Text style={[styles.infoLabel, { color: brandColor, fontFamily: "Montserrat-Medium" }]}>{label}</Text>
-                </View>
-                <Text style={[styles.infoValue, { fontFamily: "Montserrat-Bold", color: isDark ? theme.colors.text : "#000" }]}>{value}</Text>
+    const InfoCard = ({ label, value }: { label: string; value: string }) => (
+        <View style={[styles.infoCard, isDark && { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
+            <View style={styles.iconLabelRow}>
+                <FontAwesome name={iconMap[label]} size={20} color={brandColor} />
+                <Text style={[styles.infoLabel, { color: brandColor, fontFamily: "Montserrat-Medium" }]}>{label}</Text>
             </View>
-        );
-    };
+            <Text style={[styles.infoValue, { fontFamily: "Montserrat-Bold", color: isDark ? theme.colors.text : "#000" }]}>{value}</Text>
+        </View>
+    );
 
     const handlePlaceOrder = () => {
         navigation.navigate("PublicTabs", {
             screen: "Contact",
-            params: {
-                prefillMessage: `I want to inquire about sending parcel abroad from ${branch.name}`,
-            },
+            params: { prefillMessage: `I want to inquire about sending parcel abroad from ${branch.name}` },
         });
     };
 
     const handleCall = (phoneNumber: string) => {
         const url = `tel:${phoneNumber}`;
         Linking.canOpenURL(url)
-            .then((supported) => {
-                if (supported) {
-                    Linking.openURL(url);
-                } else {
-                    console.log("Phone call not supported on this device");
-                }
-            })
+            .then((supported) => { if (supported) Linking.openURL(url); })
             .catch((err) => console.error("Error opening dialer", err));
     };
 
@@ -85,10 +76,8 @@ const BranchesDetails = () => {
         <ThemedView style={{ flex: 1, backgroundColor: theme.colors.background }}>
             <ScrollView contentContainerStyle={{ padding: 16 }}>
                 {/* Header Card */}
-                <View style={[styles.headerCard, { width: screenWidth - 24, alignSelf: "center", backgroundColor: brandColor,}]}>
-                    <Text style={[styles.branchLabel, { fontFamily: "Montserrat-Medium" }]}>
-                        Branch #{branch.code}
-                    </Text>
+                <View style={[styles.headerCard, { width: screenWidth - 24, alignSelf: "center", backgroundColor: brandColor }]}>
+                    <Text style={[styles.branchLabel, { fontFamily: "Montserrat-Medium" }]}>Branch #{branch.code}</Text>
                     <Text style={[styles.branchName, { fontFamily: "Montserrat-Bold", color: isDark ? theme.colors.text : "#fff" }]}>{branch.name}</Text>
                     <View style={styles.headerRow}>
                         <Ionicons name="location-outline" size={14} color={isDark ? theme.colors.text : "#fff"} />
@@ -102,12 +91,8 @@ const BranchesDetails = () => {
                 </View>
 
                 {/* Branch Information */}
-                <Text style={[styles.sectionTitle, { color: theme.colors.text, fontFamily: "Montserrat-Bold" }]}>
-                    Branch Information
-                </Text>
-                <Text style={[styles.sectionSubTitle, { color: theme.colors.secondaryText, fontFamily: "Montserrat-Regular" }]}>
-                    Contact details and coverage area
-                </Text>
+                <Text style={[styles.sectionTitle, { color: theme.colors.text, fontFamily: "Montserrat-Bold" }]}>Branch Information</Text>
+                <Text style={[styles.sectionSubTitle, { color: theme.colors.secondaryText, fontFamily: "Montserrat-Regular" }]}>Contact details and coverage area</Text>
                 <View style={{ width: screenWidth - 24, alignSelf: "center", flexWrap: "wrap", flexDirection: "row", gap: 10 }}>
                     <InfoCard label="Branch Code" value={branch.code} />
                     <InfoCard label="Phone" value={branch.phone} />
@@ -117,21 +102,98 @@ const BranchesDetails = () => {
                     <InfoCard label="Areas Covered" value={branch.areasCovered || "-"} />
                 </View>
 
+                {/* Working Hours */}
+                {hasWorkingHours && (
+                    <View style={{ width: screenWidth - 24, alignSelf: "center", marginTop: 24 }}>
+                        <Text style={[styles.sectionTitle, { color: theme.colors.text, fontFamily: "Montserrat-Bold", marginLeft: 6 }]}>
+                            Working Hours
+                        </Text>
+                        <Text style={[styles.sectionSubTitle, { fontFamily: "Montserrat-Regular", marginLeft: 15 }]}>
+                            Our weekly schedule
+                        </Text>
+
+                        <View style={{ flexDirection: "column", gap: 10 }}>
+                            {[
+                                "Sunday",
+                                "Monday",
+                                "Tuesday",
+                                "Wednesday",
+                                "Thursday",
+                                "Friday",
+                                "Saturday",
+                            ].map((day) => {
+                                const item = branch.workingHours!.find((wh) => wh.day === day);
+                                if (!item) return null;
+
+                                const today = new Date().toLocaleString("en-US", { weekday: "long" }) === day;
+                                const isSaturday = day === "Saturday";
+
+                                return (
+                                    <View
+                                        key={day}
+                                        style={[
+                                            styles.workingHourCard,
+                                            today && {
+                                                width: screenWidth - 24,
+                                                borderColor: "#fecaca",
+                                                backgroundColor: "#fff5f5",
+                                            },
+                                            !today && { width: screenWidth - 24 },
+                                        ]}
+                                    >
+                                        <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+                                            <View
+                                                style={[
+                                                    styles.statusDot,
+                                                    { backgroundColor: isSaturday ? "#a1a1aa" : "#22c55e" },
+                                                ]}
+                                            />
+                                            <Text style={[styles.dayText, today && { color: "#dc2f54" }]}>{day}</Text>
+                                            {today && <Text style={styles.todayBadge}>Today</Text>}
+                                        </View>
+
+                                        <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
+                                            <Ionicons name="time-outline" size={14} color="#6b7280" />
+                                            <Text style={styles.timeText}>
+                                                {!item.isOpen
+                                                    ? "Closed"
+                                                    : `${item.openTime} - ${item.closeTime}`}
+                                            </Text>
+                                        </View>
+                                    </View>
+                                );
+                            })}
+                        </View>
+                    </View>
+                )}
+
+                {/* Services Available */}
+                {hasServices && (
+                    <View style={{ width: screenWidth - 24, alignSelf: "center", marginTop: 32 }}>
+                        <Text style={[styles.sectionTitle, { fontFamily: "Montserrat-Bold", marginLeft: 6 }]}>Services Available</Text>
+                        <Text style={[styles.sectionSubTitle, { fontFamily: "Montserrat-Regular", marginLeft: 15 }]}>What we offer at this location</Text>
+
+                        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
+                            {services.map((service) => (
+                                <View key={service._id} style={styles.serviceCard}>
+                                    <View style={styles.serviceIcon}>
+                                        <Ionicons name="briefcase-outline" size={22} color="#dc2f54" />
+                                    </View>
+                                    <Text style={styles.serviceTitle}>{service.name}</Text>
+                                    <Text style={styles.serviceDesc}>Available at this branch</Text>
+                                </View>
+                            ))}
+                        </View>
+                    </View>
+                )}
+
                 {/* Shipping Card */}
-                <View
-                    style={[styles.shippingCard, { width: screenWidth - 24, alignSelf: "center",
-                            backgroundColor: isDark ? theme.colors.card : "#fff",
-                            borderColor: isDark ? theme.colors.border : "#eee",
-                        }
-                    ]}
-                >
+                <View style={[styles.shippingCard, { width: screenWidth - 24, alignSelf: "center", backgroundColor: isDark ? theme.colors.card : "#fff", borderColor: isDark ? theme.colors.border : "#eee" }]}>
                     <View style={styles.shippingHeader}>
                         <View style={[styles.iconBackground, { backgroundColor: brandColor }]}>
                             <Ionicons name="cube-outline" size={24} color="#fff" />
                         </View>
-                        <Text style={[styles.shippingTitle, { color: isDark ? theme.colors.text : "#000", fontFamily: "Montserrat-Bold" }]}>
-                            Ready to Ship?
-                        </Text>
+                        <Text style={[styles.shippingTitle, { color: isDark ? theme.colors.text : "#000", fontFamily: "Montserrat-Bold" }]}>Ready to Ship?</Text>
                     </View>
                     <Text style={[styles.shippingSubtitle, { fontFamily: "Montserrat-Regular", color: isDark ? theme.colors.textSecondary : "#333" }]}>
                         Send your parcels abroad from <Text style={{ fontWeight: "700", color: brandColor, fontFamily: "Montserrat-Bold" }}>{branch.name}</Text>
@@ -293,5 +355,66 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontWeight: "700",
         fontSize: 14,
+    },
+    workingHourCard: {
+        width: "48%",
+        borderWidth: 1,
+        borderColor: "#f1f1f1",
+        borderRadius: 12,
+        padding: 14,
+        backgroundColor: "#fff",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+    },
+    todayCard: {
+        borderColor: "#fecaca",
+        backgroundColor: "#fff5f5",
+    },
+    statusDot: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+    },
+    dayText: {
+        fontSize: 13,
+        fontFamily: "Montserrat-Medium",
+    },
+    todayBadge: {
+        backgroundColor: "#dc2f54",
+        color: "#fff",
+        fontSize: 10,
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 6,
+        marginLeft: 6,
+        overflow: "hidden",
+        fontFamily: "Montserrat-Bold",
+    },
+    timeText: {
+        fontSize: 12,
+        color: "#374151",
+        fontFamily: "Montserrat-Regular",
+    },
+    serviceCard: {
+        width: "48%",
+        borderWidth: 1,
+        borderColor: "#f1f1f1",
+        borderRadius: 14,
+        padding: 16,
+        backgroundColor: "#fff",
+    },
+    serviceIcon: {
+        marginBottom: 10,
+    },
+    serviceTitle: {
+        fontSize: 14,
+        fontFamily: "Montserrat-Bold",
+        marginBottom: 4,
+    },
+    serviceDesc: {
+        fontSize: 12,
+        color: "#6b7280",
+        fontFamily: "Montserrat-Regular",
     },
 });

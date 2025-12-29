@@ -30,6 +30,7 @@ import WhyChooseUS from "@/screens/Menu/components/WhyChooseUs";
 import OurBranches from "@/screens/Menu/components/OurBranches";
 import BranchesDetails from "@/screens/Menu/components/OurBranches/BranchesDetails";
 import TermsAndConditions from "@/screens/Menu/components/TermsAndConditions";
+import PrivacyPolicy from "@/screens/Menu/components/PrivacyPolicy";
 
 
 const Tab = createBottomTabNavigator<PublicTabParamList>();
@@ -251,6 +252,11 @@ const MainAppNavigator = () => {
           name="TermsAndConditions"
           component={TermsAndConditions}
           options={{ title: "Terms & Conditions"}}
+        />
+        <Stack.Screen
+          name="PrivacyPolicy"
+          component={PrivacyPolicy}
+          options={{ title: "Privacy Policy"}}
         />
         {/* <Stack.Screen
           name="CampaignDetail"

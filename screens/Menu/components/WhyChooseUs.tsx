@@ -1,10 +1,10 @@
 import React from "react";
-import { ScrollView, StyleSheet, View, Image, Dimensions } from "react-native";
+import { ScrollView, StyleSheet, View, Image } from "react-native";
 import { useTheme } from "../../../theme/ThemeProvider";
 import ThemedText from "@/components/themed/ThemedText";
+import Card from "./Card";
 
 const GlobalNetworkImage = require("../../../assets/app/global-network.png");
-const screenWidth = Dimensions.get("window").width;
 
 const WhyChooseUS = () => {
   const { theme } = useTheme();
@@ -28,22 +28,7 @@ const WhyChooseUS = () => {
       contentContainerStyle={{ paddingVertical: 20 }}
       style={{ flex: 1, backgroundColor: theme.colors.background }}
     >
-      <View
-        style={[
-          styles.card,
-          {
-            width: screenWidth - 24,
-            alignSelf: "center",
-            backgroundColor: theme.colors.card,
-            borderColor: theme.colors.border + "30",
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.1,
-            shadowRadius: 6,
-            elevation: 3,
-          },
-        ]}
-      >
+      <Card>
         <Image source={GlobalNetworkImage} style={styles.cardImage} resizeMode="cover" />
         <View style={styles.headingRow}>
           <ThemedText style={[styles.heading, { color: theme.colors.brandColor }]}>
@@ -57,18 +42,12 @@ const WhyChooseUS = () => {
         {renderPoint("Strategic Partnerships", "Collaborating with 500+ trusted logistics partners worldwide")}
         {renderPoint("Local Expertise", "Local teams understanding regional regulations and customs")}
         {renderPoint("Technology-Driven", "AI-powered optimization for faster and cheaper shipments")}
-      </View>
+      </Card>
     </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  card: {
-    padding: 16,
-    borderRadius: 12,
-    borderWidth: 1,
-    marginBottom: 20,
-  },
   cardImage: {
     width: "100%",
     height: 180,

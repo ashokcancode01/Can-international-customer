@@ -158,10 +158,12 @@ const MenuScreen = () => {
       case "Terms & Conditions":
         navigation.navigate("TermsAndConditions");
         break;
+      case "Privacy Policy":
+        navigation.navigate("PrivacyPolicy");
+        break;
       default:
     }
   };
-
 
   const submenuNavigationMap: Record<string, string> = {
     "Air Freight": "AirFreight",
@@ -300,6 +302,7 @@ const MenuScreen = () => {
             { title: "Why Choose Us", subtitle: null, icon: "shield-checkmark-outline", color: theme.colors.brandColor },
             { title: "Career", subtitle: null, icon: "briefcase-outline", color: theme.colors.brandColor },
             { title: "Terms & Conditions", subtitle: null, icon: "document-text-outline", color: theme.colors.brandColor },
+            { title: "Privacy Policy", subtitle: null, icon: "lock-closed-outline", color: theme.colors.brandColor },
 
           ].map((item, index) => (
             <View key={index}>

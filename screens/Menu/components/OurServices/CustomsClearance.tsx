@@ -1,9 +1,8 @@
 import React from "react";
-import { View, Text, ScrollView, StyleSheet, Image, Dimensions } from "react-native";
+import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
-
-const screenWidth = Dimensions.get("window").width;
+import Card from "../Card";
 
 const CustomsClearance = () => {
   const { theme } = useTheme();
@@ -19,20 +18,8 @@ const CustomsClearance = () => {
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <ScrollView contentContainerStyle={{ paddingVertical: 20 }}>
-        {/* Image Card */}
-        <View
-          style={[
-            styles.card,
-            {
-              width: screenWidth - 24,
-              alignSelf: "center",
-              backgroundColor: theme.colors.card,
-              borderColor: theme.colors.border + "30",
-              shadowOpacity: theme.dark ? 0 : 0.1,
-              elevation: theme.dark ? 0 : 3,
-            },
-          ]}
-        >
+        {/* Image */}
+        <Card>
           <Image
             source={require("../../../../assets/app/customsclearance.png")}
             style={styles.image}
@@ -42,22 +29,10 @@ const CustomsClearance = () => {
           <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
             Seamless and compliant customs processing for smooth international shipping.
           </Text>
-        </View>
+        </Card>
 
-        {/* Service Overview Card */}
-        <View
-          style={[
-            styles.card,
-            {
-              width: screenWidth - 24,
-              alignSelf: "center",
-              backgroundColor: theme.colors.card,
-              borderColor: theme.colors.border + "30",
-              shadowOpacity: theme.dark ? 0 : 0.1,
-              elevation: theme.dark ? 0 : 3,
-            },
-          ]}
-        >
+        {/* Service Overview */}
+        <Card>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
             Service Overview
           </Text>
@@ -76,7 +51,7 @@ const CustomsClearance = () => {
               </Text>
             </View>
           ))}
-        </View>
+        </Card>
       </ScrollView>
     </View>
   );
@@ -85,14 +60,6 @@ const CustomsClearance = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  card: {
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
   },
   image: {
     width: "100%",

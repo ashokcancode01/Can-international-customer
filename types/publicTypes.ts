@@ -88,6 +88,7 @@ export type PublicStackParamList = {
   WhyChooseUs: undefined;
   BranchesDetails: undefined;
   TermsAndConditions: undefined;
+  PrivacyPolicy: undefined;
 };
 
 export type PublicTabParamList = {
