@@ -3,17 +3,22 @@ export interface Coordinates {
     lat: number | null;
     long: number | null;
 }
-
 export interface WorkingHour {
     day?: string;
-    openTime?: string;
-    closeTime?: string;
+    startsAt?: string;
+    closesAt?: string;
     isOpen?: boolean;
 }
-
+export interface ServiceType {
+    _id: string;
+    name: string;
+}
 export interface Service {
     _id: string;
     name?: string;
+    code: string;
+    type?: ServiceType; 
+    description: string;
     isActive?: boolean;
 }
 
@@ -24,76 +29,66 @@ export interface Branch {
     address: string;
     phone: string;
     areasCovered: string;
-
     coordinates?: Coordinates;
     locationType?: string;
-
     district?: {
         _id?: string;
         name?: string;
     };
-
     province?: {
         _id?: string;
         name?: string;
     };
-
     municipality?: {
         _id?: string;
         name?: string;
     };
-
+    pagination?: {
+        limit: number;
+        page: number;
+        totalPages: number;
+        totalItems: number;
+    };
     service?: Service[];
     workingHours?: WorkingHour[];
 }
-
+export interface BranchResponse {
+    data: Branch[],
+    pagination?: {
+        limit: number;
+        page: number;
+        totalPages: number;
+        totalItems: number;
+    };
+}
 
 export const branchesApi = baseApi.injectEndpoints({
+    overrideExisting: true,
     endpoints: (builder) => ({
-
-        getBranchList: builder.query<
-            {
-                data: Branch[];
-                pagination: {
-                    totalItems: number;
-                    page: number;
-                    limit: number;
-                    totalPages: number;
-                };
-            },
-            { account?: string; entity?: string; page?: number; search?: string }
+        getDigitalStamps: builder.query<
+            BranchResponse,
+            { status: string; page: number; limit: number; keyword?: string }
         >({
-            query: ({ account, entity, page = 1, search = "" }) => ({
-                url: "/public/branch-list",
-                method: "GET",
-                params: { page, search, account, entity },
-            }),
-
-            transformResponse: (response: any) => {
-                const dataArray = response?.data ?? [];
-                const pagination = response?.pagination ?? {
-                    totalItems: 0,
-                    page: 1,
-                    limit: 10,
-                    totalPages: 1,
+            query: (params) => {
+                return {
+                    url: "/public/branch-list",
+                    method: "GET",
+                    params,
                 };
-
-                const transformedData: Branch[] = dataArray.map((item: any) => ({
-                    _id: item._id,
-                    code: item.code,
-                    name: item.name,
-                    address: item.address,
-                    phone: item.phone,
-                    areasCovered: item.areasCovered,
-                    district: item.district,
-                    province: item.province,
-                    municipality: item.municipality,
-                }));
-
-                return { data: transformedData, pagination };
             },
+            providesTags: () => [{ type: "Branches", id: "LIST" }],
         }),
 
+        getBranchList: builder.query<Branch[], { account?: string; entity?: string; search?: string }>({
+            query: ({ account, entity, search = "" }) => ({
+                url: "/public/branch-list",
+                method: "GET",
+                params: { search, account, entity },
+            }),
+            transformResponse: (response: any) => {
+                return response?.data ?? [];
+            },
+        }),
         getBranchById: builder.query<
             {
                 data: Branch;
@@ -102,7 +97,6 @@ export const branchesApi = baseApi.injectEndpoints({
             string
         >({
             query: (id) => `/public/branch/${id}`,
-
             transformResponse: (response: any) => ({
                 data: {
                     _id: response.data._id,
@@ -116,13 +110,7 @@ export const branchesApi = baseApi.injectEndpoints({
                     district: response.data.district,
                     province: response.data.province,
                     municipality: response.data.municipality,
-                    service: response.data.service ?? [],
-                    workingHours: response.data.workingHours?.map((wh: any) => ({
-                        day: wh.day,
-                        openTime: wh.startsAt,
-                        closeTime: wh.closesAt,
-                        isOpen: wh.startsAt != null && wh.closesAt != null,
-                    })) ?? [],
+                    workingHours: response.data.workingHours ?? [],
                 },
                 services: response.services ?? [],
             }),
@@ -130,8 +118,4 @@ export const branchesApi = baseApi.injectEndpoints({
     }),
 });
 
-
-export const {
-    useGetBranchListQuery,
-    useGetBranchByIdQuery,
-} = branchesApi;
+export const { useGetBranchListQuery, useGetBranchByIdQuery } = branchesApi;

@@ -7,6 +7,8 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useGetBranchByIdQuery } from '@/store/slices/branches';
 import { ThemedTouchableOpacity } from '@/components/themed/ThemedTouchableOpacity';
+import Foundation from '@expo/vector-icons/Foundation';
+import BranchMapView from './BranchMapView';
 
 const BranchesDetails = () => {
     const { theme, isDark } = useTheme();
@@ -22,6 +24,21 @@ const BranchesDetails = () => {
     const services = branchResponse?.services ?? [];
     const hasServices = services.length > 0;
 
+    const coordinates = branch?.coordinates;
+    const lat = coordinates?.lat;
+    const long = coordinates?.long;
+
+    const hasLocation =
+        typeof lat === "number" &&
+        typeof long === "number";
+
+    // Map branch working hours to include open/close times and whether the branch is open
+    const workingHours = branch?.workingHours?.map((wh) => ({
+        day: wh.day,
+        openTime: wh.startsAt,
+        closeTime: wh.closesAt,
+        isOpen: !!(wh.startsAt && wh.closesAt),
+    })) ?? [];
 
     if (isLoading) {
         return (
@@ -54,22 +71,28 @@ const BranchesDetails = () => {
                 <FontAwesome name={iconMap[label]} size={20} color={brandColor} />
                 <Text style={[styles.infoLabel, { color: brandColor, fontFamily: "Montserrat-Medium" }]}>{label}</Text>
             </View>
-            <Text style={[styles.infoValue, { fontFamily: "Montserrat-Bold", color: isDark ? theme.colors.text : "#000" }]}>{value}</Text>
+            <Text style={[styles.infoValue, { fontFamily: "Montserrat-medium", color: isDark ? theme.colors.text : "#000" }]}>{value}</Text>
         </View>
     );
 
+    //prefill the message box when navigated from branch details
     const handlePlaceOrder = () => {
         navigation.navigate("PublicTabs", {
             screen: "Contact",
             params: { prefillMessage: `I want to inquire about sending parcel abroad from ${branch.name}` },
         });
     };
-
     const handleCall = (phoneNumber: string) => {
         const url = `tel:${phoneNumber}`;
         Linking.canOpenURL(url)
             .then((supported) => { if (supported) Linking.openURL(url); })
             .catch((err) => console.error("Error opening dialer", err));
+    };
+
+    //Helper because api is returning HTML inisde a string
+    const stripHtml = (text?: string) => {
+        if (!text) return "";
+        return text.replace(/<[^>]+>/g, "").trim();
     };
 
     return (
@@ -108,37 +131,24 @@ const BranchesDetails = () => {
                         <Text style={[styles.sectionTitle, { color: theme.colors.text, fontFamily: "Montserrat-Bold", marginLeft: 6 }]}>
                             Working Hours
                         </Text>
-                        <Text style={[styles.sectionSubTitle, { fontFamily: "Montserrat-Regular", marginLeft: 15 }]}>
+                        <Text style={[styles.sectionSubTitle, { fontFamily: "Montserrat-Regular", marginLeft: 6, color: isDark ? theme.colors.textSecondary : theme.colors.secondaryText }]}>
                             Our weekly schedule
                         </Text>
 
                         <View style={{ flexDirection: "column", gap: 10 }}>
-                            {[
-                                "Sunday",
-                                "Monday",
-                                "Tuesday",
-                                "Wednesday",
-                                "Thursday",
-                                "Friday",
-                                "Saturday",
-                            ].map((day) => {
-                                const item = branch.workingHours!.find((wh) => wh.day === day);
-                                if (!item) return null;
-
-                                const today = new Date().toLocaleString("en-US", { weekday: "long" }) === day;
-                                const isSaturday = day === "Saturday";
-
+                            {workingHours.map((item) => {
+                                const today = new Date().toLocaleString("en-US", { weekday: "long" }) === item.day;
+                                const isSaturday = item.day === "Saturday";
                                 return (
                                     <View
-                                        key={day}
+                                        key={item.day}
                                         style={[
                                             styles.workingHourCard,
-                                            today && {
+                                            {
                                                 width: screenWidth - 24,
-                                                borderColor: "#fecaca",
-                                                backgroundColor: "#fff5f5",
+                                                backgroundColor: isDark ? theme.colors.card : "#fff",
+                                                borderColor: today ? "#fecaca" : isDark ? theme.colors.border : "#f1f1f1",
                                             },
-                                            !today && { width: screenWidth - 24 },
                                         ]}
                                     >
                                         <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
@@ -148,42 +158,72 @@ const BranchesDetails = () => {
                                                     { backgroundColor: isSaturday ? "#a1a1aa" : "#22c55e" },
                                                 ]}
                                             />
-                                            <Text style={[styles.dayText, today && { color: "#dc2f54" }]}>{day}</Text>
+                                            <Text style={[styles.dayText, { color: today ? "#dc2f54" : isDark ? theme.colors.text : "#000" }]}>
+                                                {item.day}
+                                            </Text>
                                             {today && <Text style={styles.todayBadge}>Today</Text>}
                                         </View>
 
                                         <View style={{ flexDirection: "row", alignItems: "center", gap: 6 }}>
-                                            <Ionicons name="time-outline" size={14} color="#6b7280" />
-                                            <Text style={styles.timeText}>
-                                                {!item.isOpen
-                                                    ? "Closed"
-                                                    : `${item.openTime} - ${item.closeTime}`}
+                                            <Ionicons name="time-outline" size={14} color={isDark ? theme.colors.textSecondary : "#6b7280"} />
+                                            <Text style={[styles.timeText, { color: isDark ? theme.colors.textSecondary : "#374151" }]}>
+                                                {!item.isOpen ? "Closed" : `${item.openTime} - ${item.closeTime}`}
                                             </Text>
                                         </View>
                                     </View>
                                 );
                             })}
+
                         </View>
                     </View>
                 )}
 
                 {/* Services Available */}
                 {hasServices && (
-                    <View style={{ width: screenWidth - 24, alignSelf: "center", marginTop: 32 }}>
-                        <Text style={[styles.sectionTitle, { fontFamily: "Montserrat-Bold", marginLeft: 6 }]}>Services Available</Text>
-                        <Text style={[styles.sectionSubTitle, { fontFamily: "Montserrat-Regular", marginLeft: 15 }]}>What we offer at this location</Text>
-
-                        <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 12 }}>
-                            {services.map((service) => (
-                                <View key={service._id} style={styles.serviceCard}>
-                                    <View style={styles.serviceIcon}>
-                                        <Ionicons name="briefcase-outline" size={22} color="#dc2f54" />
+                    <View style={{ width: screenWidth - 24, alignSelf: "center", marginTop: 24 }}>
+                        <Text style={[styles.sectionTitle, { color: theme.colors.text, fontFamily: "Montserrat-Bold", marginLeft: 6 }]}>
+                            Services Available
+                        </Text>
+                        <Text style={[styles.sectionSubTitle, { fontFamily: "Montserrat-Regular", marginLeft: 6, color: isDark ? theme.colors.textSecondary : theme.colors.secondaryText }]}>
+                            What we offer at this location
+                        </Text>
+                        <ScrollView
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={{ paddingHorizontal: 16 }}
+                        >
+                            {services.map((service, index) => (
+                                <View
+                                    key={service.code || index}
+                                    style={[
+                                        styles.serviceCard,
+                                        {
+                                            width: screenWidth * 0.7,
+                                            marginRight: index === services.length - 1 ? 0 : 10,
+                                            backgroundColor: isDark ? theme.colors.card : "#fff",
+                                            borderColor: isDark ? theme.colors.border : "#f1f1f1",
+                                        },
+                                    ]}
+                                >
+                                    <View style={styles.topRightPriceTag}>
+                                        <Foundation name="price-tag" size={14} color={brandColor} />
+                                        <Text style={[styles.priceTagText, { color: brandColor }]}>{service.code}</Text>
                                     </View>
-                                    <Text style={styles.serviceTitle}>{service.name}</Text>
-                                    <Text style={styles.serviceDesc}>Available at this branch</Text>
+                                    <View style={styles.serviceIcon}>
+                                        <Ionicons name="briefcase-outline" size={22} color={brandColor} />
+                                    </View>
+                                    <Text style={[styles.serviceTitle, { color: isDark ? theme.colors.text : "#000" }]} numberOfLines={1}>
+                                        {service.name}
+                                    </Text>
+                                    <Text style={[styles.serviceDesc, { color: isDark ? theme.colors.textSecondary : "#6b7280" }]} numberOfLines={3}>
+                                        Type: {service.type?.name || "-"}
+                                    </Text>
+                                    <Text style={[styles.serviceDesc, { color: isDark ? theme.colors.textSecondary : "#6b7280" }]} numberOfLines={3}>
+                                        {stripHtml(service.description)}
+                                    </Text>
                                 </View>
                             ))}
-                        </View>
+                        </ScrollView>
                     </View>
                 )}
 
@@ -212,6 +252,55 @@ const BranchesDetails = () => {
                         <Text style={[styles.orderButtonText, { fontFamily: "Montserrat-Bold" }]}>Place Your Order Now →</Text>
                     </ThemedTouchableOpacity>
                 </View>
+
+                {/* Location */}
+                {hasLocation && (
+                    <View style={{ width: screenWidth - 24, alignSelf: "center", marginTop: 24 }}>
+                        <Text style={[styles.sectionTitle, { color: theme.colors.text, fontFamily: "Montserrat-Bold", marginLeft: 6 }]}>
+                            Our Location
+                        </Text>
+
+                        <View
+                            style={[
+                                styles.shippingCard,
+                                {
+                                    backgroundColor: isDark ? theme.colors.card : "#fff",
+                                    borderColor: isDark ? theme.colors.border : "#eee",
+                                    marginTop: 0,
+                                },
+                            ]}
+                        >
+                            <View style={{ height: 250, borderRadius: 12, overflow: "hidden" }}>
+                                <BranchMapView branch={branch} />
+                            </View>
+                            <View style={styles.locationFooter}>
+                                <View style={styles.locationCoords}>
+                                    <Ionicons name="location-outline" size={16} color={isDark ? theme.colors.textSecondary : "#555"} />
+                                    <Text
+                                        style={[
+                                            styles.locationCoordsText,
+                                            { color: isDark ? theme.colors.textSecondary : "#555" },
+                                        ]}
+                                    >
+                                        {lat.toFixed(6)}, {long.toFixed(6)}
+                                    </Text>
+                                </View>
+
+                                <TouchableOpacity
+                                    style={[styles.locationButton, { backgroundColor: brandColor }]}
+                                    onPress={() => {
+                                        Linking.openURL(
+                                            `https://www.google.com/maps/dir/?api=1&destination=${lat},${long}`
+                                        );
+                                    }}
+                                >
+                                    <Ionicons name="navigate-outline" size={16} color="#fff" />
+                                    <Text style={styles.locationButtonText}>Get Directions</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                )}
             </ScrollView>
         </ThemedView>
     );
@@ -258,7 +347,6 @@ const styles = StyleSheet.create({
     sectionSubTitle: {
         fontSize: 13,
         marginBottom: 12,
-        marginLeft: 6,
     },
     infoGrid: {
         flexDirection: "row",
@@ -288,7 +376,6 @@ const styles = StyleSheet.create({
     },
     infoValue: {
         fontSize: 12,
-        fontWeight: "700",
         color: "#000",
     },
     shippingCard: {
@@ -397,12 +484,26 @@ const styles = StyleSheet.create({
         fontFamily: "Montserrat-Regular",
     },
     serviceCard: {
-        width: "48%",
         borderWidth: 1,
         borderColor: "#f1f1f1",
         borderRadius: 14,
         padding: 16,
         backgroundColor: "#fff",
+        height: 170,
+        justifyContent: "flex-start",
+        position: "relative",
+    },
+    topRightPriceTag: {
+        position: "absolute",
+        top: 12,
+        right: 12,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 4,
+    },
+    priceTagText: {
+        fontSize: 12,
+        fontFamily: "Montserrat-SemiBold",
     },
     serviceIcon: {
         marginBottom: 10,
@@ -410,11 +511,48 @@ const styles = StyleSheet.create({
     serviceTitle: {
         fontSize: 14,
         fontFamily: "Montserrat-Bold",
-        marginBottom: 4,
+        marginBottom: 6,
     },
     serviceDesc: {
         fontSize: 12,
         color: "#6b7280",
         fontFamily: "Montserrat-Regular",
+        marginTop: 6,
+    },
+    locationMapWrapper: {
+        width: "100%",
+        height: 250,
+        overflow: "hidden",
+        borderTopLeftRadius: 12,
+        borderTopRightRadius: 12,
+    },
+    locationFooter: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        marginTop: 5,
+    },
+    locationCoords: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        flex: 1,
+    },
+    locationCoordsText: {
+        fontSize: 13,
+        fontFamily: 'Montserrat-Regular',
+    },
+    locationButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        paddingHorizontal: 12,
+        paddingVertical: 10,
+        borderRadius: 8,
+    },
+    locationButtonText: {
+        color: '#fff',
+        fontSize: 10,
+        fontFamily: 'Montserrat-Bold',
     },
 });

@@ -389,34 +389,36 @@ export default PrivacyPolicy
 const styles = StyleSheet.create({
     scrollContent: {
         paddingVertical: 20,
-    },
-    card: {
-        padding: 16,
-        borderRadius: 10,
-        marginBottom: 20,
-        borderWidth: 1,
+        paddingHorizontal: 16, 
     },
     heading: {
         fontSize: 18,
         fontWeight: "700",
         marginBottom: 10,
-        fontFamily: "Montserrat-bold"
+        fontFamily: "Montserrat-Bold",
+        textAlign: "left", 
     },
     subheading: {
+        fontSize: 16,
+        fontWeight: "600",
+        marginTop: 16,
+        marginBottom: 8,
+        fontFamily: "Montserrat-Medium",
+        textAlign: "left", 
+    },
+    textHeading: {
         fontSize: 14,
         fontWeight: "600",
         marginTop: 12,
         marginBottom: 6,
-        fontFamily: "Montserrat-medium"
+        fontFamily: "Montserrat-Medium",
+        textAlign: "justify", 
     },
     text: {
         fontSize: 13,
-        fontWeight: "400",
         lineHeight: 20,
         marginBottom: 8,
+        fontFamily: "Montserrat-Regular",
+        textAlign: "justify", 
     },
-    textHeading: {
-        fontFamily: "Montserrat-medium",
-        fontWeight: 700
-    }
 });

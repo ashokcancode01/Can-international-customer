@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
     StyleSheet,
     TextInput,
@@ -7,141 +7,213 @@ import {
     Keyboard,
     FlatList,
     Text,
-    ScrollView,
     Dimensions,
+    Share,
 } from "react-native";
-import ThemedKeyboardView from "@/components/themed/ThemedKeyboardView";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, Entypo, Feather } from "@expo/vector-icons";
 import { useTheme } from "@/theme/ThemeProvider";
 import { useGetBranchListQuery } from "@/store/slices/branches";
-import { ThemedTouchableOpacity } from "@/components/themed/ThemedTouchableOpacity";
 import { useNavigation } from "@react-navigation/native";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
+type RootStackParamList = {
+    BranchesDetails: { branchId: string };
+};
 
 type Branch = {
     _id: string;
     code: string;
-    branch: string;
+    name: string;
     address: string;
     phone: string;
 };
 
-const TableHeader: React.FC<{ brandColor: string; headerTextColor: string }> = ({
-    brandColor,
-    headerTextColor,
-}) => (
-    <View style={[styles.tableHeader, { backgroundColor: brandColor }]}>
-        <Text style={[styles.headerCell, { width: 90, color: headerTextColor }]} numberOfLines={1}>
-            Code
-        </Text>
-        <Text style={[styles.headerCell, { width: 150, color: headerTextColor }]} numberOfLines={1}>
-            Branch
-        </Text>
-        <Text style={[styles.headerCell, { width: 220, color: headerTextColor }]} numberOfLines={1}>
-            Address
-        </Text>
-        <Text style={[styles.headerCell, { width: 140, color: headerTextColor }]} numberOfLines={1}>
-            Phone
-        </Text>
-    </View>
-);
-
-const TableRow: React.FC<{ branch: Branch; index: number }> = ({ branch, index }) => {
+const BranchCard: React.FC<{ branch: Branch }> = ({ branch }) => {
     const { theme } = useTheme();
-    const backgroundColor = index % 2 === 0 ? theme.colors.cardBackground : theme.colors.cardBackground;
-     const navigation = useNavigation<any>();
+    const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+    const screenWidth = Dimensions.get("window").width;
+
+    const handleShare = async () => {
+        try {
+            await Share.share({
+                message: `Branch: ${branch.name}\nCode: ${branch.code}\nAddress: ${branch.address}\nPhone: ${branch.phone}`,
+            });
+        } catch (error) {
+            console.error("Error sharing branch details:", error);
+        }
+    };
 
     return (
-        <ThemedTouchableOpacity onPress={()=> navigation.navigate("BranchesDetails", {branchId: branch._id})}>
-            <View style={[styles.row, { backgroundColor }]}>
-                <Text
-                    style={[styles.cell, { width: 90, textAlign: "center", color: theme.colors.text }]}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
+        <TouchableOpacity
+            onPress={() =>
+                navigation.navigate("BranchesDetails", { branchId: branch._id })
+            }
+            activeOpacity={0.8}
+        >
+            <View
+                style={[
+                    styles.card,
+                    {
+                        width: screenWidth - 16,
+                        alignSelf: "center",
+                        backgroundColor: theme.colors.cardBackground,
+                        borderColor: theme.colors.border,
+                    },
+                ]}
+            >
+                {/* Branch Name & Share Icon */}
+                <View
+                    style={[styles.row, { justifyContent: "space-between", alignItems: "center" }]}
                 >
-                    {branch.code}
-                </Text>
-                <Text
-                    style={[styles.cell, { width: 150, textAlign: "center", color: theme.colors.brandColor }]}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                >
-                    {branch.branch}
-                </Text>
-                <Text
-                    style={[styles.cell, { width: 220, textAlign: "center", color: theme.colors.text }]}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                >
-                    {branch.address}
-                </Text>
-                <Text
-                    style={[styles.cell, { width: 140, textAlign: "center", color: theme.colors.text }]}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                >
-                    {branch.phone}
-                </Text>
+                    <View style={styles.row}>
+                        <View
+                            style={[
+                                styles.iconBackground,
+                                { backgroundColor: theme.colors.brandColor + "20", width: 28, height: 28 },
+                            ]}
+                        >
+                            <Ionicons name="home-outline" size={18} color={theme.colors.brandColor} />
+                        </View>
+                        <Text style={[styles.cardTitle, { color: theme.colors.brandColor }]}>
+                            {branch.name}
+                        </Text>
+                    </View>
+
+                    <TouchableOpacity onPress={handleShare}>
+                        <Entypo name="share" size={22} color={theme.colors.brandColor} />
+                    </TouchableOpacity>
+                </View>
+
+                {/* Divider */}
+                <View
+                    style={{
+                        height: 1,
+                        backgroundColor: theme.colors.border,
+                        marginVertical: 10,
+                    }}
+                />
+                {/* Branch Details */}
+                <View style={[styles.infoColumn, { alignItems: "flex-start" }]}>
+                    <View
+                        style={[
+                            styles.iconBackground,
+                            {
+                                backgroundColor: theme.colors.brandColor + "20",
+                                width: 36,
+                                height: 36,
+                                justifyContent: "center",
+                                alignItems: "center",
+                            },
+                        ]}
+                    >
+                        <Feather name="hash" size={18} color={theme.colors.brandColor} />
+                    </View>
+                    <View style={{ marginLeft: 10 }}>
+                        <Text
+                            style={[
+                                styles.cardText,
+                                { fontSize: 12, color: theme.colors.secondaryText, marginBottom: 2 },
+                            ]}
+                        >
+                            Code
+                        </Text>
+                        <Text style={[styles.cardText, { color: theme.colors.text }]}>
+                            {branch.code}
+                        </Text>
+                    </View>
+                </View>
+
+                {/* Address */}
+                <View style={[styles.infoColumn, { alignItems: "flex-start" }]}>
+                    <View
+                        style={[
+                            styles.iconBackground,
+                            {
+                                backgroundColor: theme.colors.brandColor + "20",
+                                width: 36,
+                                height: 36,
+                                justifyContent: "center",
+                                alignItems: "center",
+                            },
+                        ]}
+                    >
+                        <Ionicons name="location-outline" size={18} color={theme.colors.brandColor} />
+                    </View>
+                    <View style={{ marginLeft: 10 }}>
+                        <Text
+                            style={[
+                                styles.cardText,
+                                { fontSize: 12, color: theme.colors.secondaryText, marginBottom: 2 },
+                            ]}
+                        >
+                            Address
+                        </Text>
+                        <Text style={[styles.cardText, { color: theme.colors.text }]}>
+                            {branch.address}
+                        </Text>
+                    </View>
+                </View>
+
+                {/* Phone */}
+                <View style={[styles.infoColumn, { alignItems: "flex-start" }]}>
+                    <View
+                        style={[
+                            styles.iconBackground,
+                            {
+                                backgroundColor: theme.colors.brandColor + "20",
+                                width: 36,
+                                height: 36,
+                                justifyContent: "center",
+                                alignItems: "center",
+                            },
+                        ]}
+                    >
+                        <Ionicons name="call-outline" size={18} color={theme.colors.brandColor} />
+                    </View>
+                    <View style={{ marginLeft: 10 }}>
+                        <Text
+                            style={[
+                                styles.cardText,
+                                { fontSize: 12, color: theme.colors.secondaryText, marginBottom: 2 },
+                            ]}
+                        >
+                            Phone
+                        </Text>
+                        <Text style={[styles.cardText, { color: theme.colors.text }]}>
+                            {branch.phone}
+                        </Text>
+                    </View>
+                </View>
             </View>
-        </ThemedTouchableOpacity>
+        </TouchableOpacity>
     );
 };
 
 const OurBranches: React.FC = () => {
     const { theme } = useTheme();
     const brandColor = theme.colors.brandColor || "#000";
-    const headerTextColor = theme.dark ? "#fff" : "#fff";
     const [searchText, setSearchText] = useState("");
     const [active, setActive] = useState(false);
-    const [currentPage, setCurrentPage] = useState(1);
 
-    const { data, refetch } = useGetBranchListQuery({
-        page: currentPage,
+    const { data: branchList = [], refetch, isFetching } = useGetBranchListQuery({
         search: searchText,
     });
 
-    const branchList: Branch[] = data?.data?.map((item: any) => ({
-        _id: item._id,
-        code: item.code || "",
-        branch: item.name || "",
-        address: item.address || "",
-        phone: item.phone || "",
-    })) ?? [];
-
-    const totalPages = data?.pagination?.totalPages ?? 1;
-
     const handleSearchPress = () => {
-        setCurrentPage(1);
         refetch();
         Keyboard.dismiss();
     };
 
-    const handlePrev = () => {
-        if (currentPage > 1) setCurrentPage(currentPage - 1);
-    };
-
-    const handleNext = () => {
-        if (currentPage < totalPages) setCurrentPage(currentPage + 1);
-    };
-
-    useEffect(() => {
-        refetch();
-    }, [currentPage, refetch]);
-
     const screenWidth = Dimensions.get("window").width;
 
     return (
-        <ThemedKeyboardView
-            centerContent={false}
-            style={{ paddingTop: 20, backgroundColor: theme.colors.background }}
-            scrollEnabled={true}
-        >
-
+        <View style={{ flex: 1, backgroundColor: theme.colors.background }}>
             {/* Search Box */}
             <View
                 style={{
-                    width: screenWidth - 16, 
+                    width: screenWidth - 16,
                     alignSelf: "center",
+                    marginTop: 20,
                     marginBottom: 8,
                 }}
             >
@@ -164,6 +236,16 @@ const OurBranches: React.FC = () => {
                         onBlur={() => setActive(false)}
                         onSubmitEditing={handleSearchPress}
                     />
+
+                    {searchText.length > 0 && (
+                        <TouchableOpacity
+                            style={[styles.clearButton, { backgroundColor: "#ccc" }]}
+                            onPress={() => setSearchText("")}
+                        >
+                            <Ionicons name="close" size={18} color="#fff" />
+                        </TouchableOpacity>
+                    )}
+
                     <TouchableOpacity
                         style={[styles.searchIconContainer, { backgroundColor: brandColor }]}
                         onPress={handleSearchPress}
@@ -173,82 +255,29 @@ const OurBranches: React.FC = () => {
                 </View>
             </View>
 
-            {/* Table */}
-            <View
-                style={{
-                    width: screenWidth - 16,
-                    alignSelf: "center",
-                    backgroundColor: theme.colors.cardBackground,
-                    borderWidth: 1,
-                    borderColor: theme.colors.brandColor,
-                    borderRadius: 16,
-                    overflow: "hidden",
-                }}
-            >
-                <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                    <View style={{ minWidth: 600 }}>
-                        <FlatList
-                            data={branchList}
-                            keyExtractor={(item) => item.code}
-                            ListHeaderComponent={<TableHeader brandColor={brandColor} headerTextColor={headerTextColor} />}
-                            renderItem={({ item, index }) => <TableRow branch={item} index={index} />}
-                            scrollEnabled={false}
-                        />
-                    </View>
-                </ScrollView>
-
-                {/* Pagination */}
-                <View
-                    style={{
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        paddingVertical: 8,
-                        gap: 10,
-                    }}
-                >
-                    <TouchableOpacity
-                        onPress={handlePrev}
-                        disabled={currentPage === 1}
-                        style={{
-                            paddingHorizontal: 14,
-                            paddingVertical: 6,
-                            borderRadius: 8,
-                            backgroundColor: brandColor,
-                            opacity: currentPage === 1 ? 0.5 : 1,
-                        }}
-                    >
-                        <Text style={{ color: "#fff", fontFamily: "Montserrat-Bold" }}>Previous</Text>
-                    </TouchableOpacity>
-                    <Text style={{ fontFamily: "Montserrat-Medium", fontSize: 14, color: theme.colors.text }}>
-                        Page {currentPage} of {totalPages}
-                    </Text>
-                    <TouchableOpacity
-                        onPress={handleNext}
-                        disabled={currentPage === totalPages}
-                        style={{
-                            paddingHorizontal: 14,
-                            paddingVertical: 6,
-                            borderRadius: 8,
-                            backgroundColor: brandColor,
-                            opacity: currentPage === totalPages ? 0.5 : 1,
-                        }}
-                    >
-                        <Text style={{ color: "#fff", fontFamily: "Montserrat-Bold" }}>Next</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        </ThemedKeyboardView>
+            {/* Branch List */}
+            {isFetching ? (
+                <Text style={{ color: theme.colors.text, textAlign: "center", marginTop: 20 }}>
+                    Loading branches...
+                </Text>
+            ) : branchList.length === 0 ? (
+                <Text style={{ color: theme.colors.text, textAlign: "center", marginTop: 20 }}>
+                    No branches found.
+                </Text>
+            ) : (
+                <FlatList
+                    data={branchList}
+                    keyExtractor={(item) => item._id}
+                    renderItem={({ item }) => <BranchCard branch={item} />}
+                    contentContainerStyle={{ paddingBottom: 16 }}
+                    showsVerticalScrollIndicator={false}
+                />
+            )}
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
-    title: {
-        fontSize: 20,
-        fontFamily: "Montserrat-Bold",
-        marginBottom: 12,
-        textAlign: "center",
-    },
     searchContainer: {
         flexDirection: "row",
         alignItems: "center",
@@ -270,31 +299,51 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         marginLeft: 8,
     },
-    tableHeader: {
-        flexDirection: "row",
-        paddingVertical: 10,
-        paddingHorizontal: 6,
+    clearButton: {
+        width: 30,
+        height: 30,
+        borderRadius: 15,
+        justifyContent: "center",
         alignItems: "center",
+        marginRight: 8,
+    },
+    card: {
+        padding: 16,
+        borderRadius: 12,
+        marginVertical: 6,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 2,
+    },
+    cardTitle: {
+        fontFamily: "Montserrat-Bold",
+        fontSize: 16,
+        marginBottom: 6,
+    },
+    cardText: {
+        fontFamily: "Montserrat-Regular",
+        fontSize: 13,
+        marginBottom: 2,
     },
     row: {
         flexDirection: "row",
-        paddingVertical: 10,
-        paddingHorizontal: 6,
         alignItems: "center",
-        borderBottomWidth: 0.5,
-        borderBottomColor: "#e5e5e5",
+        marginBottom: 4,
     },
-    cell: {
-        textAlign: "left",
-        paddingHorizontal: 6,
-        fontFamily: "Montserrat-Regular",
-        fontSize: 13,
+    iconBackground: {
+        width: 24,
+        height: 24,
+        borderRadius: 10,
+        justifyContent: "center",
+        alignItems: "center",
+        marginRight: 8,
     },
-    headerCell: {
-        fontWeight: "bold",
-        fontFamily: "Montserrat-Bold",
-        textAlign: "center",
-        fontSize: 14,
+    infoColumn: {
+        flexDirection: "row",
+        alignItems: "flex-start",
+        marginBottom: 8,
     },
 });
 
