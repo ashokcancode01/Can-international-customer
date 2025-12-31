@@ -77,6 +77,7 @@ export type PublicStackParamList = {
   "All Reviews": { productId: string };
   OurTrustedProviders: undefined;
   AboutUs: undefined;
+  OurBranches: undefined;
   FAQs: undefined;
   AirFreight: undefined;
   OceanFreight: undefined;
@@ -85,6 +86,9 @@ export type PublicStackParamList = {
   CustomsClearance: undefined;
   RealTimeTracking: undefined;
   WhyChooseUs: undefined;
+  BranchesDetails: undefined;
+  TermsAndConditions: undefined;
+  PrivacyPolicy: undefined;
 };
 
 export type PublicTabParamList = {

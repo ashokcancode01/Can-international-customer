@@ -4,10 +4,10 @@ import { useTheme } from "@/theme/ThemeProvider";
 import { ThemedView } from "@/components/themed/ThemedView";
 import ThemedText from "@/components/themed/ThemedText";
 import { MaterialIcons } from "@expo/vector-icons";
+import Card from "./Card";
 
 const AboutUsImage1 = require("../../../assets/app/AboutUs.png");
 const AboutUsImage2 = require("../../../assets/app/AboutUs1.png");
-
 
 const AboutUs = () => {
   const { theme } = useTheme();
@@ -29,9 +29,8 @@ const AboutUs = () => {
   return (
     <ThemedView style={{ flex: 1, backgroundColor: theme.colors.background }}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
-
         {/* Company Overview */}
-        <View style={[styles.card, { backgroundColor: theme.colors.card, borderColor: theme.colors.border + "30" }]}>
+        <Card>
           <Image source={AboutUsImage1} style={styles.cardImage} resizeMode="cover" />
           <View style={styles.headingRow}>
             <MaterialIcons name="business" size={22} color={theme.colors.brandColor} />
@@ -44,10 +43,10 @@ const AboutUs = () => {
           </ThemedText>
           {renderPoint("Global Presence", "Serving clients across 150+ countries with extensive logistics capabilities.")}
           {renderPoint("Reliable Operations", "Built on transparency, technology, and trusted international partnerships.")}
-        </View>
+        </Card>
 
         {/* Our Mission */}
-        <View style={[styles.card, { backgroundColor: theme.colors.card, borderColor: theme.colors.border + "30" }]}>
+        <Card>
           <Image source={AboutUsImage2} style={styles.cardImage} resizeMode="cover" />
           <View style={styles.headingRow}>
             <MaterialIcons name="emoji-objects" size={22} color={theme.colors.brandColor} />
@@ -61,8 +60,7 @@ const AboutUs = () => {
           {renderPoint("Real-time Tracking", "Complete visibility into every shipment across 150+ countries.")}
           {renderPoint("24/7 Support", "Multilingual support team ready to assist anytime.")}
           {renderPoint("Competitive Rates", "Best rates negotiated directly with carriers worldwide.")}
-        </View>
-
+        </Card>
       </ScrollView>
     </ThemedView>
   );
@@ -71,13 +69,6 @@ const AboutUs = () => {
 const styles = StyleSheet.create({
   scrollContent: {
     paddingVertical: 20,
-    paddingHorizontal: 12,
-  },
-  card: {
-    padding: 16,
-    borderRadius: 10,
-    marginBottom: 20,
-    borderWidth: 1,
   },
   cardImage: {
     width: "100%",

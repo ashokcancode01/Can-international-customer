@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
+import Card from "../Card";
 
 const OceanFreight = () => {
   const { theme } = useTheme();
@@ -16,8 +17,9 @@ const OceanFreight = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <ScrollView contentContainerStyle={{ padding: 16 }}>
-        <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
+      <ScrollView contentContainerStyle={{ paddingVertical: 20 }}>
+        {/* Image */}
+        <Card>
           <Image
             source={require("../../../../assets/app/oceanfreight.png")}
             style={styles.image}
@@ -26,9 +28,10 @@ const OceanFreight = () => {
           <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
             Cost-effective and reliable sea shipping solutions for large-volume cargo.
           </Text>
-        </View>
+        </Card>
 
-        <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
+        {/* Service Overview */}
+        <Card>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
             Service Overview
           </Text>
@@ -47,7 +50,7 @@ const OceanFreight = () => {
               </Text>
             </View>
           ))}
-        </View>
+        </Card>
       </ScrollView>
     </View>
   );
@@ -56,16 +59,6 @@ const OceanFreight = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  card: {
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
   },
   image: {
     width: "100%",

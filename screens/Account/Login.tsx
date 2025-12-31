@@ -17,7 +17,7 @@ import { AuthStackParamList } from "./auth/constants/paramTypes";
 import ThemedKeyboardView from "@/components/themed/ThemedKeyboardView";
 import ThemedText from "@/components/themed/ThemedText";
 import ThemedTextField from "@/components/themedComponent/ThemedTextField";
-import ThemedTouchableOpacity from "@/components/themed/ThemedTouchableOpacity";
+import { ThemedTouchableOpacity } from "@/components/themed/ThemedTouchableOpacity";
 import { LinearGradient } from "expo-linear-gradient";
 import { useTheme } from "@/theme/ThemeProvider";
 import AppLogo from "@/components/AppLogo";
@@ -246,7 +246,7 @@ const LoginScreen = () => {
                 color={colors.secondaryText}
                 style={styles.registerText}
               >
-                Don't have an account?{" "}
+                Don&apos;t have an account?{" "}
               </ThemedText>
               <TouchableOpacity
                 onPress={() => navigation.navigate("Register")}

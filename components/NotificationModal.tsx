@@ -67,7 +67,7 @@ const NotificationModal = ({
         ...animationConfig,
       }).start();
     }
-  }, [notificationModalOpen]);
+  }, [notificationModalOpen,  translateY, animationConfig]);
 
   const getTimeAgo = (createdAt: string) => {
     const now = new Date();
@@ -150,7 +150,7 @@ const NotificationModal = ({
       <Feather name="bell-off" size={60} color={theme.colors.placeholder} />
       <ThemedText style={styles.emptyText}>No Notifications Yet</ThemedText>
       <ThemedText style={styles.emptySubText}>
-        We'll let you know when something new happens!
+        We&apos;ll let you know when something new happens!
       </ThemedText>
     </View>
   );
@@ -204,9 +204,9 @@ const NotificationModal = ({
                       (f: any) => !f?.isInReadByField
                     )?.length
                       ? [
-                          theme.colors.brandColor,
-                          theme.colors.brandColor + "CC",
-                        ]
+                        theme.colors.brandColor ?? "#007AFF",
+                        (theme.colors.brandColor ?? "#007AFF") + "CC"
+                      ]
                       : ["#cccccc", "#cccccc"]
                   }
                   style={styles.markAllGradient}

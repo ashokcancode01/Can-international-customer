@@ -2,6 +2,8 @@ import React from "react";
 import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
+import Card from "../Card";
+
 
 const LandTransport = () => {
   const { theme } = useTheme();
@@ -16,17 +18,9 @@ const LandTransport = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <ScrollView contentContainerStyle={{ padding: 16 }}>
-        <View
-          style={[
-            styles.card,
-            {
-              backgroundColor: theme.colors.card,
-              shadowOpacity: theme.dark ? 0 : 0.1,
-              elevation: theme.dark ? 0 : 3,
-            },
-          ]}
-        >
+      <ScrollView contentContainerStyle={{ paddingVertical: 20 }}>
+        {/* Image */}
+        <Card>
           <View style={styles.imageWrapper}>
             <Image
               source={require("../../../../assets/app/landtransport.png")}
@@ -39,18 +33,10 @@ const LandTransport = () => {
           <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
             Efficient domestic and cross-border road transport for all types of goods.
           </Text>
-        </View>
+        </Card>
 
-        <View
-          style={[
-            styles.card,
-            {
-              backgroundColor: theme.colors.card,
-              shadowOpacity: theme.dark ? 0 : 0.1,
-              elevation: theme.dark ? 0 : 3,
-            },
-          ]}
-        >
+        {/* Service Overview */}
+        <Card>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
             Service Overview
           </Text>
@@ -83,7 +69,7 @@ const LandTransport = () => {
               </Text>
             </View>
           ))}
-        </View>
+        </Card>
       </ScrollView>
     </View>
   );
@@ -92,14 +78,6 @@ const LandTransport = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  card: {
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowRadius: 6,
   },
   imageWrapper: {
     backgroundColor: "#fff",
@@ -112,7 +90,6 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 12,
     alignSelf: "center",
-    tintColor: undefined,
   },
   subtitle: {
     fontSize: 14,

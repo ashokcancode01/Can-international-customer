@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
+import Card from "../Card";
 
 const CustomsClearance = () => {
   const { theme } = useTheme();
@@ -16,8 +17,9 @@ const CustomsClearance = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <ScrollView contentContainerStyle={{ padding: 16 }}>
-        <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
+      <ScrollView contentContainerStyle={{ paddingVertical: 20 }}>
+        {/* Image */}
+        <Card>
           <Image
             source={require("../../../../assets/app/customsclearance.png")}
             style={styles.image}
@@ -27,9 +29,10 @@ const CustomsClearance = () => {
           <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
             Seamless and compliant customs processing for smooth international shipping.
           </Text>
-        </View>
+        </Card>
 
-        <View style={[styles.card, { backgroundColor: theme.colors.card }]}>
+        {/* Service Overview */}
+        <Card>
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
             Service Overview
           </Text>
@@ -48,7 +51,7 @@ const CustomsClearance = () => {
               </Text>
             </View>
           ))}
-        </View>
+        </Card>
       </ScrollView>
     </View>
   );
@@ -57,16 +60,6 @@ const CustomsClearance = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  card: {
-    borderRadius: 12,
-    padding: 16,
-    marginBottom: 20,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 6,
-    elevation: 3,
   },
   image: {
     width: "100%",

@@ -15,7 +15,7 @@ import { Ionicons } from "@expo/vector-icons";
 import ThemedKeyboardView from "@/components/themed/ThemedKeyboardView";
 import ThemedText from "@/components/themed/ThemedText";
 import ThemedTextField from "@/components/themedComponent/ThemedTextField";
-import ThemedTouchableOpacity from "@/components/themed/ThemedTouchableOpacity";
+import { ThemedTouchableOpacity } from "@/components/themed/ThemedTouchableOpacity";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRegisterMutation } from "@/store/auth/authApi";
 import { AuthStackParamList } from "./auth/constants/paramTypes";

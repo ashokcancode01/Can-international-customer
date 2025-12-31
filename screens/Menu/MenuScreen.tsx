@@ -141,6 +141,9 @@ const MenuScreen = () => {
       case "About Us":
         navigation.navigate("AboutUs");
         break;
+      case "Our Branches":
+        navigation.navigate("OurBranches");
+        break;
       case "FAQs":
         navigation.navigate("FAQs");
         break;
@@ -152,10 +155,15 @@ const MenuScreen = () => {
         console.error("Failed to open URL:", err)
       );
         break;
+      case "Terms & Conditions":
+        navigation.navigate("TermsAndConditions");
+        break;
+      case "Privacy Policy":
+        navigation.navigate("PrivacyPolicy");
+        break;
       default:
     }
   };
-
 
   const submenuNavigationMap: Record<string, string> = {
     "Air Freight": "AirFreight",
@@ -288,10 +296,13 @@ const MenuScreen = () => {
           {[
             { title: "Switch Theme", subtitle: "Change app appearance", icon: "moon-outline", color: theme.colors.brandColor },
             { title: "About Us", subtitle: "Company overview and mission", icon: "information-circle-outline", color: theme.colors.brandColor },
+            { title: "Our Branches", subtitle: null, icon: "location-outline", color: theme.colors.brandColor },
             { title: "Our Services", subtitle: null, icon: "briefcase-outline", color: theme.colors.brandColor, isDropdown: true },
             { title: "FAQs", subtitle: null, icon: "help-circle-outline", color: theme.colors.brandColor },
             { title: "Why Choose Us", subtitle: null, icon: "shield-checkmark-outline", color: theme.colors.brandColor },
             { title: "Career", subtitle: null, icon: "briefcase-outline", color: theme.colors.brandColor },
+            { title: "Terms & Conditions", subtitle: null, icon: "document-text-outline", color: theme.colors.brandColor },
+            { title: "Privacy Policy", subtitle: null, icon: "lock-closed-outline", color: theme.colors.brandColor },
 
           ].map((item, index) => (
             <View key={index}>
