@@ -5,6 +5,7 @@ import {
   View,
   ScrollView,
   ActivityIndicator,
+  RefreshControl,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import ThemedText from "@/components/themed/ThemedText";
@@ -33,10 +34,19 @@ const THEME_OPTIONS = [
 
 const AppearanceScreen = () => {
   const { theme, themeMode, setTheme } = useTheme();
+  const [ refreshing, setRefreshing ] = useState(false);
   const colors = theme.colors;
   const [isLoading, setIsLoading] = useState(false);
   const [loadingTheme, setLoadingTheme] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  //Refresh Handler
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1500)
+  }, [])
 
   const getSuccessMessage = (selectedMode: string) => {
     switch (selectedMode) {
@@ -121,7 +131,6 @@ const AppearanceScreen = () => {
               color={isSelected ? colors.brandColor : colors.textSecondary}
             />
           </View>
-
           <View style={styles.textContainer}>
             <ThemedText
               style={[
@@ -144,7 +153,6 @@ const AppearanceScreen = () => {
             </ThemedText>
           </View>
         </View>
-
         <View style={styles.themeOptionRight}>
           {isCurrentLoading ? (
             <View style={styles.loadingContainer}>
@@ -177,6 +185,13 @@ const AppearanceScreen = () => {
       style={[styles.container, { backgroundColor: colors.background }]}
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.contentContainer}
+      refreshControl={
+        <RefreshControl 
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor={theme.colors.brandColor}
+        />
+      }
     >
       <View style={styles.sectionHeader}>
         <ThemedText style={[styles.sectionTitle, { color: colors.text }]}>
@@ -188,11 +203,9 @@ const AppearanceScreen = () => {
           Customize how the app looks and feels
         </ThemedText>
       </View>
-
       <View style={styles.optionsContainer}>
         {THEME_OPTIONS?.map(renderThemeOption)}
       </View>
-
       {successMessage && (
         <View
           style={[
@@ -216,7 +229,6 @@ const AppearanceScreen = () => {
           </ThemedText>
         </View>
       )}
-
       <View
         style={[
           styles.infoCard,
@@ -256,7 +268,6 @@ const styles = StyleSheet.create({
     paddingBottom: 10,
     paddingHorizontal: 12,
   },
-
   headerSubtitle: {
     fontSize: 13,
     fontWeight: "400",
@@ -275,7 +286,6 @@ const styles = StyleSheet.create({
     gap: 10,
     marginBottom: 10,
   },
-
   themeOption: {
     flexDirection: "row",
     alignItems: "center",
@@ -359,7 +369,6 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     flex: 1,
   },
-
   infoCard: {
     flexDirection: "row",
     paddingHorizontal: 12,

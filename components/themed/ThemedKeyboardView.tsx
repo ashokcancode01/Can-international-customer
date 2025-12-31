@@ -4,18 +4,19 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  ScrollViewProps,
   StyleSheet,
   View,
   ViewStyle,
 } from "react-native";
 
-interface ThemedKeyboardViewProps {
+interface ThemedKeyboardViewProps extends ScrollViewProps {
   children: React.ReactNode;
   centerContent?: boolean;
   backgroundColor?: string;
   style?: ViewStyle;
   scrollEnabled?: boolean;
-  fullWidth?: boolean; 
+  fullWidth?: boolean;
 }
 
 const ThemedKeyboardView: React.FC<ThemedKeyboardViewProps> = ({
@@ -25,6 +26,7 @@ const ThemedKeyboardView: React.FC<ThemedKeyboardViewProps> = ({
   style,
   scrollEnabled = true,
   fullWidth = false,
+  ...scrollProps
 }) => {
   const { theme } = useTheme();
   const colors = theme.colors;
@@ -50,6 +52,7 @@ const ThemedKeyboardView: React.FC<ThemedKeyboardViewProps> = ({
     >
       {scrollEnabled ? (
         <ScrollView
+          {...scrollProps}
           contentContainerStyle={contentStyle}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
@@ -78,7 +81,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   fullWidthContent: {
-    paddingHorizontal: 0, 
+    paddingHorizontal: 0,
   },
 });
 

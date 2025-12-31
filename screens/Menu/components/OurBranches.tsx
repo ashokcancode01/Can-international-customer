@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
     StyleSheet,
     TextInput,
@@ -9,12 +9,15 @@ import {
     Text,
     Dimensions,
     Share,
+    RefreshControl
 } from "react-native";
 import { Ionicons, Entypo, Feather } from "@expo/vector-icons";
 import { useTheme } from "@/theme/ThemeProvider";
 import { useGetBranchListQuery } from "@/store/slices/branches";
 import { useNavigation } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import SectionCard from "@/screens/Home/components/SectionCard";
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 type RootStackParamList = {
     BranchesDetails: { branchId: string };
@@ -31,8 +34,6 @@ type Branch = {
 const BranchCard: React.FC<{ branch: Branch }> = ({ branch }) => {
     const { theme } = useTheme();
     const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-    const screenWidth = Dimensions.get("window").width;
-
     const handleShare = async () => {
         try {
             await Share.share({
@@ -45,42 +46,57 @@ const BranchCard: React.FC<{ branch: Branch }> = ({ branch }) => {
 
     return (
         <TouchableOpacity
+            activeOpacity={0.8}
             onPress={() =>
                 navigation.navigate("BranchesDetails", { branchId: branch._id })
             }
-            activeOpacity={0.8}
         >
-            <View
-                style={[
-                    styles.card,
-                    {
-                        width: screenWidth - 16,
-                        alignSelf: "center",
-                        backgroundColor: theme.colors.cardBackground,
-                        borderColor: theme.colors.border,
-                    },
-                ]}
+            <SectionCard
+                style={{
+                    marginHorizontal: 8,
+                    marginVertical: 6,
+                    marginBottom: 0,
+                }}
             >
                 {/* Branch Name & Share Icon */}
                 <View
-                    style={[styles.row, { justifyContent: "space-between", alignItems: "center" }]}
+                    style={[
+                        styles.row,
+                        { justifyContent: "space-between", alignItems: "center" },
+                    ]}
                 >
                     <View style={styles.row}>
                         <View
                             style={[
                                 styles.iconBackground,
-                                { backgroundColor: theme.colors.brandColor + "20", width: 28, height: 28 },
+                                { backgroundColor: theme.colors.brandColor + "20" },
                             ]}
                         >
-                            <Ionicons name="home-outline" size={18} color={theme.colors.brandColor} />
+                            <Ionicons
+                                name="home-outline"
+                                size={18}
+                                color={theme.colors.brandColor}
+                            />
                         </View>
-                        <Text style={[styles.cardTitle, { color: theme.colors.brandColor }]}>
+                        <Text
+                            style={[styles.cardTitle, { color: theme.colors.brandColor }]}
+                        >
                             {branch.name}
                         </Text>
                     </View>
 
-                    <TouchableOpacity onPress={handleShare}>
-                        <Entypo name="share" size={22} color={theme.colors.brandColor} />
+                    {/* Prevent navigation when pressing share */}
+                    <TouchableOpacity
+                        onPress={(e) => {
+                            e.stopPropagation();
+                            handleShare();
+                        }}
+                    >
+                        <Entypo
+                            name="share"
+                            size={22}
+                            color={theme.colors.brandColor}
+                        />
                     </TouchableOpacity>
                 </View>
 
@@ -92,18 +108,13 @@ const BranchCard: React.FC<{ branch: Branch }> = ({ branch }) => {
                         marginVertical: 10,
                     }}
                 />
-                {/* Branch Details */}
-                <View style={[styles.infoColumn, { alignItems: "flex-start" }]}>
+
+                {/* Code */}
+                <View style={styles.infoColumn}>
                     <View
                         style={[
                             styles.iconBackground,
-                            {
-                                backgroundColor: theme.colors.brandColor + "20",
-                                width: 36,
-                                height: 36,
-                                justifyContent: "center",
-                                alignItems: "center",
-                            },
+                            { backgroundColor: theme.colors.brandColor + "20", width: 36, height: 36 },
                         ]}
                     >
                         <Feather name="hash" size={18} color={theme.colors.brandColor} />
@@ -112,7 +123,7 @@ const BranchCard: React.FC<{ branch: Branch }> = ({ branch }) => {
                         <Text
                             style={[
                                 styles.cardText,
-                                { fontSize: 12, color: theme.colors.secondaryText, marginBottom: 2 },
+                                { fontSize: 12, color: theme.colors.secondaryText },
                             ]}
                         >
                             Code
@@ -124,26 +135,24 @@ const BranchCard: React.FC<{ branch: Branch }> = ({ branch }) => {
                 </View>
 
                 {/* Address */}
-                <View style={[styles.infoColumn, { alignItems: "flex-start" }]}>
+                <View style={styles.infoColumn}>
                     <View
                         style={[
                             styles.iconBackground,
-                            {
-                                backgroundColor: theme.colors.brandColor + "20",
-                                width: 36,
-                                height: 36,
-                                justifyContent: "center",
-                                alignItems: "center",
-                            },
+                            { backgroundColor: theme.colors.brandColor + "20", width: 36, height: 36 },
                         ]}
                     >
-                        <Ionicons name="location-outline" size={18} color={theme.colors.brandColor} />
+                        <Ionicons
+                            name="location-outline"
+                            size={18}
+                            color={theme.colors.brandColor}
+                        />
                     </View>
                     <View style={{ marginLeft: 10 }}>
                         <Text
                             style={[
                                 styles.cardText,
-                                { fontSize: 12, color: theme.colors.secondaryText, marginBottom: 2 },
+                                { fontSize: 12, color: theme.colors.secondaryText },
                             ]}
                         >
                             Address
@@ -155,26 +164,24 @@ const BranchCard: React.FC<{ branch: Branch }> = ({ branch }) => {
                 </View>
 
                 {/* Phone */}
-                <View style={[styles.infoColumn, { alignItems: "flex-start" }]}>
+                <View style={styles.infoColumn}>
                     <View
                         style={[
                             styles.iconBackground,
-                            {
-                                backgroundColor: theme.colors.brandColor + "20",
-                                width: 36,
-                                height: 36,
-                                justifyContent: "center",
-                                alignItems: "center",
-                            },
+                            { backgroundColor: theme.colors.brandColor + "20", width: 36, height: 36 },
                         ]}
                     >
-                        <Ionicons name="call-outline" size={18} color={theme.colors.brandColor} />
+                        <Ionicons
+                            name="call-outline"
+                            size={18}
+                            color={theme.colors.brandColor}
+                        />
                     </View>
                     <View style={{ marginLeft: 10 }}>
                         <Text
                             style={[
                                 styles.cardText,
-                                { fontSize: 12, color: theme.colors.secondaryText, marginBottom: 2 },
+                                { fontSize: 12, color: theme.colors.secondaryText },
                             ]}
                         >
                             Phone
@@ -184,13 +191,14 @@ const BranchCard: React.FC<{ branch: Branch }> = ({ branch }) => {
                         </Text>
                     </View>
                 </View>
-            </View>
+            </SectionCard>
         </TouchableOpacity>
     );
 };
 
 const OurBranches: React.FC = () => {
     const { theme } = useTheme();
+    const [refreshing, setRefreshing] = useState(false);
     const brandColor = theme.colors.brandColor || "#000";
     const [searchText, setSearchText] = useState("");
     const [active, setActive] = useState(false);
@@ -198,6 +206,14 @@ const OurBranches: React.FC = () => {
     const { data: branchList = [], refetch, isFetching } = useGetBranchListQuery({
         search: searchText,
     });
+
+    //Refresh Handler
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 1500);
+    }, []);
 
     const handleSearchPress = () => {
         refetch();
@@ -236,7 +252,6 @@ const OurBranches: React.FC = () => {
                         onBlur={() => setActive(false)}
                         onSubmitEditing={handleSearchPress}
                     />
-
                     {searchText.length > 0 && (
                         <TouchableOpacity
                             style={[styles.clearButton, { backgroundColor: "#ccc" }]}
@@ -245,7 +260,6 @@ const OurBranches: React.FC = () => {
                             <Ionicons name="close" size={18} color="#fff" />
                         </TouchableOpacity>
                     )}
-
                     <TouchableOpacity
                         style={[styles.searchIconContainer, { backgroundColor: brandColor }]}
                         onPress={handleSearchPress}
@@ -257,9 +271,10 @@ const OurBranches: React.FC = () => {
 
             {/* Branch List */}
             {isFetching ? (
-                <Text style={{ color: theme.colors.text, textAlign: "center", marginTop: 20 }}>
-                    Loading branches...
-                </Text>
+                <LoadingIndicator
+                    size={80}
+                    color={theme.colors.brandColor}
+                />
             ) : branchList.length === 0 ? (
                 <Text style={{ color: theme.colors.text, textAlign: "center", marginTop: 20 }}>
                     No branches found.
@@ -271,6 +286,13 @@ const OurBranches: React.FC = () => {
                     renderItem={({ item }) => <BranchCard branch={item} />}
                     contentContainerStyle={{ paddingBottom: 16 }}
                     showsVerticalScrollIndicator={false}
+                    refreshControl={
+                        <RefreshControl
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            tintColor={theme.colors.brandColor}
+                        />
+                    }
                 />
             )}
         </View>
@@ -306,16 +328,6 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         marginRight: 8,
-    },
-    card: {
-        padding: 16,
-        borderRadius: 12,
-        marginVertical: 6,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 4,
-        elevation: 2,
     },
     cardTitle: {
         fontFamily: "Montserrat-Bold",

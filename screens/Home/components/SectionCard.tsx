@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
   container: {
     marginHorizontal: 12,
     marginTop: 30,
-    marginBottom: 30,
+    marginBottom: 20,
   },
   headerWrapper: {
     marginBottom: 6,

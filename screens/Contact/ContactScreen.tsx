@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { View, StyleSheet } from "react-native";
+import React, { useCallback, useState } from "react";
+import { View, StyleSheet, RefreshControl } from "react-native";
 import { useForm } from "react-hook-form";
 import { Entypo, MaterialIcons } from "@expo/vector-icons";
 import ThemedTextField from "@/components/themedComponent/ThemedTextField";
@@ -20,6 +20,7 @@ interface FormData {
 
 const ContactScreen = () => {
   const { theme } = useTheme();
+  const [refreshing, setRefreshing] = useState(false);
   const route = useRoute<any>();
   const { control, handleSubmit, reset } = useForm<FormData>({
     defaultValues: {
@@ -36,38 +37,51 @@ const ContactScreen = () => {
     reset();
   };
 
+  // Pull-to-refresh handler (Menu-style behavior)
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+
+    reset({
+      fullName: "",
+      subject: "",
+      phone: "",
+      email: "",
+      message: route.params?.prefillMessage ?? "",
+    });
+
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 600);
+  }, [reset, route.params]);
+
+  // Reset form when screen is focused
   useFocusEffect(
     useCallback(() => {
-      // Always reset form first
       reset({
         fullName: "",
         subject: "",
         phone: "",
         email: "",
-        message: "",
+        message: route.params?.prefillMessage ?? "",
       });
-
-      // If coming from Branch Details, prefill message
-      if (route.params?.prefillMessage) {
-        reset({
-          fullName: "",
-          subject: "",
-          phone: "",
-          email: "",
-          message: route.params.prefillMessage,
-        });
-      }
     }, [route.params, reset])
   );
 
   return (
     <ThemedKeyboardView
       scrollEnabled
-      backgroundColor={theme.colors.background}
       fullWidth
       style={styles.container}
+      backgroundColor={theme.colors.background}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor={theme.colors.brandColor}
+          colors={[theme.colors.brandColor!]}
+        />
+      }
     >
-
       {/* Contact Info Card */}
       <ThemedView style={[styles.cardContainer, { backgroundColor: theme.colors.card }]}>
         <ThemedText type="label" style={[styles.heading, { color: theme.colors.text }]}>

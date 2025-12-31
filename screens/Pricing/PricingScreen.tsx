@@ -1,5 +1,5 @@
-import React, { useCallback } from "react";
-import { ScrollView, StyleSheet } from "react-native";
+import React, { useCallback, useState } from "react";
+import { ScrollView, StyleSheet, RefreshControl } from "react-native";
 import { useForm } from "react-hook-form";
 import { useTheme } from "../../theme/ThemeProvider";
 import ThemedText from "@/components/themed/ThemedText";
@@ -12,6 +12,7 @@ import { useGetCountryListQuery } from "@/store/slices/dropdown";
 import { getServiceTypeOptions, ShipmentType } from "@/constants/dropdowns";
 import { useFocusEffect } from "@react-navigation/native";
 
+
 type FormData = {
     origin: string;
     destination: any;
@@ -22,6 +23,7 @@ type FormData = {
 
 const PricingScreen = () => {
     const { theme } = useTheme();
+    const [refreshing, setRefreshing] = useState(false);
     const { control, handleSubmit, watch, reset } = useForm<FormData>({
         defaultValues: {
             origin: "Nepal",
@@ -43,6 +45,14 @@ const PricingScreen = () => {
 
     const { data: countryList } = useGetCountryListQuery();
 
+    //Refresh Handler
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 1500);
+    }, []);
+
     //Reset the pricng form 
     useFocusEffect(
         useCallback(() => {
@@ -58,7 +68,17 @@ const PricingScreen = () => {
 
     return (
         <ThemedView style={{ flex: 1, backgroundColor: theme.colors.background }}>
-            <ScrollView contentContainerStyle={styles.scrollContent}>
+            <ScrollView
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        tintColor={theme.colors.brandColor}
+                    />
+                }
+            >
                 <ThemedText style={[styles.title, { color: theme.colors.brandColor }]}>
                     International Courier Pricing
                 </ThemedText>

@@ -1,16 +1,35 @@
-import React from "react";
-import { ScrollView, StyleSheet, View, Image } from "react-native";
+import React, { useCallback, useState, useEffect } from "react";
+import { ScrollView, StyleSheet, View, Image, RefreshControl } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import { ThemedView } from "@/components/themed/ThemedView";
 import ThemedText from "@/components/themed/ThemedText";
 import { MaterialIcons } from "@expo/vector-icons";
 import Card from "./Card";
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 const AboutUsImage1 = require("../../../assets/app/AboutUs.png");
 const AboutUsImage2 = require("../../../assets/app/AboutUs1.png");
 
 const AboutUs = () => {
   const { theme } = useTheme();
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Simulate fetching data
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1000); 
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Refresh Handler
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1500);
+  }, []);
 
   const renderPoint = (title: string, description: string) => (
     <View style={styles.point}>
@@ -26,9 +45,31 @@ const AboutUs = () => {
     </View>
   );
 
+  if (loading) {
+    return (
+      <ThemedView style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: theme.colors.background }}>
+        <LoadingIndicator
+          width={100}
+          duration={9000}
+          trailLength={20}
+          color={theme.colors.brandColor}
+        />
+      </ThemedView>
+    );
+  }
+
   return (
     <ThemedView style={{ flex: 1, backgroundColor: theme.colors.background }}>
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={theme.colors.brandColor}
+          />
+        }
+      >
         {/* Company Overview */}
         <Card>
           <Image source={AboutUsImage1} style={styles.cardImage} resizeMode="cover" />

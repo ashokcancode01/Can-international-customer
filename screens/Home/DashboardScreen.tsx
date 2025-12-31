@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback} from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import {
   StyleSheet,
   Dimensions,
@@ -9,6 +9,7 @@ import {
   ScrollView,
   FlatList,
   ColorValue,
+  RefreshControl,
 } from "react-native";
 import { useTheme } from "../../theme/ThemeProvider";
 import ThemedText from "@/components/themed/ThemedText";
@@ -111,6 +112,7 @@ const OUR_CLIENTS_SAY = [
 
 const DashboardHeader = () => {
   const { theme } = useTheme();
+  const [refreshing, setRefreshing] = useState(false);
   const [trackingNumber, setTrackingNumber] = useState("");
   const [isFocused, setIsFocused] = useState(false);
   const navigation = useNavigation<any>();
@@ -118,6 +120,15 @@ const DashboardHeader = () => {
   const clientFlatListRef = useRef<FlatList>(null);
   const [currentClientIndex, setCurrentClientIndex] = useState(0);
   const [submittedId, setSubmittedId] = useState<string | undefined>(undefined);
+
+  //Refresh Handler
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1500);
+  }, []);
+
 
   // For trackOrder
   const { data: TrackOrder, isLoading, isError } = useGetTrackOrderQuery(submittedId!, { skip: !submittedId });
@@ -160,7 +171,6 @@ const DashboardHeader = () => {
                 <ThemedText style={[styles.greetingText, { color: theme.colors.textSecondary }]}>
                   {getGreeting()},
                 </ThemedText>
-
                 <ThemedText style={[styles.nameText, { color: theme.colors.text }]}>
                   TestUser
                 </ThemedText>
@@ -168,8 +178,17 @@ const DashboardHeader = () => {
             </View>
           </View>
         </View>
-
-        <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={onRefresh}
+              tintColor={theme.colors.brandColor}
+            />
+          }
+        >
           {/* Welcome Section */}
           <View style={styles.welcomeContainer}>
             <ThemedText style={[styles.WelcomeTitle, { color: theme.colors.text }]}>
@@ -246,45 +265,39 @@ const DashboardHeader = () => {
           </SectionCard>
 
           {/* Our Services */}
-          <HorizontalSection
-            icon={<Ionicons name="briefcase" size={30} color={theme.colors.brandColor!} />}
-            title="Our Services"
-            subtitle="Explore what Nepal Can International offers to customers and businesses."
-            data={QUICK_ACTIONS}
-            renderItem={(action) => (
-              <View style={styles.actionCard}>
-                <ThemedTouchableOpacity style={styles.actionButton}>
-                  {action.icon(theme.colors.brandColor!)}
-                  <ThemedText style={[styles.actionLabel, { color: theme.colors.text }]}>
-                    {action.label}
-                  </ThemedText>
-                  <ThemedText style={[styles.actionDescription, { color: theme.colors.textSecondary }]}>
-                    {action.description}
-                  </ThemedText>
-                </ThemedTouchableOpacity>
-              </View>
-            )}
-          />
+<HorizontalSection
+  icon={<Ionicons name="briefcase" size={30} color={theme.colors.brandColor!} />}
+  title="Our Services"
+  subtitle="Explore what Nepal Can International offers to customers and businesses."
+  data={QUICK_ACTIONS}
+  renderItem={(action) => (
+    <ThemedTouchableOpacity style={[styles.horizontalCard, { backgroundColor: theme.colors.card }]}>
+      {action.icon(theme.colors.brandColor!)}
+      <ThemedText style={[styles.cardTitle, { color: theme.colors.text }]}>{action.label}</ThemedText>
+      <ThemedText style={[styles.cardSubtitle, { color: theme.colors.textSecondary }]}>{action.description}</ThemedText>
+    </ThemedTouchableOpacity>
+  )}
+  cardStyle={styles.horizontalCardWrapper}
+/>
+
 
           {/* Why Choose Us */}
-          <HorizontalSection
-            icon={<Ionicons name="shield-checkmark" size={30} color={theme.colors.brandColor!} />}
-            title="Why Choose Us"
-            subtitle="We’re not just a logistics company—we’re your trusted partner in keeping your business moving forward globally."
-            data={WHY_CHOOSE_US}
-            renderItem={(item) => (
-              <View style={styles.whyChooseCard}>
-                <ThemedTouchableOpacity style={styles.whyChooseButton}>
-                  <ThemedText style={[styles.whyChooseLabel, { color: theme.colors.brandColor! }]}>
-                    {item.label}
-                  </ThemedText>
-                  <ThemedText style={[styles.whyChooseDescription, { color: theme.colors.textSecondary }]}>
-                    {item.description}
-                  </ThemedText>
-                </ThemedTouchableOpacity>
-              </View>
-            )}
-          />
+ <View style={{ marginTop: 20 }}>
+  <HorizontalSection
+    icon={<Ionicons name="shield-checkmark" size={30} color={theme.colors.brandColor!} />}
+    title="Why Choose Us"
+    subtitle="We’re not just a logistics company—we’re your trusted partner in keeping your business moving forward globally."
+    data={WHY_CHOOSE_US}
+    renderItem={(item) => (
+      <ThemedTouchableOpacity style={[styles.horizontalCard, { backgroundColor: theme.colors.card }]}>
+        <ThemedText style={[styles.cardTitle, { color: theme.colors.brandColor! }]}>{item.label}</ThemedText>
+        <ThemedText style={[styles.cardSubtitle, { color: theme.colors.textSecondary }]}>{item.description}</ThemedText>
+      </ThemedTouchableOpacity>
+    )}
+    cardStyle={styles.horizontalCardWrapper}
+  />
+</View>
+
 
           {/* Our Trusted Providers */}
           <SectionCard
@@ -323,7 +336,7 @@ const DashboardHeader = () => {
           </SectionCard>
 
           {/* What Our Clients Say */}
-          <View style={{ marginHorizontal: 12, marginTop: 30, marginBottom: 30 }}>
+          <View style={{ marginHorizontal: 12, marginTop: 20, marginBottom: 30 }}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginHorizontal: 8 }}>
               <Ionicons
                 name="chatbubbles"
@@ -485,90 +498,6 @@ const styles = StyleSheet.create({
     fontFamily: "Montserrat-Bold",
     marginBottom: 6,
   },
-  servicesSubtitle: {
-    fontSize: 12,
-    fontFamily: "Montserrat-Medium",
-    lineHeight: 18,
-    marginBottom: 6,
-  },
-  actionCard: {
-    width: 220,
-    alignItems: "center",
-    borderRadius: 20,
-    paddingVertical: 20,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
-      },
-      android: {
-        elevation: 0,
-      },
-    })
-  },
-  actionButton: {
-    width: "100%",
-    height: 160,
-    borderRadius: 16,
-    justifyContent: "flex-start",
-    alignItems: "center",
-    paddingTop: 16,
-    paddingHorizontal: 8,
-  },
-  actionLabel: {
-    fontSize: 14,
-    fontFamily: "Montserrat-Bold",
-    textAlign: "center",
-    marginTop: 12,
-  },
-  actionDescription: {
-    fontSize: 12,
-    fontFamily: "Montserrat-Medium",
-    textAlign: "center",
-    marginTop: 6,
-    lineHeight: 18,
-  },
-  whyChooseCard: {
-    width: 160,
-    alignItems: "center",
-    borderRadius: 16,
-    paddingVertical: 16,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 0,
-      }
-
-    })
-  },
-  whyChooseButton: {
-    width: "100%",
-    height: 120,
-    borderRadius: 16,
-    justifyContent: "center",
-    alignItems: "center",
-    paddingHorizontal: 8,
-  },
-  whyChooseLabel: {
-    fontSize: 18,
-    fontFamily: "Montserrat-Bold",
-    textAlign: "center",
-    marginTop: 8,
-  },
-  whyChooseDescription: {
-    fontSize: 12,
-    fontFamily: "Montserrat-Medium",
-    textAlign: "center",
-    marginTop: 4,
-    lineHeight: 16,
-  },
   providersContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -627,6 +556,30 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: "Montserrat-Medium",
     marginTop: 2
+  },
+  horizontalCardWrapper: {
+    width: 280,
+    height: 150,
+    marginRight: 12,
+  },
+  horizontalCard: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 12,
+    padding: 16,
+  },
+  cardTitle: {
+    fontSize: 14,
+    fontFamily: "Montserrat-Bold",
+    marginTop: 12,
+    textAlign: "center",
+  },
+  cardSubtitle: {
+    fontSize: 12,
+    fontFamily: "Montserrat-Medium",
+    marginTop: 6,
+    textAlign: "center",
   },
 });
 

@@ -1,18 +1,20 @@
 import { ThemedView } from '@/components/themed/ThemedView';
 import { useTheme } from '@/theme/ThemeProvider';
 import { useRoute, useNavigation } from '@react-navigation/native';
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform, Linking, TouchableOpacity, Dimensions } from "react-native";
+import React, { useCallback, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Platform, Linking, TouchableOpacity, Dimensions, RefreshControl } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useGetBranchByIdQuery } from '@/store/slices/branches';
 import { ThemedTouchableOpacity } from '@/components/themed/ThemedTouchableOpacity';
 import Foundation from '@expo/vector-icons/Foundation';
 import BranchMapView from './BranchMapView';
+import LoadingIndicator from '@/components/LoadingIndicator';
 
 const BranchesDetails = () => {
     const { theme, isDark } = useTheme();
     const navigation = useNavigation<any>();
+    const [refreshing, setRefreshing] = useState(false);
     const brandColor = theme.colors.brandColor || "#dc2f54";
     const route = useRoute<any>();
     const screenWidth = Dimensions.get("window").width;
@@ -31,6 +33,14 @@ const BranchesDetails = () => {
     const hasLocation =
         typeof lat === "number" &&
         typeof long === "number";
+    //Refresh Handler
+
+    const onRefresh = useCallback(() => {
+        setRefreshing(true);
+        setTimeout(() => {
+            setRefreshing(false);
+        }, 1500);
+    }, []);
 
     // Map branch working hours to include open/close times and whether the branch is open
     const workingHours = branch?.workingHours?.map((wh) => ({
@@ -43,11 +53,13 @@ const BranchesDetails = () => {
     if (isLoading) {
         return (
             <ThemedView style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: theme.colors.background }}>
-                <Text style={{ fontFamily: "Montserrat-Medium", color: theme.colors.text }}>Loading branch data...</Text>
+                <LoadingIndicator
+                    size={80}
+                    color={brandColor}
+                />
             </ThemedView>
         );
     }
-
     if (isError || !branch) {
         return (
             <ThemedView style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: theme.colors.background }}>
@@ -97,7 +109,14 @@ const BranchesDetails = () => {
 
     return (
         <ThemedView style={{ flex: 1, backgroundColor: theme.colors.background }}>
-            <ScrollView contentContainerStyle={{ padding: 16 }}>
+            <ScrollView contentContainerStyle={{ padding: 16 }}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        tintColor={theme.colors.brandColor}
+                    />}
+            >
                 {/* Header Card */}
                 <View style={[styles.headerCard, { width: screenWidth - 24, alignSelf: "center", backgroundColor: brandColor }]}>
                     <Text style={[styles.branchLabel, { fontFamily: "Montserrat-Medium" }]}>Branch #{branch.code}</Text>
@@ -127,7 +146,7 @@ const BranchesDetails = () => {
 
                 {/* Working Hours */}
                 {hasWorkingHours && (
-                    <View style={{ width: screenWidth - 24, alignSelf: "center", marginTop: 24 }}>
+                    <View style={{ width: screenWidth - 24, alignSelf: "center", marginTop: 10 }}>
                         <Text style={[styles.sectionTitle, { color: theme.colors.text, fontFamily: "Montserrat-Bold", marginLeft: 6 }]}>
                             Working Hours
                         </Text>
@@ -228,7 +247,8 @@ const BranchesDetails = () => {
                 )}
 
                 {/* Shipping Card */}
-                <View style={[styles.shippingCard, { width: screenWidth - 24, alignSelf: "center", backgroundColor: isDark ? theme.colors.card : "#fff", borderColor: isDark ? theme.colors.border : "#eee" }]}>
+                <View
+                    style={[styles.shippingCard, { width: screenWidth - 24, alignSelf: "center", backgroundColor: isDark ? theme.colors.card : "#fff", borderColor: isDark ? theme.colors.border : "#eee" }]}>
                     <View style={styles.shippingHeader}>
                         <View style={[styles.iconBackground, { backgroundColor: brandColor }]}>
                             <Ionicons name="cube-outline" size={24} color="#fff" />
@@ -259,7 +279,6 @@ const BranchesDetails = () => {
                         <Text style={[styles.sectionTitle, { color: theme.colors.text, fontFamily: "Montserrat-Bold", marginLeft: 6 }]}>
                             Our Location
                         </Text>
-
                         <View
                             style={[
                                 styles.shippingCard,
