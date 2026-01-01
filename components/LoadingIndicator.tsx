@@ -3,11 +3,11 @@ import { View, Animated, StyleSheet, Easing } from "react-native";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 interface PlaneLoaderProps {
-  size?: number;        // Width of the progress bar
-  dotSize?: number;     // Size of the moving dot
-  duration?: number;    // Animation duration in ms
-  color?: string;       // Brand color for icon and dot
-  iconSize?: number;    // Size of the plane icon
+  size?: number;       
+  dotSize?: number;     
+  duration?: number;    
+  color?: string;       
+  iconSize?: number;   
 }
 
 const PlaneLoader: React.FC<PlaneLoaderProps> = ({
@@ -37,7 +37,7 @@ const PlaneLoader: React.FC<PlaneLoaderProps> = ({
 
   return (
     <View style={styles.container}>
-      {/* Fixed plane icon */}
+      {/* plane icon */}
       <MaterialCommunityIcons
         name="airplane-takeoff"
         size={iconSize}
