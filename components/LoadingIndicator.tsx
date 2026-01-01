@@ -1,82 +1,99 @@
 import React, { useEffect, useRef } from "react";
-import { View, Animated, Easing, StyleSheet } from "react-native";
+import { View, Animated, StyleSheet, Easing } from "react-native";
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
-interface LoadingIndicatorProps {
-  size?: number;       
-  duration?: number;   
-  dotCount?: number;  
-  color?: string;      
+interface PlaneLoaderProps {
+  size?: number;        // Width of the progress bar
+  dotSize?: number;     // Size of the moving dot
+  duration?: number;    // Animation duration in ms
+  color?: string;       // Brand color for icon and dot
+  iconSize?: number;    // Size of the plane icon
 }
 
-const LoadingIndicator: React.FC<LoadingIndicatorProps> = ({
-  size = 80,
-  duration = 4000,
-  dotCount = 15,
-  color = "#000",
+const PlaneLoader: React.FC<PlaneLoaderProps> = ({
+  size = 200,
+  dotSize = 12,
+  duration = 2000,
+  color = "#007AFF",
+  iconSize = 40,
 }) => {
-  const rotation = useRef(new Animated.Value(0)).current;
+  const animation = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     Animated.loop(
-      Animated.timing(rotation, {
+      Animated.timing(animation, {
         toValue: 1,
         duration,
-        easing: Easing.linear,
         useNativeDriver: true,
+        easing: Easing.linear,
       })
     ).start();
-  }, [rotation, duration]);
+  }, [animation, duration]);
 
-  const radius = size / 2 - 10;
-
-  const dots = [];
-  for (let i = 0; i < dotCount; i++) {
-    const angle = (i / dotCount) * 2 * Math.PI;
-    const x = radius + radius * Math.cos(angle) - 4; 
-    const y = radius + radius * Math.sin(angle) - 4;
-    dots.push(
-      <View
-        key={i}
-        style={{
-          position: "absolute" as const,
-          width: 8,
-          height: 8,
-          borderRadius: 4,
-          backgroundColor: color,
-          top: y,
-          left: x,
-          opacity: 1 - i / dotCount, 
-        }}
-      />
-    );
-  }
-
-  const rotateInterpolate = rotation.interpolate({
+  const translateX = animation.interpolate({
     inputRange: [0, 1],
-    outputRange: ["0deg", "360deg"], 
+    outputRange: [0, size - dotSize],
   });
 
   return (
-    <View style={styles.screenCenter}>
-      <Animated.View
-        style={{
-          width: size,
-          height: size,
-          transform: [{ rotate: rotateInterpolate }],
-        }}
-      >
-        {dots}
-      </Animated.View>
+    <View style={styles.container}>
+      {/* Fixed plane icon */}
+      <MaterialCommunityIcons
+        name="airplane-takeoff"
+        size={iconSize}
+        color={color}
+        style={styles.plane}
+      />
+
+      {/* Progress bar container */}
+      <View style={[styles.progressBar, { width: size, height: dotSize }]}>
+        {/* Background bar */}
+        <View style={[styles.barBackground, { height: dotSize / 3 }]} />
+
+        {/* Animated moving dot */}
+        <Animated.View
+          style={[
+            styles.dot,
+            {
+              width: dotSize,
+              height: dotSize,
+              borderRadius: dotSize / 2,
+              backgroundColor: color,
+              transform: [{ translateX }],
+            },
+          ]}
+        />
+      </View>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  screenCenter: {
-    flex: 1,
-    justifyContent: "center",
+  container: {
     alignItems: "center",
+    justifyContent: "center",
+    height: 100,
+    position: "relative",
+  },
+  plane: {
+    marginBottom: 15,
+  },
+  progressBar: {
+    position: "relative",
+    justifyContent: "center",
+  },
+  barBackground: {
+    position: "absolute",
+    width: "100%",
+    backgroundColor: "#ddd",
+    borderRadius: 10,
+    top: "50%",
+    transform: [{ translateY: -0.5 }],
+  },
+  dot: {
+    position: "absolute",
+    top: 0,
   },
 });
 
-export default LoadingIndicator;
+export default PlaneLoader;

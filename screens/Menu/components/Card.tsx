@@ -1,14 +1,15 @@
 import React, { ReactNode } from "react";
-import { View, StyleSheet, Dimensions } from "react-native";
+import { View, StyleSheet, Dimensions, StyleProp, ViewStyle } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 
 const screenWidth = Dimensions.get("window").width;
 
 type CardProps = {
   children: ReactNode;
+  style?: StyleProp<ViewStyle>; 
 };
 
-const Card: React.FC<CardProps> = ({ children }) => {
+const Card: React.FC<CardProps> = ({ children, style }) => { 
   const { theme } = useTheme();
 
   return (
@@ -21,6 +22,7 @@ const Card: React.FC<CardProps> = ({ children }) => {
           backgroundColor: theme.colors.card,
           borderColor: theme.colors.border + "30",
         },
+        style, 
       ]}
     >
       {children}

@@ -1,11 +1,14 @@
-import React from "react";
-import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
+import { View, Text, ScrollView, StyleSheet, Image, RefreshControl } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
 import Card from "../Card";
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 const RealTimeTracking = () => {
   const { theme } = useTheme();
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const features = [
     "Real-time updates and monitoring",
@@ -13,9 +16,40 @@ const RealTimeTracking = () => {
     "24/7 customer support",
   ];
 
+  //Refresh Handler
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1500);
+  }, []);
+
+  // simulate loading 
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={[styles.fullScreenLoader, { backgroundColor: theme.colors.background }]}>
+        <LoadingIndicator size={60} color={theme.colors.brandColor} />
+      </View>
+    );
+  }
+
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <ScrollView contentContainerStyle={{ paddingVertical: 20 }}>
+      <ScrollView
+        contentContainerStyle={{ paddingVertical: 20 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={theme.colors.brandColor}
+          />
+        }
+      >
         {/* Image */}
         <Card>
           <View style={styles.imageWrapper}>
@@ -62,6 +96,11 @@ const RealTimeTracking = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  fullScreenLoader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   imageWrapper: {
     backgroundColor: "#fff",
