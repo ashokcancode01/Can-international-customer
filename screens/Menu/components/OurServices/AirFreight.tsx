@@ -1,11 +1,14 @@
-import React from "react";
-import { View, Text, ScrollView, StyleSheet, Image } from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
+import { View, Text, ScrollView, Image, StyleSheet, RefreshControl } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
 import Card from "../Card";
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 const AirFreight = () => {
   const { theme } = useTheme();
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const features = [
     "Fast delivery for urgent shipments",
@@ -15,9 +18,40 @@ const AirFreight = () => {
     "Custom documentation assistance",
   ];
 
+  //Refresh Handler
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1500);
+  }, []);
+
+  // simulate loading 
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={[styles.fullScreenLoader, { backgroundColor: theme.colors.background }]}>
+        <LoadingIndicator size={60} color={theme.colors.brandColor} />
+      </View>
+    );
+  }
+
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      <ScrollView contentContainerStyle={{ paddingVertical: 20 }}>
+      <ScrollView
+        contentContainerStyle={{ paddingVertical: 20 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={theme.colors.brandColor}
+          />
+        }
+      >
         {/* Image */}
         <Card>
           <Image
@@ -45,9 +79,7 @@ const AirFreight = () => {
           {features.map((feature, idx) => (
             <View style={styles.featureItem} key={idx}>
               <Ionicons name="checkmark-circle-outline" size={20} color={theme.colors.brandColor} />
-              <Text style={[styles.featureText, { color: theme.colors.textSecondary }]}>
-                {feature}
-              </Text>
+              <Text style={[styles.featureText, { color: theme.colors.textSecondary }]}>{feature}</Text>
             </View>
           ))}
         </Card>
@@ -59,6 +91,11 @@ const AirFreight = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  fullScreenLoader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   image: {
     width: "100%",

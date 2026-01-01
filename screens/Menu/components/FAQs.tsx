@@ -1,11 +1,14 @@
-import React, { useState } from "react";
-import { ScrollView, StyleSheet, View, TouchableOpacity } from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
+import { ScrollView, StyleSheet, View, TouchableOpacity, RefreshControl } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import ThemedText from "@/components/themed/ThemedText";
 import { useTheme } from "@/theme/ThemeProvider";
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 const FAQs = () => {
   const { theme } = useTheme();
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   const faqs = [
@@ -23,6 +26,28 @@ const FAQs = () => {
     },
   ];
 
+  //Refresh Handler
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1500);
+  }, []);
+
+  // simulate loading 
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={[styles.fullScreenLoader, { backgroundColor: theme.colors.background }]}>
+        <LoadingIndicator size={60} color={theme.colors.brandColor} />
+      </View>
+    );
+  }
+
   const toggleFAQ = (index: number) => {
     setActiveIndex(activeIndex === index ? null : index);
   };
@@ -32,6 +57,13 @@ const FAQs = () => {
       style={[styles.container, { backgroundColor: theme.colors.background }]}
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor={theme.colors.brandColor}
+        />
+      }
     >
       {/* Header */}
       <View style={styles.sectionHeader}>
@@ -89,6 +121,11 @@ const FAQs = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  fullScreenLoader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   contentContainer: {
     paddingTop: 20,

@@ -271,10 +271,9 @@ const OurBranches: React.FC = () => {
 
             {/* Branch List */}
             {isFetching ? (
-                <LoadingIndicator
-                    size={80}
-                    color={theme.colors.brandColor}
-                />
+                <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                    <LoadingIndicator size={80} color={theme.colors.brandColor} />
+                </View>
             ) : branchList.length === 0 ? (
                 <Text style={{ color: theme.colors.text, textAlign: "center", marginTop: 20 }}>
                     No branches found.

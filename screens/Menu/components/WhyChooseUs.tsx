@@ -1,13 +1,38 @@
-import React from "react";
-import { ScrollView, StyleSheet, View, Image } from "react-native";
+import React, { useState, useEffect, useCallback } from "react";
+import { ScrollView, StyleSheet, View, Image, RefreshControl } from "react-native";
 import { useTheme } from "../../../theme/ThemeProvider";
 import ThemedText from "@/components/themed/ThemedText";
 import Card from "./Card";
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 const GlobalNetworkImage = require("../../../assets/app/global-network.png");
 
 const WhyChooseUS = () => {
   const { theme } = useTheme();
+  const [refreshing, setRefreshing] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  //Refresh Handler
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1500);
+  }, []);
+
+  // simulate loading 
+  useEffect(() => {
+    const timer = setTimeout(() => setLoading(false), 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (loading) {
+    return (
+      <View style={[styles.fullScreenLoader, { backgroundColor: theme.colors.background }]}>
+        <LoadingIndicator size={60} color={theme.colors.brandColor} />
+      </View>
+    );
+  }
 
   const renderPoint = (title: string, description: string) => (
     <View style={styles.point}>
@@ -27,6 +52,13 @@ const WhyChooseUS = () => {
     <ScrollView
       contentContainerStyle={{ paddingVertical: 20 }}
       style={{ flex: 1, backgroundColor: theme.colors.background }}
+      refreshControl={
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={onRefresh}
+          tintColor={theme.colors.brandColor}
+        />
+      }
     >
       <Card>
         <Image source={GlobalNetworkImage} style={styles.cardImage} resizeMode="cover" />
@@ -53,6 +85,11 @@ const styles = StyleSheet.create({
     height: 180,
     borderRadius: 12,
     marginBottom: 12,
+  },
+  fullScreenLoader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
   headingRow: {
     flexDirection: "row",

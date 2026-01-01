@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { ScrollView, StyleSheet, View, Image, RefreshControl } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import { ThemedView } from "@/components/themed/ThemedView";
@@ -15,15 +15,13 @@ const AboutUs = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
-  // Simulate fetching data
+  // Simulate loading 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false);
-    }, 1000); 
+    const timer = setTimeout(() => setLoading(false), 1500);
     return () => clearTimeout(timer);
   }, []);
 
-  // Refresh Handler
+  //Refresh Handler
   const onRefresh = useCallback(() => {
     setRefreshing(true);
     setTimeout(() => {
@@ -31,30 +29,22 @@ const AboutUs = () => {
     }, 1500);
   }, []);
 
+
   const renderPoint = (title: string, description: string) => (
     <View style={styles.point}>
       <View style={styles.pointRow}>
         <View style={[styles.bullet, { backgroundColor: theme.colors.brandColor }]} />
-        <ThemedText style={[styles.subheading, { color: theme.colors.brandColor }]}>
-          {title}
-        </ThemedText>
+        <ThemedText style={[styles.subheading, { color: theme.colors.brandColor }]}>{title}</ThemedText>
       </View>
-      <ThemedText style={[styles.text, { color: theme.colors.textSecondary, marginLeft: 18 }]}>
-        {description}
-      </ThemedText>
+      <ThemedText style={[styles.text, { color: theme.colors.textSecondary, marginLeft: 18 }]}>{description}</ThemedText>
     </View>
   );
 
   if (loading) {
     return (
-      <ThemedView style={{ flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: theme.colors.background }}>
-        <LoadingIndicator
-          width={100}
-          duration={9000}
-          trailLength={20}
-          color={theme.colors.brandColor}
-        />
-      </ThemedView>
+      <View style={[styles.fullScreenLoader, { backgroundColor: theme.colors.background }]}>
+        <LoadingIndicator size={60} color={theme.colors.brandColor} />
+      </View>
     );
   }
 
@@ -150,6 +140,11 @@ const styles = StyleSheet.create({
     height: 6,
     borderRadius: 3,
     marginTop: 6,
+  },
+  fullScreenLoader: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 
