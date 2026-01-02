@@ -1,31 +1,68 @@
-import React, { useState, useCallback, useEffect } from "react";
-import {
-  View,
-  TextInput,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  Keyboard,
-  TouchableOpacity,
-  ScrollView,
-  Image,
-  Text,
-} from "react-native";
+import React, { useState,   useEffect } from "react";
+import { View, TextInput, StyleSheet, TouchableWithoutFeedback, Keyboard, TouchableOpacity, ScrollView, Image, Text } from "react-native";
 import { useTheme } from "../../../theme/ThemeProvider";
-import Card from "../components/Card"; 
-import ThemedText from "@/components/themed/ThemedText"; 
-import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import Card from "../components/Card";
+import ThemedText from "@/components/themed/ThemedText";
+import { FontAwesome5, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useGetTrackOrderQuery, TrackOrderResponse, OrderNote } from "@/store/slices/trackorder";
-import { useFocusEffect } from "@react-navigation/native";
+import LoadingIndicator from "@/components/LoadingIndicator";
+
+// Tracking steps
+const TRACKING_STEPS = [
+  { label: "Order Placed", detail: "Your order was created" },
+  { label: "Processing", detail: "Inspecting and packaging your order" },
+  { label: "International Departure", detail: "Package departed from Origin Country" },
+  { label: "International Arrival", detail: "Package arrived in Destination Country" },
+  { label: "In Transit", detail: "Your Package Is On The Way" },
+  { label: "Delivery Attempted", detail: "We Tried To Deliver Your Package" },
+  { label: "Delivered", detail: "Package Received Successfully" },
+];
+
+// Status to step mapping
+const STATUS_TO_STEP_MAPPING = {
+  Created: 0,
+  "Branch Dispatched": 1,
+  "Arrived at Hub": 1,
+  Inspected: 1,
+  Packaged: 1,
+  "Carrier Dispatched": 2,
+  "Arrived at Overseas": 3,
+  "Sent for Delivery": 4,
+  "On Transit": 4,
+  "On Hold": 4,
+  "Delivery Attempted": 5,
+  Delivered: 6,
+};
+
+// Return tracking steps
+const RETURN_TRACKING_STEPS = [
+  { label: "Return Initiated", detail: "Return process has been started" },
+  { label: "Return InProcess", detail: "Return is being processed at branch" },
+  { label: "Return Dispatched", detail: "Return package has been dispatched" },
+  { label: "Returned to Branch", detail: "Package has returned to the branch" },
+  { label: "Return Delivered", detail: "Return successfully delivered" },
+];
+
+// Return status to step mapping
+const RETURN_STATUS_TO_STEP_MAPPING = {
+  "Flagged For Return": 0,
+  "Return Initiated": 1,
+  "Created Partial Return Order": 1,
+  "Return Dispatched": 2,
+  "Returned to Branch": 3,
+  "Return Delivered": 4,
+};
+
+type OrderStatus = keyof typeof STATUS_TO_STEP_MAPPING;
+type ReturnStatus = keyof typeof RETURN_STATUS_TO_STEP_MAPPING;
 
 const TrackOrderScreen = () => {
   const { theme } = useTheme();
-
   const [trackingNumber, setTrackingNumber] = useState("");
   const [submittedId, setSubmittedId] = useState<string | undefined>(undefined);
   const [isFocused, setIsFocused] = useState(false);
   const [orderData, setOrderData] = useState<TrackOrderResponse | null>(null);
 
-  // Format date like "DEC 31 05:27 PM"
   const formatDate = (dateStr: string) => {
     const d = new Date(dateStr);
     const options: Intl.DateTimeFormatOptions = {
@@ -41,6 +78,10 @@ const TrackOrderScreen = () => {
       .toUpperCase();
   };
 
+  const isReturnStatus = (orderStatus: string) => {
+    return Object.keys(RETURN_STATUS_TO_STEP_MAPPING).includes(orderStatus);
+  };
+
   const { data: TrackOrder, isLoading, error } = useGetTrackOrderQuery(submittedId!, {
     skip: !submittedId,
   });
@@ -49,26 +90,24 @@ const TrackOrderScreen = () => {
     if (TrackOrder) setOrderData(TrackOrder);
   }, [TrackOrder]);
 
-  useFocusEffect(
-    useCallback(() => {
-      setTrackingNumber("");
-      setSubmittedId(undefined);
-      setIsFocused(false);
-    }, [])
-  );
+
 
   const stripHtml = (text?: string) => {
-  if (!text) return "";
-  return text.replace(/<[^>]+>/g, "").trim();
-};
+    if (!text) return "";
+    return text.replace(/<[^>]+>/g, "").trim();
+  };
+
+  const getActiveStepFromOrderStatus = (orderStatus: OrderStatus) => {
+    return STATUS_TO_STEP_MAPPING[orderStatus] ?? 0;
+  };
+
+  const getReturnActiveStep = (returnStatus: ReturnStatus) => {
+    return RETURN_STATUS_TO_STEP_MAPPING[returnStatus] ?? 0;
+  };
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <ScrollView
-        style={[styles.container, { backgroundColor: theme.colors.background }]}
-        contentContainerStyle={{ paddingBottom: 40 }}
-        keyboardShouldPersistTaps="handled"
-      >
+      <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]} contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
         {/* TRACKING CARD */}
         <Card>
           <View style={[styles.iconContainer, { backgroundColor: theme.colors.brandColor + "20" }]}>
@@ -79,10 +118,7 @@ const TrackOrderScreen = () => {
             Track Your Order
           </ThemedText>
 
-          <ThemedText
-            type="cardLabel"
-            style={{ fontSize: 12, textAlign: "center", marginBottom: 16, color: theme.colors.textSecondary }}
-          >
+          <ThemedText type="cardLabel" style={{ fontSize: 12, textAlign: "center", marginBottom: 16, color: theme.colors.textSecondary }}>
             Enter your Order ID below to see the current status and delivery timeline.
           </ThemedText>
 
@@ -108,40 +144,28 @@ const TrackOrderScreen = () => {
             <Ionicons name="qr-code-outline" size={20} color="#888" />
           </View>
 
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => setSubmittedId(trackingNumber.trim())}
-            disabled={!trackingNumber.trim()}
-            style={{ opacity: !trackingNumber.trim() ? 0.6 : 1 }}
-          >
-            <Card>
-              <View
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  backgroundColor: theme.colors.brandColor,
-                  paddingVertical: 12,
-                  borderRadius: 10,
-                }}
-              >
-                <ThemedText type="buttonText" style={{ color: "#fff", marginRight: 6 }} capital>
-                  Track
-                </ThemedText>
-              </View>
-            </Card>
+          <TouchableOpacity activeOpacity={0.8} onPress={() => setSubmittedId(trackingNumber.trim())} disabled={!trackingNumber.trim()} style={{ opacity: !trackingNumber.trim() ? 0.6 : 1 }}>
+            <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", backgroundColor: theme.colors.brandColor, paddingVertical: 12, borderRadius: 10 }}>
+              <ThemedText type="buttonText" style={{ color: "#fff", marginRight: 6 }} capital>
+                Track
+              </ThemedText>
+            </View>
           </TouchableOpacity>
 
-          {isLoading && <ThemedText style={{ marginTop: 12, textAlign: "center" }}>Loading...</ThemedText>}
+          {isLoading && (
+            <View style={{ marginTop: 20, alignItems: "center" }}>
+              <LoadingIndicator
+                size={250}
+                dotSize={14}
+                color={theme.colors.brandColor}
+                iconSize={40}
+                duration={2000}
+              />
+            </View>
+          )}
 
           {error && (
-            <ThemedText
-              style={{
-                marginTop: 12,
-                textAlign: "center",
-                color: theme.colors.brandColor,
-              }}
-            >
+            <ThemedText style={{ marginTop: 12, textAlign: "center", color: theme.colors.brandColor }}>
               Order not found or cancelled
             </ThemedText>
           )}
@@ -152,87 +176,203 @@ const TrackOrderScreen = () => {
                 marginTop: 12,
                 textAlign: "center",
                 color: theme.colors.green,
+                fontFamily:"Montserrat-bold"
               }}
             >
               {orderData.OrderStatus}
             </ThemedText>
           )}
+
         </Card>
 
         {/* ORDER DETAILS */}
         {orderData && !isLoading && !error && (
-          <View style={{ marginTop: 20, paddingHorizontal: 16 }}>
+          <View style={{ marginTop: 20 }}>
             {/* Header with Order ID and Flags */}
-            <View style={[styles.orderHeader, { backgroundColor: theme.colors.brandColor }]}>
-              <Text style={styles.orderIdText}>ORDER ID: {orderData.orderId}</Text>
+            <Card style={{ backgroundColor: theme.colors.brandColor, paddingVertical: 20, alignItems: "center" }}>
+              <Text style={[styles.orderIdText, { color: theme.colors.disabled }]}>ORDER ID: {orderData.orderId}</Text>
 
+              {/* Flags Row */}
               <View style={styles.flagsRow}>
-                <View style={styles.flagContainer}>
-                  <Image source={{ uri: orderData.senderCountry.flagUrl.png }} style={styles.flagImage} />
+                <View style={{ alignItems: "center" }}>
+                  <View style={[styles.flagContainer, { borderColor: "#fff" }]}>
+                    <Image source={{ uri: orderData.senderCountry.flagUrl.png }} style={styles.flagImage} />
+                  </View>
                   <Text style={styles.flagLabel}>{orderData.senderCountry.name}</Text>
                 </View>
 
-                <Ionicons
-                  name="airplane-outline"
-                  size={28}
-                  color="white"
-                  style={{ marginHorizontal: 20, alignSelf: "center" }}
-                />
-
-                <View style={styles.flagContainer}>
-                  <Image source={{ uri: orderData.receiverCountry.flagUrl.png }} style={styles.flagImage} />
+                {/* Airplane Icon */}
+                <MaterialCommunityIcons name="airplane-takeoff" size={28} color="white" style={{ marginHorizontal: 20 }} />
+                <View style={{ alignItems: "center" }}>
+                  <View style={[styles.flagContainer, { borderColor: "#fff" }]}>
+                    <Image source={{ uri: orderData.receiverCountry.flagUrl.png }} style={styles.flagImage} />
+                  </View>
                   <Text style={styles.flagLabel}>{orderData.receiverCountry.name}</Text>
                 </View>
               </View>
-            </View>
+            </Card>
 
             {/* Live Tracking Card */}
-            <Card style={{ marginTop: 20 }}>
-              <ThemedText
-                type="cardHeader"
-                style={{ fontSize: 18, color: theme.colors.brandColor, marginBottom: 12 }}
-              >
-                <FontAwesome5 name="truck" size={18} color={theme.colors.brandColor} /> Live Tracking
-              </ThemedText>
+            <Card style={{ marginTop: 20, padding: 16 }}>
+              <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 16 }}>
+                {isReturnStatus(orderData.OrderStatus) ? (
+                  <MaterialIcons
+                    name="assignment-return"
+                    size={22}
+                    color={theme.colors.brandColor}
+                    style={{ marginRight: 8 }}
+                  />
+                ) : (
+                  <FontAwesome5
+                    name="truck"
+                    size={20}
+                    color={theme.colors.brandColor}
+                    style={{ marginRight: 8 }}
+                  />
+                )}
+                <ThemedText
+                  type="cardHeader"
+                  style={{
+                    fontSize: 18,
+                    color: theme.colors.text,
+                    marginTop: 4,
+                    fontFamily: "Montserrat-Bold",
+                  }}
+                >
+                  {isReturnStatus(orderData.OrderStatus) ? "Return Status" : "Live Tracking"}
+                </ThemedText>
+              </View>
 
-              {[...orderData.orderProcess]
-                .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime())
-                .map((step) => (
-                  <View key={step._id} style={styles.trackingStep}>
-                    <View style={styles.leftStep}>
-                      <FontAwesome5
-                        name="check-circle"
-                        size={20}
-                        color={theme.colors.brandColor}
-                        style={{ marginRight: 12 }}
-                      />
-                      <View>
-                        <ThemedText style={styles.stepTitle}>{step.process}</ThemedText>
-                        <ThemedText style={styles.stepDate}>{formatDate(step.createdAt)}</ThemedText>
+              {/* Tracking Steps */}
+              {isReturnStatus(orderData.OrderStatus)
+                ? RETURN_TRACKING_STEPS.map((step, index) => {
+                  const activeStep = getReturnActiveStep(orderData.OrderStatus as ReturnStatus);
+                  const isCompleted = index < activeStep;
+                  const isActive = index === activeStep;
+                  const isLastStep = index === RETURN_TRACKING_STEPS.length - 1;
+
+                  return (
+                    <View key={step.label} style={styles.trackingStepVertical}>
+                      <View style={styles.iconColumn}>
+                        <View style={styles.iconWrapper}>
+                          <FontAwesome5
+                            name={isActive ? "dot-circle" : "check-circle"}
+                            size={18}
+                            color={isCompleted || isActive ? theme.colors.brandColor : "#ccc"}
+                          />
+                        </View>
+                        {!isLastStep && <View style={styles.verticalLine} />}
+                      </View>
+                      <View style={styles.stepTextVertical}>
+                        <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>{step.label}</ThemedText>
+                        <ThemedText style={[styles.stepDate, { color: theme.colors.brandColor }]}>
+                          {formatDate(orderData.orderProcess[index]?.createdAt || "")}
+                        </ThemedText>
+                        <ThemedText
+                          style={[
+                            styles.stepDescriptionVertical,
+                            { backgroundColor: theme.colors.border, padding: 8, borderRadius: 5 },
+                          ]}
+                        >
+                          {step.detail}
+                        </ThemedText>
                       </View>
                     </View>
-                    <ThemedText style={styles.stepDescription}>{step.description}</ThemedText>
-                  </View>
-                ))}
+                  );
+                })
+                : TRACKING_STEPS.map((step, index) => {
+                  const activeStep = getActiveStepFromOrderStatus(orderData.OrderStatus as OrderStatus);
+                  const isCompleted = index < activeStep;
+                  const isActive = index === activeStep;
+                  const isLastStep = index === TRACKING_STEPS.length - 1;
+                  return (
+                    <View key={step.label} style={styles.trackingStepVertical}>
+                      <View style={styles.iconColumn}>
+                        <View style={styles.iconWrapper}>
+                          <FontAwesome5
+                            name={isActive ? "dot-circle" : "check-circle"}
+                            size={18}
+                            color={isCompleted || isActive ? theme.colors.brandColor : "#ccc"}
+                          />
+                        </View>
+                        {!isLastStep && <View style={styles.verticalLine} />}
+                      </View>
+                      <View style={styles.stepTextVertical}>
+                        <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>{step.label}</ThemedText>
+                        <ThemedText style={[styles.stepDate, { color: theme.colors.brandColor }]}>
+                          {formatDate(orderData.orderProcess[index]?.createdAt || "")}
+                        </ThemedText>
+                        <ThemedText
+                          style={[
+                            styles.stepDescriptionVertical,
+                            { backgroundColor: theme.colors.border, padding: 8, borderRadius: 5 },
+                          ]}
+                        >
+                          {step.detail}
+                        </ThemedText>
+                      </View>
+                    </View>
+                  );
+                })}
             </Card>
 
             {/* Notes For You */}
             {orderData.orderNotes.length > 0 && (
-              <Card style={{ marginTop: 20, backgroundColor: "#fff0f0", borderColor: "#f7d6d6" }}>
-                <ThemedText
-                  type="cardHeader"
-                  style={{ fontSize: 18, color: theme.colors.brandColor, marginBottom: 12 }}
-                >
-                  Notes For You
-                </ThemedText>
+              <Card style={{ marginTop: 20, backgroundColor: theme.dark ? "#2C2C2C" : "#fff0f0", padding: 16 }}>
+                <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
+                  <MaterialIcons name="note-alt" size={24} color={theme.colors.brandColor} />
+                  <ThemedText
+                    type="cardHeader"
+                    style={{
+                      fontSize: 18,
+                      color: theme.colors.text,
+                      marginLeft: 8,
+                      fontFamily: "Montserrat-Bold",
+                      marginTop: 4,
+                    }}
+                  >
+                    Notes For You
+                  </ThemedText>
+                </View>
+
+                {/* Horizontal line */}
+                <View style={{ height: 1, backgroundColor: "#f7d6d6", width: "100%", marginTop: 1, marginBottom: 14, borderRadius: 1 }} />
+
+                {/* Notes List */}
                 {orderData.orderNotes.map((note: OrderNote) => (
-                  <View key={note._id} style={styles.noteContainer}>
-                    <ThemedText style={styles.noteContent}>{stripHtml(note.content)}</ThemedText>
-                    <ThemedText style={styles.noteDate}>{formatDate(note.createdAt)}</ThemedText>
+                  <View
+                    key={note._id}
+                    style={{
+                      backgroundColor: theme.dark ? "#3A3A3A" : "#fff",
+                      borderWidth: 1,
+                      borderColor: theme.dark ? "#555" : "#f7d6d6",
+                      padding: 12,
+                      borderRadius: 6,
+                      marginBottom: 12,
+                    }}
+                  >
+                    <ThemedText style={{ fontSize: 14, color: theme.colors.text }}>{stripHtml(note.content)}</ThemedText>
+                    <ThemedText
+                      style={{
+                        fontSize: 11,
+                        textAlign: "right",
+                        marginTop: 10,
+                        borderWidth: 1,
+                        borderColor: theme.colors.border,
+                        borderRadius: 6,
+                        paddingHorizontal: 6,
+                        paddingVertical: 2,
+                        alignSelf: "flex-end",
+                        color: theme.colors.textSecondary,
+                      }}
+                    >
+                      {formatDate(note.createdAt)}
+                    </ThemedText>
                   </View>
                 ))}
               </Card>
             )}
+
           </View>
         )}
       </ScrollView>
@@ -270,110 +410,76 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 8,
   },
-  orderHeader: {
-    paddingVertical: 20,
-    borderRadius: 10,
+  trackingStepVertical: {
+    flexDirection: "row",
+    alignItems: "flex-start",
+    marginBottom: 16,
+  },
+  iconColumn: {
+    width: 24,
     alignItems: "center",
   },
-  orderIdText: {
-    color: "white",
+  iconWrapper: {
+    justifyContent: "center",
+    alignItems: "center",
+    zIndex: 1,
+  },
+  stepTextVertical: {
+    flex: 1,
+    marginLeft: 12,
+  },
+  stepTitle: {
     fontSize: 12,
-    fontWeight: "600",
-    marginBottom: 12,
+    fontFamily: "Montserrat-semibold",
+  },
+  stepDate: {
+    fontSize: 10,
+    marginTop: 4,
+    fontFamily: "Montserrat-medium",
+  },
+  stepDescriptionVertical: {
+    fontSize: 10,
+    marginTop: 4,
+    fontFamily: "Montserrat-Regular",
+  },
+  verticalLine: {
+    position: "absolute",
+    top: 25,
+    width: 1,
+    height: "70%",
+    backgroundColor: "#ddd",
+  },
+  orderIdText: {
+    fontSize: 12,
+    fontFamily: "Montserrat-semibold",
   },
   flagsRow: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
+    marginTop: 10,
   },
   flagContainer: {
-    alignItems: "center",
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 70,
+    height: 50,
+    borderWidth: 2,
+    borderRadius: 6,
+    overflow: 'hidden',
+    marginBottom: 5,
+    backgroundColor: 'white',
   },
   flagImage: {
-    width: 48,
-    height: 32,
-    borderRadius: 4,
+    width: '100%',
+    height: '100%',
+    resizeMode: 'contain',
   },
   flagLabel: {
-    marginTop: 6,
-    fontSize: 14,
-    fontWeight: "600",
+    fontSize: 12,
     color: "white",
-  },
-  trackingStep: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 16,
-  },
-  leftStep: {
-    flexDirection: "row",
-    alignItems: "center",
-    flex: 1.5,
-  },
-  stepTitle: {
-    fontSize: 12,
-    fontWeight: "700",
-    color: "#333",
-  },
-  stepDate: {
-    fontSize: 10,
-    color: "#999",
     marginTop: 4,
-  },
-  stepDescription: {
-    fontSize: 10,
-    color: "#999",
-    flex: 1,
-    textAlign: "right",
-  },
-  noteContainer: {
-    backgroundColor: "#fff",
-    borderWidth: 1,
-    borderColor: "#f7d6d6",
-    padding: 12,
-    borderRadius: 6,
-    marginBottom: 12,
-  },
-  noteContent: {
-    fontSize: 14,
-    color: "#333",
-  },
-  noteDate: {
-    fontSize: 11,
-    color: "#999",
-    textAlign: "right",
-    marginTop: 6,
-  },
-  trackButtonContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    paddingVertical: 12,
-    borderRadius: 10,
-  },
-  themeOptionContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingVertical: 10,
-  },
-  themeOptionIcon: {
-    width: 36,
-    height: 36,
-    borderRadius: 4,
-    alignItems: "center",
-    justifyContent: "center",
-    marginRight: 10,
-  },
-  themeOptionTextContainer: {
-    flex: 1,
-  },
-  themeOptionText: {
-    fontSize: 15,
-    marginBottom: 2,
-    letterSpacing: -0.2,
-  },
-  themeOptionDescription: {
-    fontSize: 12,
-    opacity: 0.8,
+    fontFamily: "Montserrat-semibold",
   },
 });
 
