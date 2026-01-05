@@ -89,6 +89,8 @@ export type PublicStackParamList = {
   BranchesDetails: undefined;
   TermsAndConditions: undefined;
   PrivacyPolicy: undefined;
+  ScannerScreen: undefined;
+  ScannedOrderDetails: undefined; 
 };
 
 export type PublicTabParamList = {
