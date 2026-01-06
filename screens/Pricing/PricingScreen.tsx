@@ -10,7 +10,8 @@ import ThemedTextField from "@/components/themedComponent/ThemedTextField";
 import { CustomFormDropdown } from "@/components/themedComponent/CustomFormDropdown";
 import { useGetCountryListQuery } from "@/store/slices/dropdown";
 import { getServiceTypeOptions, ShipmentType } from "@/constants/dropdowns";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useGetPricingMutation } from "@/store/slices/pricing";
 
 
 type FormData = {
@@ -23,7 +24,9 @@ type FormData = {
 
 const PricingScreen = () => {
     const { theme } = useTheme();
+    const navigation = useNavigation<any>();
     const [refreshing, setRefreshing] = useState(false);
+    const [pricingResult, setPricingResult] = useState<any>(null);
     const { control, handleSubmit, watch, reset } = useForm<FormData>({
         defaultValues: {
             origin: "Nepal",
@@ -39,11 +42,61 @@ const PricingScreen = () => {
     // Change the service type dropdowm dynamically for shipment type document and parcel
     const serviceOptions = getServiceTypeOptions(selectedShipmentType);
 
-    const onSubmit = (data: FormData) => {
-        console.log("Pricing Form Data:", data);
+    const { data: countryList } = useGetCountryListQuery();
+
+    const [getPricing, { isLoading }] = useGetPricingMutation();
+
+    const onSubmit = async (formData: FormData) => {
+        const safeToLower = (str?: string) => (str ? str.toLowerCase() : "");
+
+        if (!formData.weight || Number(formData.weight) <= 0) {
+            return;
+        }
+        if (!formData.destination?.name) {
+            return;
+        }
+        if (!formData.shipmentType?.name) {
+            return;
+        }
+        if (!formData.serviceType?.name) {
+            return;
+        }
+
+        try {
+            const result = await getPricing({
+                destination: formData.destination.value,
+                shipmentType: safeToLower(formData.shipmentType.name),
+                serviceType: safeToLower(formData.serviceType.name),
+                weight: Number(formData.weight),
+            }).unwrap();
+
+            setPricingResult(result);
+
+        } catch {
+            alert(" An error occurred while calculating rate. Please try again.");
+
+        }
     };
 
-    const { data: countryList } = useGetCountryListQuery();
+    // Helper function to convert cca2 to emoji
+    const countryCodeToEmoji = (cca2?: string) => {
+        if (!cca2) return "";
+        return cca2
+            .toUpperCase()
+            .replace(/./g, (char) =>
+                String.fromCodePoint(char.charCodeAt(0) + 127397)
+            );
+    };
+
+    //Map the country list for the dropdown
+    const mappedCountries = countryList?.map((item) => ({
+        _id: item._id,
+        name: `${item.cca2 ? countryCodeToEmoji(item.cca2) + " " : ""}${item.name}`,
+        value: item.name,
+        cca2: item.cca2,
+        flagUrl: item.flagUrl,
+    })) || [];
+
 
     //Refresh Handler
     const onRefresh = useCallback(() => {
@@ -56,15 +109,37 @@ const PricingScreen = () => {
     //Reset the pricng form 
     useFocusEffect(
         useCallback(() => {
-            reset({
-                origin: "Nepal",
-                destination: { name: "Afghanistan" },
-                shipmentType: null,
-                serviceType: null,
-                weight: "",
-            });
+            return () => {
+                reset({
+                    origin: "Nepal",
+                    destination: { name: "Afghanistan" },
+                    shipmentType: null,
+                    serviceType: null,
+                    weight: "",
+                });
+                setPricingResult(null);
+            };
         }, [reset])
     );
+
+    //Prefills the message in contact screen message
+    const handleOrder = () => {
+        const destination = watch("destination")?.name || "";
+        const serviceType = watch("serviceType")?.name || "";
+        const weight = watch("weight") || "";
+        const estimatedPrice = pricingResult?.data?.finalRate || "";
+
+        const message = `I am sending my parcel from Nepal to ${destination}, Service: ${serviceType}, Weight: ${weight}kg, Estimated Price: NPR ${estimatedPrice}`;
+
+        navigation.navigate("PublicTabs", {
+            screen: "Contact",
+            params: {
+                screen: "ContactScreen",
+                 prefillMessage: message
+                 },
+        });
+    };
+
 
     return (
         <ThemedView style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -116,7 +191,7 @@ const PricingScreen = () => {
                         name="destination"
                         label="Destination Country"
                         storeFullObject
-                        options={countryList}
+                        options={mappedCountries}
                         placeholder="Select country name"
                     />
 
@@ -128,7 +203,7 @@ const PricingScreen = () => {
                         options={ShipmentType}
                         defaultValue=""
                         placeholder="Select Shipment Type"
-                        storeFullObject={true}
+                        storeFullObject
                         containerStyle={{ marginBottom: 0 }}
                     />
                     <ThemedText
@@ -147,6 +222,7 @@ const PricingScreen = () => {
                         name="serviceType"
                         label="Service Type"
                         options={serviceOptions}
+                        storeFullObject
                         defaultValue=""
                         placeholder="Select Shipment Type"
                         disabled={!selectedShipmentType}
@@ -178,10 +254,48 @@ const PricingScreen = () => {
                     <ThemedButton
                         buttonName="Calculate Price"
                         loadingText="Calculating..."
-                        isLoading={false}
+                        isLoading={isLoading}
+                        disabled={isLoading}
                         onPress={handleSubmit(onSubmit)}
                     />
+
                 </ThemedCard>
+                {pricingResult?.success && (
+                    <ThemedCard
+                        isCard
+                        radius
+                        padding="md"
+                        style={{
+                            backgroundColor: "#FFE6EA",
+                            marginTop: 16,
+                        }}
+                    >
+                        <ThemedText
+                            style={{
+                                color: "#D7263D",
+                                fontSize: 16,
+                                fontFamily: "Montserrat-SemiBold",
+                            }}
+                        >
+                            Rate: ₹ {pricingResult.data.finalRate}
+                        </ThemedText>
+
+                        <ThemedText
+                            style={{
+                                fontSize: 11,
+                                color: theme.colors.textSecondary,
+                                marginTop: 6,
+                            }}
+                        >
+                            * Additional surcharges, remote area fees, or customs duties may apply based on destination and service type.
+                        </ThemedText>
+
+                        <ThemedButton
+                            buttonName="Send Your Order"
+                            style={{ marginTop: 10 }} isLoading={false} loadingText={""}
+                            onPress={handleOrder} />
+                    </ThemedCard>
+                )}
             </ScrollView>
         </ThemedView>
     );
@@ -206,4 +320,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default PricingScreen;
+export default PricingScreen;  

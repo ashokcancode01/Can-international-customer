@@ -83,6 +83,11 @@ const DropdownOption = memo(
       style={[styles.option, isSelected && styles.selectedOption]}
       onPress={onSelect}
     >
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
+        {item.flag && (
+          <Text style={{ marginRight: 8 }}>{item.flag}</Text>
+        )}
+      </View>
       <ThemedText
         style={[styles.optionText, isSelected && styles.selectedOptionText]}
       >
@@ -100,9 +105,12 @@ const DropdownOption = memo(
   )
 );
 
+DropdownOption.displayName = "DropdownOption";
+
 const SelectedBadge = memo(
   ({ item, onRemove }: { item: Option; onRemove: () => void }) => (
     <ThemedView style={styles.selectedBadge}>
+      {item.flag && <Text style={{ marginRight: 4 }}>{item.flag}</Text>}
       <ThemedText style={styles.selectedBadgeText}>{item.name}</ThemedText>
       <TouchableOpacity onPress={onRemove} style={styles.badgeRemoveButton}>
         <ThemedIcon as={Ionicons} name="close" type="xsmall" color="#1976D2" />
@@ -110,6 +118,8 @@ const SelectedBadge = memo(
     </ThemedView>
   )
 );
+
+SelectedBadge.displayName = "SelectedBadge";
 
 const DROPDOWN_MAX_HEIGHT = Platform.select({ ios: 300, android: 400 });
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
@@ -154,7 +164,7 @@ function CustomFormDropdownBase<T extends FieldValues>(
 
   const filteredOptions = useCallback(
     () =>
-      options?.filter((option) =>
+      options?.filter((option: { name: string; }) =>
         option?.name?.toLowerCase()?.includes(searchText?.toLowerCase())
       ),
     [options, searchText]
@@ -164,11 +174,11 @@ function CustomFormDropdownBase<T extends FieldValues>(
     (searchValue: string | boolean | SelectedValue) => {
       if (typeof searchValue === "object" && searchValue !== null) {
         return options?.find(
-          (opt) => opt._id === (searchValue as SelectedValue)._id
+          (opt: { _id: string | boolean; }) => opt._id === (searchValue as SelectedValue)._id
         );
       }
       return options?.find(
-        (opt) =>
+        (opt: { _id: string | boolean; name: string; }) =>
           opt._id === searchValue ||
           opt.name.toLowerCase() === String(searchValue).toLowerCase()
       );
@@ -316,6 +326,7 @@ function CustomFormDropdownBase<T extends FieldValues>(
       rules={rules}
       defaultValue={defaultValue as any}
       render={({ field: { value, onChange }, fieldState: { error } }) => {
+        // eslint-disable-next-line react-hooks/rules-of-hooks
         useEffect(() => {
           if (!value && defaultValue && options?.length > 0) {
             if (isMultiSelect && Array.isArray(defaultValue)) {

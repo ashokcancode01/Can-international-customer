@@ -12,6 +12,7 @@ import { useTheme } from "../../../theme/ThemeProvider";
 import Card from "../../Menu/components/Card";
 import ThemedText from "@/components/themed/ThemedText";
 import { useGetTrackOrderQuery, OrderNote } from "@/store/slices/trackorder";
+import LoadingIndicator from "@/components/LoadingIndicator";
 
 const TRACKING_STEPS = [
   { label: "Order Placed", detail: "Your order was created" },
@@ -75,7 +76,11 @@ export default function ScannedOrderDetails() {
     return d.toLocaleString("en-US", options).replace(",", "").toUpperCase();
   };
 
-  const stripHtml = (text?: string) => (text ? text.replace(/<[^>]+>/g, "").trim() : "");
+  const stripHtml = (text?: string) => (text ? text
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/\u00A0/g, " ")
+    .trim() : "");
 
   const isReturnStatus = (status: string) => {
     return Object.keys(RETURN_STATUS_TO_STEP_MAPPING).includes(status);
@@ -89,8 +94,43 @@ export default function ScannedOrderDetails() {
     return RETURN_STATUS_TO_STEP_MAPPING[status as keyof typeof RETURN_STATUS_TO_STEP_MAPPING] ?? 0;
   };
 
-  if (isLoading) return <Text style={{ flex: 1, textAlign: "center", marginTop: 50 }}>Loading...</Text>;
-  if (error || !orderData) return <Text style={{ flex: 1, textAlign: "center", marginTop: 50 }}>Order not found</Text>;
+  if (isLoading) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <LoadingIndicator size={60} color={theme.colors.brandColor} />
+      </View>
+    );
+  }
+
+  if (error || !orderData) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: "center",
+          alignItems: "center",
+          padding: 20,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 16,
+            color: "#666",
+            textAlign: "center",
+          }}
+        >
+          We couldn’t find the order you’re looking for.
+        </Text>
+      </View>
+    );
+  }
+
 
   const activeStep = isReturnStatus(orderData.OrderStatus)
     ? getReturnActiveStep(orderData.OrderStatus)

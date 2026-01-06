@@ -122,8 +122,9 @@ export default function ThemedTextField<T extends FieldValues = any>({
       borderWidth: 1,
       borderRadius: 5,
       flexDirection: multiline ? "column" : "row",
-      alignItems: multiline ? "stretch" : "center",
-      height: multiline ? 100 : height,
+      alignItems: multiline ? "flex-start" : "center",
+      height: multiline ? undefined : height,
+      minHeight: multiline ? 100 : height,
       paddingLeft: 10,
       paddingRight: isNumber ? 0 : 10,
       paddingVertical: multiline ? 8 : 0,
@@ -144,9 +145,8 @@ export default function ThemedTextField<T extends FieldValues = any>({
       fontSize: theme.fontSizes.md,
       paddingHorizontal: multiline ? 0 : 10,
       paddingVertical: multiline ? 5 : 0,
+      ...(multiline && { minHeight: 80, height: undefined, width: "100%" }),
       textAlignVertical: multiline ? "top" : "center",
-      ...(multiline && { height: "100%" }),
-      width: "90%",
     },
     numberBox: {
       borderLeftWidth: 1,
@@ -293,6 +293,8 @@ export default function ThemedTextField<T extends FieldValues = any>({
                     secureTextEntry={secureEntry}
                     keyboardType={isNumber ? "numeric" : restProps.keyboardType}
                     editable={editable}
+                    multiline={multiline}        
+                    scrollEnabled={multiline}
                     {...restProps}
                   />
 

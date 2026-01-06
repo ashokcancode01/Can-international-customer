@@ -37,7 +37,7 @@ const ContactScreen = () => {
     reset();
   };
 
-  // Pull-to-refresh handler (Menu-style behavior)
+  // Pull-to-refresh handler
   const onRefresh = useCallback(() => {
     setRefreshing(true);
 
@@ -57,6 +57,7 @@ const ContactScreen = () => {
   // Reset form when screen is focused
   useFocusEffect(
     useCallback(() => {
+      // On screen focus, set default values
       reset({
         fullName: "",
         subject: "",
@@ -64,8 +65,20 @@ const ContactScreen = () => {
         email: "",
         message: route.params?.prefillMessage ?? "",
       });
+
+      // Cleanup: reset message when leaving this screen
+      return () => {
+        reset({
+          fullName: "",
+          subject: "",
+          phone: "",
+          email: "",
+          message: "",
+        });
+      };
     }, [route.params, reset])
   );
+
 
   return (
     <ThemedKeyboardView
