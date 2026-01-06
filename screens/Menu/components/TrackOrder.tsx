@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { View, TextInput, StyleSheet, TouchableWithoutFeedback, Keyboard, TouchableOpacity, ScrollView, Image, Text } from "react-native";
 import { useTheme } from "../../../theme/ThemeProvider";
 import Card from "../components/Card";
 import ThemedText from "@/components/themed/ThemedText";
 import { FontAwesome5, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useGetTrackOrderQuery, TrackOrderResponse, OrderNote } from "@/store/slices/trackorder";
-import LoadingIndicator from "@/components/LoadingIndicator";
+import ThemedButton from "@/components/themedComponent/ThemedButton";
+import { useFocusEffect } from "@react-navigation/native";
 
 
 
@@ -65,8 +66,10 @@ const TrackOrderScreen = () => {
   const [isFocused, setIsFocused] = useState(false);
   const [orderData, setOrderData] = useState<TrackOrderResponse | null>(null);
 
-  const formatDate = (dateStr: string) => {
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return "";
     const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return "";
     const options: Intl.DateTimeFormatOptions = {
       month: "short",
       day: "2-digit",
@@ -104,6 +107,17 @@ const TrackOrderScreen = () => {
   const getReturnActiveStep = (returnStatus: ReturnStatus) => {
     return RETURN_STATUS_TO_STEP_MAPPING[returnStatus] ?? 0;
   };
+
+  // Reset the screen whenever it comes into focus
+  useFocusEffect(
+    useCallback(() => {
+      setTrackingNumber("");
+      setSubmittedId(undefined);
+      setOrderData(null);
+      setIsFocused(false);
+    }, [])
+  );
+
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -153,24 +167,28 @@ const TrackOrderScreen = () => {
               }
             }}
           >
-            <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", backgroundColor: theme.colors.brandColor, paddingVertical: 12, borderRadius: 10 }}>
-              <ThemedText type="buttonText" style={{ color: "#fff", marginRight: 6 }} capital>
-                Track
-              </ThemedText>
-            </View>
-          </TouchableOpacity>
+            {/* TRACK BUTTON */}
+            <ThemedButton
+              buttonName="Track"
+              loadingText="Tracking..."
+              isLoading={isLoading}
+              disabled={isLoading || !trackingNumber.trim()}
+              onPress={() => {
+                const trimmed = trackingNumber.trim();
+                if (trimmed) setSubmittedId(trimmed);
+              }}
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: theme.colors.brandColor,
+                paddingVertical: 12,
+                borderRadius: 10,
+                marginTop: 12,
+              }}
+            />
 
-          {isLoading && (
-            <View style={{ marginTop: 20, alignItems: "center" }}>
-              <LoadingIndicator
-                size={250}
-                dotSize={14}
-                color={theme.colors.brandColor}
-                iconSize={40}
-                duration={2000}
-              />
-            </View>
-          )}
+          </TouchableOpacity>
 
           {error && (
             <ThemedText style={{ marginTop: 12, textAlign: "center", color: theme.colors.brandColor }}>

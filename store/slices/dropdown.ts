@@ -9,7 +9,7 @@ export interface DropdownCountryItem {
   _id?: string;
   name?: string;
   cca2?: string;
-  flagUrl: {
+  flagUrl?: {
     png?: string
     svg?: string
   }
@@ -23,10 +23,16 @@ export const dropdwonApi = baseApi.injectEndpoints({
         url: "/public/country/ddl",
         method: "GET",
       }),
-      transformResponse: (response: any) => {
+      transformResponse: (response: any[]): DropdownCountryItem[] => {
         const transformedResponse = response?.map((item: any) => ({
           _id: item._id,
           name: item.name,
+          cca2: item.cca2,
+          flagUrl : {
+            png: item?.flags?.png,
+            svg: item?.flags?.svg
+          },
+          flag: item?.flags?.png || item?.flags?.svg || null,
         }));
         return transformedResponse;
       },
