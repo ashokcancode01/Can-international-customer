@@ -3,7 +3,6 @@ import {
   StyleSheet,
   Dimensions,
   View,
-  TextInput,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
@@ -19,11 +18,10 @@ import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 import Entypo from "@expo/vector-icons/Entypo";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { ThemedTouchableOpacity } from "@/components/themed/ThemedTouchableOpacity";
-import { useNavigation, useFocusEffect } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from 'expo-linear-gradient';
 import SectionCard from "./components/SectionCard";
 import HorizontalSection from "./components/HorizontalSection";
-import { useGetTrackOrderQuery } from "@/store/slices/trackorder";
 
 //Get the full screen width
 const { width } = Dimensions.get("window");
@@ -113,13 +111,10 @@ const OUR_CLIENTS_SAY = [
 const DashboardHeader = () => {
   const { theme } = useTheme();
   const [refreshing, setRefreshing] = useState(false);
-  const [trackingNumber, setTrackingNumber] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
   const navigation = useNavigation<any>();
   const CARD_GRADIENT_COLORS: [ColorValue, ColorValue] = ['#FF4D4D', '#FF9999'];
   const clientFlatListRef = useRef<FlatList>(null);
   const [currentClientIndex, setCurrentClientIndex] = useState(0);
-  const [submittedId, setSubmittedId] = useState<string | undefined>(undefined);
 
   //Refresh Handler
   const onRefresh = useCallback(() => {
@@ -129,20 +124,6 @@ const DashboardHeader = () => {
     }, 1500);
   }, []);
 
-
-  // For trackOrder
-  const { data: TrackOrder, isLoading, isError } = useGetTrackOrderQuery(submittedId!, { skip: !submittedId });
-
-  // Reset tracking-related states when screen is focused
-  useFocusEffect(
-    useCallback(() => {
-      setSubmittedId(undefined);
-      setTrackingNumber("");
-      setIsFocused(false);
-    }, [])
-  );
-
-  // For auto Scroll of what our client says
   useEffect(() => {
     const interval = setInterval(() => {
       const nextIndex = (currentClientIndex + 1) % OUR_CLIENTS_SAY.length;
@@ -154,7 +135,6 @@ const DashboardHeader = () => {
     }, 4000);
     return () => clearInterval(interval);
   }, [currentClientIndex]);
-
 
   return (
     <KeyboardAvoidingView
@@ -176,6 +156,16 @@ const DashboardHeader = () => {
                 </ThemedText>
               </View>
             </View>
+            {/* Scanner icon */}
+            <ThemedTouchableOpacity
+              style={styles.scannerButton}
+              onPress={()=> navigation.navigate("ScannerScreen")}
+            >
+              <Ionicons name="scan-circle-sharp" size={40} color={theme.colors.brandColor} />
+              <ThemedText style={{ color: theme.colors.textSecondary, fontFamily: "Montserrat-bold"}}>
+                Scan
+              </ThemedText>
+            </ThemedTouchableOpacity>
           </View>
         </View>
         <ScrollView
@@ -199,105 +189,38 @@ const DashboardHeader = () => {
             </ThemedText>
           </View>
 
-          {/* Tracking Card */}
-          <SectionCard>
-            <ThemedText style={[styles.trackingTitle, { color: theme.colors.text }]}>
-              Track Your Order
-            </ThemedText>
-            <ThemedText style={[styles.trackingSubtitle, { color: theme.colors.textSecondary }]}>
-              Enter your Order ID below to see the current status and delivery timeline.
-            </ThemedText>
-            <ThemedTouchableOpacity
-              style={[
-                styles.inputContainer,
-                {
-                  borderColor: isFocused ? theme.colors.brandColor! : "#613b3b33",
-                  backgroundColor: isFocused ? "#FFFFFF20" : "#FFFFFF1A",
-                },
-              ]}
-              activeOpacity={1}
-            >
-              <Ionicons name="search" size={20} color="#888" style={{ marginRight: 8 }} />
-              <TextInput
-                style={[styles.input, { color: theme.colors.text }]}
-                placeholder="e.g. C42EQEX6NFQP"
-                placeholderTextColor="#888"
-                value={trackingNumber}
-                onChangeText={setTrackingNumber}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-              />
-              <Ionicons name="qr-code-outline" size={20} color="#888" />
-            </ThemedTouchableOpacity>
-            <ThemedTouchableOpacity
-              style={[styles.trackButton, { backgroundColor: theme.colors.brandColor! }]}
-              onPress={() => setSubmittedId(trackingNumber.trim())}
-            >
-              <ThemedText style={styles.trackButtonText}>Track</ThemedText>
-            </ThemedTouchableOpacity>
-            {isLoading && (
-              <ThemedText style={{ marginTop: 12, textAlign: "center" }}>
-                Loading...
-              </ThemedText>
-            )}
-            {isError && (
-              <ThemedText
-                style={{
-                  marginTop: 12,
-                  textAlign: "center",
-                  color: "red",
-                }}
-              >
-                Order not found or cancelled
-              </ThemedText>
-            )}
-            {TrackOrder?.message && (
-              <ThemedText
-                style={{
-                  marginTop: 12,
-                  textAlign: "center",
-                  color: theme.colors.textSecondary,
-                }}
-              >
-                {TrackOrder.message}
-              </ThemedText>
-            )}
-          </SectionCard>
-
           {/* Our Services */}
-<HorizontalSection
-  icon={<Ionicons name="briefcase" size={30} color={theme.colors.brandColor!} />}
-  title="Our Services"
-  subtitle="Explore what Nepal Can International offers to customers and businesses."
-  data={QUICK_ACTIONS}
-  renderItem={(action) => (
-    <ThemedTouchableOpacity style={[styles.horizontalCard, { backgroundColor: theme.colors.card }]}>
-      {action.icon(theme.colors.brandColor!)}
-      <ThemedText style={[styles.cardTitle, { color: theme.colors.text }]}>{action.label}</ThemedText>
-      <ThemedText style={[styles.cardSubtitle, { color: theme.colors.textSecondary }]}>{action.description}</ThemedText>
-    </ThemedTouchableOpacity>
-  )}
-  cardStyle={styles.horizontalCardWrapper}
-/>
-
+          <HorizontalSection
+            icon={<Ionicons name="briefcase" size={30} color={theme.colors.brandColor!} />}
+            title="Our Services"
+            subtitle="Explore what Nepal Can International offers to customers and businesses."
+            data={QUICK_ACTIONS}
+            renderItem={(action) => (
+              <ThemedTouchableOpacity style={[styles.horizontalCard, { backgroundColor: theme.colors.card }]}>
+                {action.icon(theme.colors.brandColor!)}
+                <ThemedText style={[styles.cardTitle, { color: theme.colors.text }]}>{action.label}</ThemedText>
+                <ThemedText style={[styles.cardSubtitle, { color: theme.colors.textSecondary }]}>{action.description}</ThemedText>
+              </ThemedTouchableOpacity>
+            )}
+            cardStyle={styles.horizontalCardWrapper}
+          />
 
           {/* Why Choose Us */}
- <View style={{ marginTop: 20 }}>
-  <HorizontalSection
-    icon={<Ionicons name="shield-checkmark" size={30} color={theme.colors.brandColor!} />}
-    title="Why Choose Us"
-    subtitle="We’re not just a logistics company—we’re your trusted partner in keeping your business moving forward globally."
-    data={WHY_CHOOSE_US}
-    renderItem={(item) => (
-      <ThemedTouchableOpacity style={[styles.horizontalCard, { backgroundColor: theme.colors.card }]}>
-        <ThemedText style={[styles.cardTitle, { color: theme.colors.brandColor! }]}>{item.label}</ThemedText>
-        <ThemedText style={[styles.cardSubtitle, { color: theme.colors.textSecondary }]}>{item.description}</ThemedText>
-      </ThemedTouchableOpacity>
-    )}
-    cardStyle={styles.horizontalCardWrapper}
-  />
-</View>
-
+          <View style={{ marginTop: 20 }}>
+            <HorizontalSection
+              icon={<Ionicons name="shield-checkmark" size={30} color={theme.colors.brandColor!} />}
+              title="Why Choose Us"
+              subtitle="We’re not just a logistics company—we’re your trusted partner in keeping your business moving forward globally."
+              data={WHY_CHOOSE_US}
+              renderItem={(item) => (
+                <ThemedTouchableOpacity style={[styles.horizontalCard, { backgroundColor: theme.colors.card }]}>
+                  <ThemedText style={[styles.cardTitle, { color: theme.colors.brandColor! }]}>{item.label}</ThemedText>
+                  <ThemedText style={[styles.cardSubtitle, { color: theme.colors.textSecondary }]}>{item.description}</ThemedText>
+                </ThemedTouchableOpacity>
+              )}
+              cardStyle={styles.horizontalCardWrapper}
+            />
+          </View>
 
           {/* Our Trusted Providers */}
           <SectionCard
@@ -388,7 +311,7 @@ const DashboardHeader = () => {
           </View>
         </ScrollView>
       </ThemedView>
-    </KeyboardAvoidingView>
+    </KeyboardAvoidingView >
   );
 };
 
@@ -399,13 +322,18 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingBottom: 30,
   },
+  topHeader: {
+    paddingBottom: 10,
+  },
   headerRow: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  topHeader: {
-    paddingBottom: 10,
+  scannerButton: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
   },
   profileContainer: {
     flexDirection: "row",
@@ -433,81 +361,40 @@ const styles = StyleSheet.create({
     fontFamily: "Montserrat-Bold",
     lineHeight: 26,
   },
-  trackingTitle: {
-    fontSize: 15,
-    fontFamily: "Montserrat-Bold",
-    marginBottom: 6,
-  },
-  trackingSubtitle: {
-    fontSize: 12,
-    fontFamily: "Montserrat-Medium",
-    marginBottom: 20,
-  },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    borderRadius: 50,
-    borderWidth: 2,
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    marginBottom: 15,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.05,
-        shadowRadius: 4,
-      },
-      android: {
-        elevation: 0,
-      },
-    }),
-  },
-  input: {
-    flex: 1,
-    fontSize: 14,
-    paddingVertical: 6,
-    paddingHorizontal: 8,
-  },
-  trackButton: {
-    flexDirection: "row",
-    height: 50,
-    borderRadius: 50,
-    justifyContent: "center",
-    alignItems: "center",
-    gap: 8,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
-      },
-      android: {
-        elevation: 0,
-      },
-    }),
-  },
-  trackButtonText: {
-    color: "#fff",
-    fontFamily: "Montserrat-Bold",
-    fontSize: 16,
-  },
   servicesTitle: {
     fontSize: 15,
     fontFamily: "Montserrat-Bold",
     marginBottom: 6,
   },
-  providersContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
+  horizontalCardWrapper: {
+    width: 280,
+    height: 150,
+    marginRight: 12,
+  },
+  horizontalCard: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 12,
+    padding: 16,
+  },
+  cardTitle: {
+    fontSize: 14,
+    fontFamily: "Montserrat-Bold",
+    marginTop: 12,
+    textAlign: "center",
+  },
+  cardSubtitle: {
+    fontSize: 12,
+    fontFamily: "Montserrat-Medium",
+    marginTop: 6,
+    textAlign: "center",
   },
   providerButton: {
-    width: 140,
+    flex: 1,
+    marginHorizontal: 5,
     height: 50,
     borderRadius: 16,
-    marginVertical: 6,
     backgroundColor: "transparent",
   },
   providerInner: {
@@ -555,31 +442,8 @@ const styles = StyleSheet.create({
   clientAddress: {
     fontSize: 12,
     fontFamily: "Montserrat-Medium",
-    marginTop: 2
-  },
-  horizontalCardWrapper: {
-    width: 280,
-    height: 150,
-    marginRight: 12,
-  },
-  horizontalCard: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 12,
-    padding: 16,
-  },
-  cardTitle: {
-    fontSize: 14,
-    fontFamily: "Montserrat-Bold",
-    marginTop: 12,
-    textAlign: "center",
-  },
-  cardSubtitle: {
-    fontSize: 12,
-    fontFamily: "Montserrat-Medium",
-    marginTop: 6,
-    textAlign: "center",
+    marginTop: 2,
+    textAlign: 'center',
   },
 });
 

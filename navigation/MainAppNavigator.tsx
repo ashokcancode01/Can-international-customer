@@ -31,6 +31,8 @@ import OurBranches from "@/screens/Menu/components/OurBranches";
 import BranchesDetails from "@/screens/Menu/components/OurBranches/BranchesDetails";
 import TermsAndConditions from "@/screens/Menu/components/TermsAndConditions";
 import PrivacyPolicy from "@/screens/Menu/components/PrivacyPolicy";
+import ScannerScreen from "@/screens/Home/components/Scanner";
+import ScannedOrderDetails from "@/screens/Home/components/ScannedOrderDetails";
 
 
 const Tab = createBottomTabNavigator<PublicTabParamList>();
@@ -258,6 +260,17 @@ const MainAppNavigator = () => {
           component={PrivacyPolicy}
           options={{ title: "Privacy Policy"}}
         />
+        <Stack.Screen 
+          name="ScannerScreen"
+          component={ScannerScreen}
+          options={{ title: "Scan"}}
+        />
+        <Stack.Screen 
+          name="ScannedOrderDetails"
+          component={ScannedOrderDetails}
+          options={{ title: "Order Details"}}
+        />
+
         {/* <Stack.Screen
           name="CampaignDetail"
           component={CampaignDetailScreen}

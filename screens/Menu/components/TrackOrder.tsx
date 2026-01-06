@@ -1,4 +1,4 @@
-import React, { useState,   useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { View, TextInput, StyleSheet, TouchableWithoutFeedback, Keyboard, TouchableOpacity, ScrollView, Image, Text } from "react-native";
 import { useTheme } from "../../../theme/ThemeProvider";
 import Card from "../components/Card";
@@ -6,6 +6,8 @@ import ThemedText from "@/components/themed/ThemedText";
 import { FontAwesome5, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useGetTrackOrderQuery, TrackOrderResponse, OrderNote } from "@/store/slices/trackorder";
 import LoadingIndicator from "@/components/LoadingIndicator";
+
+
 
 // Tracking steps
 const TRACKING_STEPS = [
@@ -90,8 +92,6 @@ const TrackOrderScreen = () => {
     if (TrackOrder) setOrderData(TrackOrder);
   }, [TrackOrder]);
 
-
-
   const stripHtml = (text?: string) => {
     if (!text) return "";
     return text.replace(/<[^>]+>/g, "").trim();
@@ -144,7 +144,15 @@ const TrackOrderScreen = () => {
             <Ionicons name="qr-code-outline" size={20} color="#888" />
           </View>
 
-          <TouchableOpacity activeOpacity={0.8} onPress={() => setSubmittedId(trackingNumber.trim())} disabled={!trackingNumber.trim()} style={{ opacity: !trackingNumber.trim() ? 0.6 : 1 }}>
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => {
+              const trimmed = trackingNumber.trim();
+              if (trimmed) {
+                setSubmittedId(trimmed);
+              }
+            }}
+          >
             <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center", backgroundColor: theme.colors.brandColor, paddingVertical: 12, borderRadius: 10 }}>
               <ThemedText type="buttonText" style={{ color: "#fff", marginRight: 6 }} capital>
                 Track
@@ -176,13 +184,12 @@ const TrackOrderScreen = () => {
                 marginTop: 12,
                 textAlign: "center",
                 color: theme.colors.green,
-                fontFamily:"Montserrat-bold"
+                fontFamily: "Montserrat-bold"
               }}
             >
               {orderData.OrderStatus}
             </ThemedText>
           )}
-
         </Card>
 
         {/* ORDER DETAILS */}
@@ -190,7 +197,7 @@ const TrackOrderScreen = () => {
           <View style={{ marginTop: 20 }}>
             {/* Header with Order ID and Flags */}
             <Card style={{ backgroundColor: theme.colors.brandColor, paddingVertical: 20, alignItems: "center" }}>
-              <Text style={[styles.orderIdText, { color: theme.colors.disabled }]}>ORDER ID: {orderData.orderId}</Text>
+              <Text style={[styles.orderIdText, { color: "#fff" }]}>ORDER ID: {orderData.orderId}</Text>
 
               {/* Flags Row */}
               <View style={styles.flagsRow}>
@@ -264,14 +271,24 @@ const TrackOrderScreen = () => {
                         {!isLastStep && <View style={styles.verticalLine} />}
                       </View>
                       <View style={styles.stepTextVertical}>
-                        <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>{step.label}</ThemedText>
-                        <ThemedText style={[styles.stepDate, { color: theme.colors.brandColor }]}>
-                          {formatDate(orderData.orderProcess[index]?.createdAt || "")}
-                        </ThemedText>
+                        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                          <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>
+                            {step.label}
+                          </ThemedText>
+                          <ThemedText style={[styles.stepDate, { color: theme.colors.textSecondary }]}>
+                            {formatDate(orderData.orderProcess[index]?.createdAt || "")}
+                          </ThemedText>
+                        </View>
+
                         <ThemedText
                           style={[
                             styles.stepDescriptionVertical,
-                            { backgroundColor: theme.colors.border, padding: 8, borderRadius: 5 },
+                            {
+                              marginLeft: 0,
+                              marginTop: 10,
+                              marginBottom: 8,
+                              color: theme.colors.textSecondary,
+                            },
                           ]}
                         >
                           {step.detail}
@@ -298,14 +315,24 @@ const TrackOrderScreen = () => {
                         {!isLastStep && <View style={styles.verticalLine} />}
                       </View>
                       <View style={styles.stepTextVertical}>
-                        <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>{step.label}</ThemedText>
-                        <ThemedText style={[styles.stepDate, { color: theme.colors.brandColor }]}>
-                          {formatDate(orderData.orderProcess[index]?.createdAt || "")}
-                        </ThemedText>
+                        <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                          <ThemedText style={[styles.stepTitle, { color: theme.colors.text }]}>
+                            {step.label}
+                          </ThemedText>
+                          <ThemedText style={[styles.stepDate, { color: theme.colors.textSecondary }]}>
+                            {formatDate(orderData.orderProcess[index]?.createdAt || "")}
+                          </ThemedText>
+                        </View>
+
                         <ThemedText
                           style={[
                             styles.stepDescriptionVertical,
-                            { backgroundColor: theme.colors.border, padding: 8, borderRadius: 5 },
+                            {
+                              marginLeft: 0,
+                              marginTop: 10,
+                              marginBottom: 8,
+                              color: theme.colors.textSecondary,
+                            },
                           ]}
                         >
                           {step.detail}
@@ -317,61 +344,80 @@ const TrackOrderScreen = () => {
             </Card>
 
             {/* Notes For You */}
-            {orderData.orderNotes.length > 0 && (
-              <Card style={{ marginTop: 20, backgroundColor: theme.dark ? "#2C2C2C" : "#fff0f0", padding: 16 }}>
-                <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}>
-                  <MaterialIcons name="note-alt" size={24} color={theme.colors.brandColor} />
-                  <ThemedText
-                    type="cardHeader"
-                    style={{
-                      fontSize: 18,
-                      color: theme.colors.text,
-                      marginLeft: 8,
-                      fontFamily: "Montserrat-Bold",
-                      marginTop: 4,
-                    }}
-                  >
-                    Notes For You
-                  </ThemedText>
-                </View>
-
-                {/* Horizontal line */}
-                <View style={{ height: 1, backgroundColor: "#f7d6d6", width: "100%", marginTop: 1, marginBottom: 14, borderRadius: 1 }} />
-
-                {/* Notes List */}
-                {orderData.orderNotes.map((note: OrderNote) => (
+            {orderData.orderNotes.map((note: OrderNote) => (
+              <Card
+                key={note._id}
+                style={{
+                  marginHorizontal: 16,
+                  marginBottom: 12,
+                  padding: 14,
+                  borderRadius: 14,
+                }}
+              >
+                <View style={{ flexDirection: "row", alignItems: "flex-start" }}>
+                  {/* Icon */}
                   <View
-                    key={note._id}
                     style={{
-                      backgroundColor: theme.dark ? "#3A3A3A" : "#fff",
-                      borderWidth: 1,
-                      borderColor: theme.dark ? "#555" : "#f7d6d6",
-                      padding: 12,
-                      borderRadius: 6,
-                      marginBottom: 12,
+                      width: 40,
+                      height: 40,
+                      borderRadius: 20,
+                      backgroundColor: theme.colors.brandColor + "15",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      marginRight: 12,
                     }}
                   >
-                    <ThemedText style={{ fontSize: 14, color: theme.colors.text }}>{stripHtml(note.content)}</ThemedText>
-                    <ThemedText
+                    <MaterialIcons
+                      name="note-add"
+                      size={20}
+                      color={theme.colors.brandColor}
+                    />
+                  </View>
+
+                  {/* Content */}
+                  <View style={{ flex: 1 }}>
+                    <View
                       style={{
-                        fontSize: 11,
-                        textAlign: "right",
-                        marginTop: 10,
-                        borderWidth: 1,
-                        borderColor: theme.colors.border,
-                        borderRadius: 6,
-                        paddingHorizontal: 6,
-                        paddingVertical: 2,
-                        alignSelf: "flex-end",
-                        color: theme.colors.textSecondary,
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        marginBottom: 8,
                       }}
                     >
-                      {formatDate(note.createdAt)}
+                      <ThemedText
+                        style={{
+                          fontSize: 14,
+                          fontFamily: "Montserrat-semibold",
+                          color: theme.colors.text,
+                        }}
+                      >
+                        Notes For You
+                      </ThemedText>
+                      <ThemedText
+                        style={{
+                          fontSize: 8,
+                          color: theme.colors.textSecondary,
+                          fontFamily: "Montserrat-Regular",
+                        }}
+                      >
+                        {formatDate(note.createdAt)}
+                      </ThemedText>
+                    </View>
+
+                    <ThemedText
+                      style={{
+                        fontSize: 13,
+                        lineHeight: 18,
+                        color: theme.colors.textSecondary,
+                        fontFamily: "Montserrat-Regular",
+                      }}
+                    >
+                      {stripHtml(note.content)}
                     </ThemedText>
                   </View>
-                ))}
+                </View>
               </Card>
-            )}
+            ))}
 
           </View>
         )}
@@ -433,14 +479,13 @@ const styles = StyleSheet.create({
     fontFamily: "Montserrat-semibold",
   },
   stepDate: {
-    fontSize: 10,
-    marginTop: 4,
+    fontSize: 8,
     fontFamily: "Montserrat-medium",
   },
   stepDescriptionVertical: {
     fontSize: 10,
-    marginTop: 4,
     fontFamily: "Montserrat-Regular",
+    marginLeft: 12,
   },
   verticalLine: {
     position: "absolute",
