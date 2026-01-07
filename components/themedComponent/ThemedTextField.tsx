@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
-import ThemedIcon from "../themed/ThemedIcon";
+import { ThemedIcon } from "../themed/ThemedIcon";
 import { Controller, FieldValues } from "react-hook-form";
 import ThemedText from "../themed/ThemedText";
 
@@ -116,19 +116,16 @@ export default function ThemedTextField<T extends FieldValues = any>({
     container: {
       backgroundColor: editable
         ? theme.colors.cardBackground
-        : theme.dark
-          ? "#1E1E1E"
-          : getDisabledBackgroundColor(),
+        : getDisabledBackgroundColor(),
       borderWidth: 1,
       borderRadius: 5,
       flexDirection: multiline ? "column" : "row",
-      alignItems: multiline ? "flex-start" : "center",
-      height: multiline ? undefined : height,
-      minHeight: multiline ? 100 : height,
+      alignItems: multiline ? "stretch" : "center",
+      height: multiline ? 100 : height,
       paddingLeft: 10,
       paddingRight: isNumber ? 0 : 10,
       paddingVertical: multiline ? 8 : 0,
-      opacity: editable ? 1 : 1,
+      opacity: editable ? 1 : 0.6,
     },
     topRow: {
       flexDirection: "row",
@@ -136,17 +133,14 @@ export default function ThemedTextField<T extends FieldValues = any>({
     },
     input: {
       flex: 1,
-      color: editable
-        ? inputStyle?.color || theme.colors.text
-        : theme.dark
-          ? "#FFFFFF"
-          : getDisabledColor(),
+      color: editable ? theme.colors.text : getDisabledColor(),
       fontFamily: theme.fonts.regular,
       fontSize: theme.fontSizes.md,
       paddingHorizontal: multiline ? 0 : 10,
       paddingVertical: multiline ? 5 : 0,
-      ...(multiline && { minHeight: 80, height: undefined, width: "100%" }),
       textAlignVertical: multiline ? "top" : "center",
+      ...(multiline && { height: "100%" }),
+      width: "90%",
     },
     numberBox: {
       borderLeftWidth: 1,
@@ -167,17 +161,6 @@ export default function ThemedTextField<T extends FieldValues = any>({
       top: 30,
     },
   });
-  const inputColor = !editable
-    ? theme.dark
-      ? "#FFFFFF"   // white text in dark mode
-      : getDisabledColor()
-    : inputStyle?.color || theme.colors.text;
-
-  const placeholderColor = !editable
-    ? theme.dark
-      ? "#FFFFFF"   // white placeholder in dark mode
-      : getDisabledColor()
-    : theme.colors.textSecondary;
 
   return (
     <Controller
@@ -191,10 +174,10 @@ export default function ThemedTextField<T extends FieldValues = any>({
         const borderColor = !editable
           ? getDisabledColor()
           : isFocused
-            ? theme.colors.brandColor
-            : error
-              ? theme.colors.error
-              : theme.colors.border;
+          ? theme.colors.brandColor
+          : error
+          ? theme.colors.error
+          : theme.colors.border;
 
         const iconColor = editable ? undefined : getDisabledColor();
 
@@ -206,12 +189,10 @@ export default function ThemedTextField<T extends FieldValues = any>({
                 style={[
                   {
                     color: !editable
-                      ? theme.dark
-                        ? "#FFFFFF"
-                        : getDisabledColor()
+                      ? getDisabledColor()
                       : isFocused
-                        ? theme.colors.brandColor
-                        : theme.colors.text,
+                      ? theme.colors.brandColor
+                      : theme.colors.text,
                     marginBottom: 5,
                   },
                   labelStyle,
@@ -219,7 +200,6 @@ export default function ThemedTextField<T extends FieldValues = any>({
               >
                 {label}
               </ThemedText>
-
             )}
 
             <View style={[styles.container, { borderColor }, containerStyle]}>
@@ -229,60 +209,62 @@ export default function ThemedTextField<T extends FieldValues = any>({
                     rightIcon ||
                     (editable && clearButton && value) ||
                     secureTextEntry !== undefined) && (
-                      <View style={styles.topRow}>
-                        {leftIcon && (
-                          <View style={styles.iconContainer}>
-                            <ThemedIcon
-                              name={leftIcon.name}
-                              size={leftIcon.size || 20}
-                              color={iconColor || leftIcon.color}
-                              onPress={editable ? leftIcon.onPress : undefined}
-                            />
-                          </View>
-                        )}
+                    <View style={styles.topRow}>
+                      {leftIcon && (
+                        <View style={styles.iconContainer}>
+                          <ThemedIcon
+                            name={leftIcon.name}
+                            size={leftIcon.size || 20}
+                            color={iconColor || leftIcon.color}
+                            onPress={editable ? leftIcon.onPress : undefined}
+                          />
+                        </View>
+                      )}
 
-                        <View style={{ flex: 1 }} />
+                      <View style={{ flex: 1 }} />
 
-                        {editable && clearButton && value && (
-                          <TouchableOpacity
-                            onPress={() => handleClear(onChange)}
-                            style={styles.iconContainer}
-                          >
-                            <ThemedIcon name="close" size={20} />
-                          </TouchableOpacity>
-                        )}
+                      {editable && clearButton && value && (
+                        <TouchableOpacity
+                          onPress={() => handleClear(onChange)}
+                          style={styles.iconContainer}
+                        >
+                          <ThemedIcon name="close" size={20} />
+                        </TouchableOpacity>
+                      )}
 
-                        {secureTextEntry !== undefined && (
-                          <TouchableOpacity
-                            onPress={editable ? toggleSecureEntry : undefined}
-                            style={styles.iconContainer}
-                            disabled={!editable}
-                          >
-                            <ThemedIcon
-                              name={secureEntry ? "visibility-off" : "visibility"}
-                              size={20}
-                              color={iconColor}
-                            />
-                          </TouchableOpacity>
-                        )}
+                      {secureTextEntry !== undefined && (
+                        <TouchableOpacity
+                          onPress={editable ? toggleSecureEntry : undefined}
+                          style={styles.iconContainer}
+                          disabled={!editable}
+                        >
+                          <ThemedIcon
+                            name={secureEntry ? "visibility-off" : "visibility"}
+                            size={20}
+                            color={iconColor}
+                          />
+                        </TouchableOpacity>
+                      )}
 
-                        {rightIcon && (
-                          <View style={styles.iconContainer}>
-                            <ThemedIcon
-                              name={rightIcon.name}
-                              size={rightIcon.size || 20}
-                              color={iconColor || rightIcon.color}
-                              onPress={editable ? rightIcon.onPress : undefined}
-                            />
-                          </View>
-                        )}
-                      </View>
-                    )}
+                      {rightIcon && (
+                        <View style={styles.iconContainer}>
+                          <ThemedIcon
+                            name={rightIcon.name}
+                            size={rightIcon.size || 20}
+                            color={iconColor || rightIcon.color}
+                            onPress={editable ? rightIcon.onPress : undefined}
+                          />
+                        </View>
+                      )}
+                    </View>
+                  )}
 
                   <TextInput
-                    style={[styles.input, inputStyle, { color: inputColor }]}
+                    style={[styles.input, inputStyle]}
                     placeholder={placeholder}
-                    placeholderTextColor={placeholderColor}
+                    placeholderTextColor={
+                      editable ? theme.colors.textSecondary : getDisabledColor()
+                    }
                     value={String(value || "")}
                     onChangeText={onChange}
                     onBlur={() => {
@@ -290,15 +272,10 @@ export default function ThemedTextField<T extends FieldValues = any>({
                       handleBlur();
                     }}
                     onFocus={handleFocus}
-                    secureTextEntry={secureEntry}
-                    keyboardType={isNumber ? "numeric" : restProps.keyboardType}
+                    multiline={true}
                     editable={editable}
-                    multiline={multiline}        
-                    scrollEnabled={multiline}
                     {...restProps}
                   />
-
-
                 </>
               ) : (
                 <>
@@ -320,9 +297,11 @@ export default function ThemedTextField<T extends FieldValues = any>({
                   )}
 
                   <TextInput
-                    style={[styles.input, inputStyle, { color: inputColor }]}
+                    style={[styles.input, inputStyle]}
                     placeholder={placeholder}
-                    placeholderTextColor={placeholderColor}
+                    placeholderTextColor={
+                      editable ? theme.colors.textSecondary : getDisabledColor()
+                    }
                     value={String(value || "")}
                     onChangeText={onChange}
                     onBlur={() => {
@@ -335,7 +314,6 @@ export default function ThemedTextField<T extends FieldValues = any>({
                     editable={editable}
                     {...restProps}
                   />
-
 
                   {editable && clearButton && value && (
                     <TouchableOpacity onPress={() => handleClear(onChange)}>

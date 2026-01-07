@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, TextInput, StyleSheet, TouchableWithoutFeedback, Keyboard, TouchableOpacity, ScrollView, Image, Text } from "react-native";
+import { View, TextInput, StyleSheet, TouchableWithoutFeedback, Keyboard, TouchableOpacity, ScrollView, Image, Text, RefreshControl } from "react-native";
 import { useTheme } from "../../../theme/ThemeProvider";
 import Card from "../components/Card";
 import ThemedText from "@/components/themed/ThemedText";
 import { FontAwesome5, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useGetTrackOrderQuery, TrackOrderResponse, OrderNote } from "@/store/slices/trackorder";
 import ThemedButton from "@/components/themedComponent/ThemedButton";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { ThemedTouchableOpacity } from "@/components/themed/ThemedTouchableOpacity";
 
 
 
@@ -61,6 +62,8 @@ type ReturnStatus = keyof typeof RETURN_STATUS_TO_STEP_MAPPING;
 
 const TrackOrderScreen = () => {
   const { theme } = useTheme();
+  const navigation = useNavigation<any>();
+  const [refreshing, setRefreshing] = useState(false);
   const [trackingNumber, setTrackingNumber] = useState("");
   const [submittedId, setSubmittedId] = useState<string | undefined>(undefined);
   const [isFocused, setIsFocused] = useState(false);
@@ -118,10 +121,25 @@ const TrackOrderScreen = () => {
     }, [])
   );
 
+  //Refresh Handler
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 1500)
+  }, [])
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <ScrollView style={[styles.container, { backgroundColor: theme.colors.background }]} contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        style={[styles.container, { backgroundColor: theme.colors.background }]} contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled"
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={theme.colors.brandColor}   
+          />}
+      >
         {/* TRACKING CARD */}
         <Card>
           <View style={[styles.iconContainer, { backgroundColor: theme.colors.brandColor + "20" }]}>
@@ -155,7 +173,9 @@ const TrackOrderScreen = () => {
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
             />
-            <Ionicons name="qr-code-outline" size={20} color="#888" />
+            <ThemedTouchableOpacity onPress={()=> navigation.navigate("ScannerScreen")}>
+              <Ionicons name="qr-code-outline" size={20} color="#888" />
+            </ThemedTouchableOpacity>
           </View>
 
           <TouchableOpacity
