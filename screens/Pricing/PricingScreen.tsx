@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { ScrollView, StyleSheet, RefreshControl, Modal, Pressable } from "react-native";
+import { ScrollView, StyleSheet, RefreshControl, View, Pressable } from "react-native";
 import { useForm } from "react-hook-form";
 import { useTheme } from "../../theme/ThemeProvider";
 import ThemedText from "@/components/themed/ThemedText";
@@ -28,12 +28,8 @@ const PricingScreen = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [pricingResult, setPricingResult] = useState<any>(null);
-    const {
-        control,
-        handleSubmit,
-        watch,
-        reset,
-    } = useForm<FormData>({
+
+    const { control, handleSubmit, watch, reset } = useForm<FormData>({
         defaultValues: {
             origin: "Nepal",
             destination: { name: "Afghanistan", value: "Afghanistan" },
@@ -42,6 +38,7 @@ const PricingScreen = () => {
             weight: "",
         },
     });
+
     const selectedShipmentType = watch("shipmentType");
     const serviceOptions = getServiceTypeOptions(selectedShipmentType);
     const { data: countryList } = useGetCountryListQuery();
@@ -67,11 +64,13 @@ const PricingScreen = () => {
             }).unwrap();
 
             setPricingResult(result);
+            setErrorMessage(null);
         } catch (error: any) {
             setErrorMessage(
                 error?.data?.message ||
                 "An error occurred while calculating rate. Please try again."
             );
+            setPricingResult(null);
         }
     };
 
@@ -110,6 +109,7 @@ const PricingScreen = () => {
                     weight: "",
                 });
                 setPricingResult(null);
+                setErrorMessage(null);
             };
         }, [reset])
     );
@@ -120,7 +120,6 @@ const PricingScreen = () => {
         const serviceType = watch("serviceType")?.name || "";
         const weight = watch("weight") || "";
         const estimatedPrice = pricingResult?.data?.finalRate || "";
-
         const message = `I am sending my parcel from Nepal to ${destination}, Service: ${serviceType}, Weight: ${weight}kg, Estimated Price: NPR ${estimatedPrice}`;
 
         navigation.navigate("PublicTabs", {
@@ -137,9 +136,17 @@ const PricingScreen = () => {
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.brandColor} />}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                        tintColor={theme.colors.brandColor}
+                    />
+                }
             >
-                <ThemedText style={[styles.title, { color: theme.colors.brandColor }]}>International Courier Pricing</ThemedText>
+                <ThemedText style={[styles.title, { color: theme.colors.brandColor }]}>
+                    International Courier Pricing
+                </ThemedText>
 
                 <ThemedCard
                     isCard
@@ -176,6 +183,7 @@ const PricingScreen = () => {
                         placeholder="Select country name"
                         rules={{ required: "Please select a destination country" }}
                     />
+
                     {/* SHIPMENT TYPE */}
                     <CustomFormDropdown
                         control={control}
@@ -187,7 +195,7 @@ const PricingScreen = () => {
                         rules={{ required: "Please select a shipment type" }}
                     />
                     <ThemedText style={{ color: theme.colors.textSecondary, marginBottom: 12, fontSize: 10 }}>
-                        Choose what are you sending
+                        Choose what you are sending
                     </ThemedText>
 
                     {/* SERVICE TYPE */}
@@ -216,6 +224,8 @@ const PricingScreen = () => {
                         step={0.5}
                         rules={{
                             required: "Weight is required",
+                            validate: (value: number) =>
+                                value > 0 || "Please enter a valid weight"
                         }}
                     />
 
@@ -229,97 +239,100 @@ const PricingScreen = () => {
                     />
                 </ThemedCard>
 
-                {/* RESULT MODAL */}
-                <Modal visible={!!pricingResult?.success} transparent animationType="fade">
-                    <Pressable style={styles.overlay} onPress={() => setPricingResult(null)}>
-                        <Pressable
-                            style={[
-                                styles.rateCard,
-                                { backgroundColor: theme.colors.card, borderWidth: theme.dark ? 1 : 0, borderColor: theme.dark ? "#FFFFFF20" : "transparent" },
-                            ]}
-                            onPress={() => { }}
-                        >
-                            {/* CLOSE */}
-                            <Pressable style={styles.closeButton} onPress={() => setPricingResult(null)}>
-                                <Ionicons name="close" size={20} color={theme.colors.textSecondary} />
-                            </Pressable>
-
-                            {/* PRICE */}
-                            <ThemedText style={[styles.cardTitle, { color: theme.colors.secondaryText }]}>TOTAL ESTIMATED RATE</ThemedText>
-                            <ThemedText style={[styles.totalPrice, { color: theme.colors.text }]}>₹ {pricingResult?.data?.finalRate}</ThemedText>
-
-                            {/* INFO */}
-                            <ThemedView style={[styles.infoBox, { backgroundColor: theme.dark ? "#1F2933" : "#F3F4F6" }]}>
-                                <Ionicons name="information-circle-outline" size={16} color={theme.colors.textSecondary} />
-                                <ThemedText style={[styles.infoText, { color: theme.colors.secondaryText }]}>
-                                    Additional surcharges, remote area fees, or customs duties may apply based on destination.
-                                </ThemedText>
-                            </ThemedView>
-
-                            {/* SEND ORDER */}
-                            <ThemedButton buttonName="Send Your Order →" style={[
-                                styles.orderButton,
-                                { backgroundColor: theme.colors.brandColor }]}
-                                onPress={handleOrder} isLoading={false} loadingText="" />
-                        </Pressable>
-                    </Pressable>
-                </Modal>
-
-                {/* ERROR MODAL */}
-                <Modal visible={!!errorMessage} transparent animationType="fade">
-                    <Pressable
-                        style={styles.overlay}
-                        onPress={() => setErrorMessage(null)}
+                {/* PRICING RESULT */}
+                {pricingResult?.success && (
+                    <ThemedCard
+                        isCard
+                        borderColor={theme.dark ? "#FFFFFF20" : theme.colors.brandColor}
+                        borderWidth={1}
+                        radius
+                        shadow="md"
+                        padding="md"
+                        style={{ marginTop: 16, position: "relative" }}
                     >
+                        {/* CLOSE BUTTON */}
                         <Pressable
-                            style={[
-                                styles.rateCard,
-                                {
-                                    backgroundColor: theme.colors.card,
-                                    borderWidth: theme.dark ? 1 : 0,
-                                    borderColor: theme.dark ? "#FFFFFF20" : "transparent",
-                                    alignItems: "center",
-                                },
-                            ]}
-                            onPress={() => { }}
+                            style={{
+                                position: "absolute",
+                                top: 12,
+                                right: 12,
+                                zIndex: 10,
+                            }}
+                            onPress={() => setPricingResult(null)}
                         >
-                            {/* CLOSE */}
-                            <Pressable
-                                style={styles.closeButton}
-                                onPress={() => setErrorMessage(null)}
-                            >
-                                <Ionicons
-                                    name="close"
-                                    size={20}
-                                    color={theme.colors.textSecondary}
-                                />
-                            </Pressable>
+                            <Ionicons name="close" size={20} color={theme.colors.textSecondary} />
+                        </Pressable>
 
-                            {/* ERROR ICON */}
-                            <Ionicons
-                                name="alert-circle-outline"
-                                size={26}
-                                color="#DC2626"
-                                style={{ marginBottom: 10, marginTop: 12 }}
-                            />
+                        {/* PRICE TITLE */}
+                        <ThemedText style={[styles.cardTitle, { color: theme.colors.secondaryText }]}>
+                            TOTAL ESTIMATED RATE
+                        </ThemedText>
 
-                            {/* ERROR TEXT */}
+                        {/* PRICE */}
+                        <ThemedText style={[styles.totalPrice, { color: theme.colors.text }]}>
+                            ₹ {pricingResult?.data?.finalRate}
+                        </ThemedText>
+
+                        {/* INFO BOX */}
+                        <View style={[styles.infoBox, { backgroundColor: theme.dark ? "#1F2933" : "#F3F4F6" }]}>
+                            <Ionicons name="information-circle-outline" size={16} color={theme.colors.textSecondary} />
+                            <ThemedText style={[styles.infoText, { color: theme.colors.secondaryText }]}>
+                                Additional surcharges, remote area fees, or customs duties may apply based on destination.
+                            </ThemedText>
+                        </View>
+
+                        {/* SEND ORDER BUTTON */}
+                        <ThemedButton
+                            buttonName="Send Your Order →"
+                            style={[styles.orderButton, { backgroundColor: theme.colors.brandColor }]}
+                            onPress={handleOrder}
+                            isLoading={false}
+                            loadingText=""
+                        />
+                    </ThemedCard>
+                )}
+
+                {/* ERROR MESSAGE */}
+                {errorMessage && (
+                    <ThemedCard
+                        isCard
+                        borderColor={theme.dark ? "#FFFFFF20" : theme.colors.brandColor}
+                        borderWidth={1}
+                        radius
+                        shadow="md"
+                        padding="md"
+                        style={{ marginTop: 16, position: "relative" }}
+                    >
+                        {/* CLOSE BUTTON */}
+                        <Pressable
+                            onPress={() => setErrorMessage(null)}
+                            style={{
+                                position: "absolute",
+                                top: 8, 
+                                right: 8, 
+                                padding: 6, 
+                                zIndex: 10,
+                            }}
+                        >
+                            <Ionicons name="close" size={18} color={theme.colors.textSecondary} />
+                        </Pressable>
+
+                        {/* ERROR MESSAGE */}
+                        <View style={{ flexDirection: "row", alignItems: "center", gap: 8, paddingRight: 28 }}>
+                            <Ionicons name="alert-circle-outline" size={16} color="#DC2626" />
                             <ThemedText
                                 style={{
-                                    fontSize: 14,
-                                    lineHeight: 20,
-                                    color: theme.colors.text,
+                                    fontSize: 12,
                                     fontFamily: "Montserrat-Medium",
-                                    textAlign: "center",
-                                    paddingHorizontal: 12,
+                                    color: "#DC2626",
+                                    flexShrink: 1,
                                 }}
                             >
                                 {errorMessage}
                             </ThemedText>
-                        </Pressable>
-                    </Pressable>
-                </Modal>
-
+                        </View>
+                    </ThemedCard>
+                )}
 
             </ScrollView>
         </ThemedView>
@@ -338,26 +351,6 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginTop: 20,
     },
-    overlay: {
-        flex: 1,
-        backgroundColor: "rgba(0,0,0,0.4)",
-        justifyContent: "center",
-        alignItems: "center",
-        padding: 16,
-    },
-    rateCard: {
-        width: "100%",
-        maxWidth: 360,
-        backgroundColor: "#FFFFFF",
-        borderRadius: 16,
-        padding: 20,
-    },
-    closeButton: {
-        position: "absolute",
-        top: 14,
-        right: 14,
-        zIndex: 10,
-    },
     cardTitle: {
         fontSize: 11,
         textAlign: "center",
@@ -373,7 +366,6 @@ const styles = StyleSheet.create({
     },
     infoBox: {
         flexDirection: "row",
-        backgroundColor: "#F3F4F6",
         padding: 10,
         borderRadius: 10,
         marginBottom: 16,
@@ -388,8 +380,6 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         padding: 5,
     },
-
 });
 
-
-export default PricingScreen;  
+export default PricingScreen;

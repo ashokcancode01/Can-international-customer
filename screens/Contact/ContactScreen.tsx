@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { View, StyleSheet, RefreshControl } from "react-native";
+import { View, StyleSheet, RefreshControl, Linking } from "react-native";
 import { useForm } from "react-hook-form";
 import { Entypo, MaterialIcons } from "@expo/vector-icons";
 import ThemedTextField from "@/components/themedComponent/ThemedTextField";
@@ -8,8 +8,9 @@ import ThemedText from "@/components/themed/ThemedText";
 import { useTheme } from "@/theme/ThemeProvider";
 import ThemedKeyboardView from "@/components/themed/ThemedKeyboardView";
 import { ThemedView } from "@/components/themed/ThemedView";
-import { useRoute, useFocusEffect } from "@react-navigation/native";
+import { useRoute, useFocusEffect, } from "@react-navigation/native";
 import { useCreateLeadMutation } from "@/store/slices/contact";
+import { ThemedTouchableOpacity } from "@/components/themed/ThemedTouchableOpacity";
 
 interface FormData {
   fullName: string;
@@ -97,6 +98,18 @@ const ContactScreen = () => {
     }, [route.params, reset])
   );
 
+  //Helper to open phone  dialer with the given
+  const handleCall = async (phoneNumber: string) => {
+  const url = `tel:${phoneNumber}`;
+
+  try {
+    await Linking.openURL(url);
+  } catch (error) {
+    console.log("Error opening dialer:", error);
+  }
+};
+
+
   return (
     <ThemedKeyboardView
       scrollEnabled
@@ -108,7 +121,6 @@ const ContactScreen = () => {
           refreshing={refreshing}
           onRefresh={onRefresh}
           tintColor={theme.colors.brandColor}
-          colors={[theme.colors.brandColor!]}
         />
       }
     >
@@ -117,12 +129,14 @@ const ContactScreen = () => {
         <ThemedText type="label" style={[styles.heading, { color: theme.colors.text }]}>
           Contact Us
         </ThemedText>
-        <View style={styles.infoRow}>
-          <Entypo name="phone" size={20} color={theme.colors.brandColor!} />
-          <ThemedText style={[styles.infoText, { color: theme.colors.textSecondary }]}>
-            01-5970736
-          </ThemedText>
-        </View>
+        <ThemedTouchableOpacity onPress={() => handleCall("01-5970736")} style={{ backgroundColor: "transparent" }}>
+          <View style={styles.infoRow}>
+            <Entypo name="phone" size={20} color={theme.colors.brandColor!} />
+            <ThemedText style={[styles.infoText, { color: theme.colors.textSecondary }]}>
+              01-5970736
+            </ThemedText>
+          </View>
+        </ThemedTouchableOpacity>
         <View style={styles.infoRow}>
           <Entypo name="location-pin" size={20} color={theme.colors.brandColor!} />
           <ThemedText style={[styles.infoText, { color: theme.colors.textSecondary }]}>
@@ -187,6 +201,7 @@ const ContactScreen = () => {
           label="Message"
           multiline
           scrollEnabled={true}
+          clearButton={false}
           placeholderTextColor={theme.colors.textSecondary}
           rules={{ required: "Message is required" }}
         />

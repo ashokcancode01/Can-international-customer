@@ -152,20 +152,10 @@ const DashboardHeader = () => {
                   {getGreeting()},
                 </ThemedText>
                 <ThemedText style={[styles.nameText, { color: theme.colors.text }]}>
-                  TestUser
+                  Guest User
                 </ThemedText>
               </View>
             </View>
-            {/* Scanner icon */}
-            <ThemedTouchableOpacity
-              style={styles.scannerButton}
-              onPress={()=> navigation.navigate("ScannerScreen")}
-            >
-              <Ionicons name="scan-circle-sharp" size={40} color={theme.colors.brandColor} />
-              <ThemedText style={{ color: theme.colors.textSecondary, fontFamily: "Montserrat-bold"}}>
-                Scan
-              </ThemedText>
-            </ThemedTouchableOpacity>
           </View>
         </View>
         <ScrollView
@@ -183,11 +173,18 @@ const DashboardHeader = () => {
           <View style={styles.welcomeContainer}>
             <ThemedText style={[styles.WelcomeTitle, { color: theme.colors.text }]}>
               Welcome to{" "}
-              <ThemedText style={[styles.WelcomeTitle, { color: theme.colors.brandColor! }]}>
-                Nepal Can International
+              <ThemedText style={[styles.WelcomeTitle, { color: theme.colors.brandColor!, fontWeight: '700' }]}>
+                Nepal Can{'\n'}International
               </ThemedText>
             </ThemedText>
+            <ThemedText style={{ color: theme.colors.textSecondary, marginTop: 8, fontSize: 12, lineHeight: 20 }}>
+              We make international shipping easier with a smart management system that streamlines the movement of goods worldwide.
+            </ThemedText>
+            <ThemedText style={{ color: theme.colors.textSecondary, fontSize: 12, lineHeight: 20, marginTop: 6 }}>
+              One solution to simplify all your global logistics.
+            </ThemedText>
           </View>
+
 
           {/* Our Services */}
           <HorizontalSection
@@ -330,11 +327,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "space-between",
   },
-  scannerButton: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
-  },
   profileContainer: {
     flexDirection: "row",
     alignItems: "center",
@@ -355,9 +347,10 @@ const styles = StyleSheet.create({
   welcomeContainer: {
     marginTop: 16,
     marginHorizontal: 16,
+    marginBottom: 20,
   },
   WelcomeTitle: {
-    fontSize: 16,
+    fontSize: 18,
     fontFamily: "Montserrat-Bold",
     lineHeight: 26,
   },

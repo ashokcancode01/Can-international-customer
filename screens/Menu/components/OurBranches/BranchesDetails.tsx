@@ -2,7 +2,7 @@ import { ThemedView } from '@/components/themed/ThemedView';
 import { useTheme } from '@/theme/ThemeProvider';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import React, { useCallback, useState } from 'react';
-import { View, Text, StyleSheet, ScrollView, Platform, Linking, TouchableOpacity, Dimensions, RefreshControl } from "react-native";
+import { View, Text, StyleSheet, ScrollView, Linking, TouchableOpacity, Dimensions, RefreshControl } from "react-native";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { useGetBranchByIdQuery } from '@/store/slices/branches';
@@ -10,6 +10,7 @@ import { ThemedTouchableOpacity } from '@/components/themed/ThemedTouchableOpaci
 import Foundation from '@expo/vector-icons/Foundation';
 import BranchMapView from './BranchMapView';
 import LoadingIndicator from '@/components/LoadingIndicator';
+import Card from '../Card';
 
 const BranchesDetails = () => {
     const { theme, isDark } = useTheme();
@@ -75,14 +76,22 @@ const BranchesDetails = () => {
         Municipality: 'university',
     };
 
-    const InfoCard = ({ label, value }: { label: string; value: string }) => (
-        <View style={[styles.infoCard, isDark && { backgroundColor: theme.colors.card, borderColor: theme.colors.border }]}>
+    const InfoCard = ({ label, value, onPress }: { label: string; value: string; onPress?: () => void }) => (
+        <ThemedTouchableOpacity
+            onPress={onPress}
+            style={[
+                styles.infoCard,
+                isDark && { backgroundColor: theme.colors.card, borderColor: theme.colors.border },
+            ]}
+        >
             <View style={styles.iconLabelRow}>
                 <FontAwesome name={iconMap[label]} size={20} color={brandColor} />
                 <Text style={[styles.infoLabel, { color: brandColor, fontFamily: "Montserrat-Medium" }]}>{label}</Text>
             </View>
-            <Text style={[styles.infoValue, { fontFamily: "Montserrat-medium", color: isDark ? theme.colors.text : "#000" }]}>{value}</Text>
-        </View>
+            <Text style={[styles.infoValue, { fontFamily: "Montserrat-medium", color: isDark ? theme.colors.text : "#000" }]}>
+                {value}
+            </Text>
+        </ThemedTouchableOpacity>
     );
 
     //prefill the message box when navigated from branch details
@@ -92,12 +101,16 @@ const BranchesDetails = () => {
             params: { prefillMessage: `I want to inquire about sending parcel abroad from ${branch.name}` },
         });
     };
-    const handleCall = (phoneNumber: string) => {
+
+    const handleCall = async (phoneNumber: string) => {
         const url = `tel:${phoneNumber}`;
-        Linking.canOpenURL(url)
-            .then((supported) => { if (supported) Linking.openURL(url); })
-            .catch((err) => console.error("Error opening dialer", err));
+        try {
+            await Linking.openURL(url);
+        } catch (error) {
+            console.log("Error opening dialer:", error);
+        }
     };
+
 
     //Helper because api is returning HTML inisde a string
     const stripHtml = (text?: string) => {
@@ -116,7 +129,7 @@ const BranchesDetails = () => {
                     />}
             >
                 {/* Header Card */}
-                <View style={[styles.headerCard, { width: screenWidth - 24, alignSelf: "center", backgroundColor: brandColor }]}>
+                <Card style={{ backgroundColor: theme.colors.brandColor }}>
                     <Text style={[styles.branchLabel, { fontFamily: "Montserrat-Medium" }]}>Branch #{branch.code}</Text>
                     <Text style={[styles.branchName, { fontFamily: "Montserrat-Bold", color: isDark ? theme.colors.text : "#fff" }]}>{branch.name}</Text>
                     <View style={styles.headerRow}>
@@ -124,18 +137,18 @@ const BranchesDetails = () => {
                         <Text style={[styles.headerText, { fontFamily: "Montserrat-Regular", color: isDark ? theme.colors.textSecondary : "#fff" }]}>{branch.address}</Text>
 
                         <Ionicons name="call-outline" size={14} color={isDark ? theme.colors.text : "#fff"} style={{ marginLeft: 16 }} />
-                        <TouchableOpacity onPress={() => handleCall(branch.phone)}>
+                        <ThemedTouchableOpacity onPress={() => handleCall(branch.phone)} style={{ backgroundColor: "trand" }}>
                             <Text style={[styles.headerText, { fontFamily: "Montserrat-Regular", color: isDark ? theme.colors.textSecondary : "#fff" }]}>{branch.phone}</Text>
-                        </TouchableOpacity>
+                        </ThemedTouchableOpacity>
                     </View>
-                </View>
+                </Card>
 
                 {/* Branch Information */}
                 <Text style={[styles.sectionTitle, { color: theme.colors.text, fontFamily: "Montserrat-Bold" }]}>Branch Information</Text>
                 <Text style={[styles.sectionSubTitle, { color: theme.colors.secondaryText, fontFamily: "Montserrat-Regular" }]}>Contact details and coverage area</Text>
                 <View style={{ width: screenWidth - 24, alignSelf: "center", flexWrap: "wrap", flexDirection: "row", gap: 10 }}>
                     <InfoCard label="Branch Code" value={branch.code} />
-                    <InfoCard label="Phone" value={branch.phone} />
+                    <InfoCard onPress={() => handleCall(branch.phone)} label="Phone" value={branch.phone} />
                     <InfoCard label="Province" value={branch.province?.name || "-"} />
                     <InfoCard label="District" value={branch.district?.name || "-"} />
                     <InfoCard label="Municipality" value={branch.municipality?.name || "-"} />
@@ -190,7 +203,6 @@ const BranchesDetails = () => {
                                     </View>
                                 );
                             })}
-
                         </View>
                     </View>
                 )}
@@ -245,8 +257,7 @@ const BranchesDetails = () => {
                 )}
 
                 {/* Shipping Card */}
-                <View
-                    style={[styles.shippingCard, { width: screenWidth - 24, alignSelf: "center", backgroundColor: isDark ? theme.colors.card : "#fff", borderColor: isDark ? theme.colors.border : "#eee" }]}>
+                <Card style={{ marginTop: 24 }}>
                     <View style={styles.shippingHeader}>
                         <View style={[styles.iconBackground, { backgroundColor: brandColor }]}>
                             <Ionicons name="cube-outline" size={24} color="#fff" />
@@ -269,24 +280,15 @@ const BranchesDetails = () => {
                     <ThemedTouchableOpacity style={[styles.orderButton, { backgroundColor: brandColor }]} onPress={handlePlaceOrder}>
                         <Text style={[styles.orderButtonText, { fontFamily: "Montserrat-Bold" }]}>Place Your Order Now →</Text>
                     </ThemedTouchableOpacity>
-                </View>
+                </Card>
 
                 {/* Location */}
                 {hasLocation && (
-                    <View style={{ width: screenWidth - 24, alignSelf: "center", marginTop: 24 }}>
+                    <View style={{ width: screenWidth - 24, alignSelf: "center", marginTop: 10 }}>
                         <Text style={[styles.sectionTitle, { color: theme.colors.text, fontFamily: "Montserrat-Bold", marginLeft: 6 }]}>
                             Our Location
                         </Text>
-                        <View
-                            style={[
-                                styles.shippingCard,
-                                {
-                                    backgroundColor: isDark ? theme.colors.card : "#fff",
-                                    borderColor: isDark ? theme.colors.border : "#eee",
-                                    marginTop: 0,
-                                },
-                            ]}
-                        >
+                        <Card>
                             <View style={{ height: 250, borderRadius: 12, overflow: "hidden" }}>
                                 <BranchMapView branch={branch} />
                             </View>
@@ -315,7 +317,7 @@ const BranchesDetails = () => {
                                     <Text style={styles.locationButtonText}>Get Directions</Text>
                                 </TouchableOpacity>
                             </View>
-                        </View>
+                        </Card>
                     </View>
                 )}
             </ScrollView>
@@ -326,11 +328,6 @@ const BranchesDetails = () => {
 export default BranchesDetails;
 
 const styles = StyleSheet.create({
-    headerCard: {
-        borderRadius: 14,
-        padding: 16,
-        marginBottom: 20,
-    },
     branchLabel: {
         color: "#fff",
         backgroundColor: "rgba(255, 255, 255, 0.3)",
@@ -394,25 +391,6 @@ const styles = StyleSheet.create({
     infoValue: {
         fontSize: 12,
         color: "#000",
-    },
-    shippingCard: {
-        backgroundColor: "#fff",
-        padding: 16,
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: "#eee",
-        marginTop: 20,
-        ...Platform.select({
-            ios: {
-                shadowColor: "#000",
-                shadowOpacity: 0.05,
-                shadowOffset: { width: 0, height: 4 },
-                shadowRadius: 8,
-            },
-            android: {
-                elevation: 2,
-            },
-        }),
     },
     shippingHeader: {
         flexDirection: "row",

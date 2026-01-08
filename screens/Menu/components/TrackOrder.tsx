@@ -137,8 +137,9 @@ const TrackOrderScreen = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={theme.colors.brandColor}   
-          />}
+            tintColor={theme.colors.brandColor}
+          />
+        }
       >
         {/* TRACKING CARD */}
         <Card>
@@ -173,7 +174,7 @@ const TrackOrderScreen = () => {
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
             />
-            <ThemedTouchableOpacity onPress={()=> navigation.navigate("ScannerScreen")}>
+            <ThemedTouchableOpacity onPress={() => navigation.navigate("ScannerScreen")}>
               <Ionicons name="qr-code-outline" size={20} color="#888" />
             </ThemedTouchableOpacity>
           </View>
