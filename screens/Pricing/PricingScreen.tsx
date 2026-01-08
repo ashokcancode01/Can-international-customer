@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { ScrollView, StyleSheet, RefreshControl } from "react-native";
+import { ScrollView, StyleSheet, RefreshControl, Modal, Pressable } from "react-native";
 import { useForm } from "react-hook-form";
 import { useTheme } from "../../theme/ThemeProvider";
 import ThemedText from "@/components/themed/ThemedText";
@@ -12,11 +12,11 @@ import { useGetCountryListQuery } from "@/store/slices/dropdown";
 import { getServiceTypeOptions, ShipmentType } from "@/constants/dropdowns";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { useGetPricingMutation } from "@/store/slices/pricing";
-
+import { Ionicons } from "@expo/vector-icons";
 
 type FormData = {
     origin: string;
-    destination: any;
+    destination: { _id?: string; name: string; value: string } | null;
     shipmentType: { _id: string; name: string } | null;
     serviceType: { _id: string; name: string } | null;
     weight: string;
@@ -26,93 +26,85 @@ const PricingScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<any>();
     const [refreshing, setRefreshing] = useState(false);
+    const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [pricingResult, setPricingResult] = useState<any>(null);
-    const { control, handleSubmit, watch, reset } = useForm<FormData>({
+    const {
+        control,
+        handleSubmit,
+        watch,
+        reset,
+    } = useForm<FormData>({
         defaultValues: {
             origin: "Nepal",
-            destination: { name: "Afghanistan" },
+            destination: { name: "Afghanistan", value: "Afghanistan" },
             shipmentType: null,
             serviceType: null,
             weight: "",
         },
     });
-
     const selectedShipmentType = watch("shipmentType");
-
-    // Change the service type dropdowm dynamically for shipment type document and parcel
     const serviceOptions = getServiceTypeOptions(selectedShipmentType);
-
     const { data: countryList } = useGetCountryListQuery();
-
     const [getPricing, { isLoading }] = useGetPricingMutation();
 
+    // Submit handler
     const onSubmit = async (formData: FormData) => {
         const safeToLower = (str?: string) => (str ? str.toLowerCase() : "");
 
-        if (!formData.weight || Number(formData.weight) <= 0) {
-            return;
-        }
-        if (!formData.destination?.name) {
-            return;
-        }
-        if (!formData.shipmentType?.name) {
-            return;
-        }
-        if (!formData.serviceType?.name) {
-            return;
-        }
+        if (!formData.weight || Number(formData.weight) <= 0) return;
+        if (!formData.destination?.name) return;
+        if (!formData.shipmentType?.name) return;
+        if (!formData.serviceType?.name) return;
 
         try {
             const result = await getPricing({
-                destination: formData.destination.value,
-                shipmentType: safeToLower(formData.shipmentType.name),
-                serviceType: safeToLower(formData.serviceType.name),
-                weight: Number(formData.weight),
+                payload: {
+                    destination: formData.destination.value,
+                    type: safeToLower(formData.shipmentType?.name),
+                    service: safeToLower(formData.serviceType?.name),
+                    weight: Number(formData.weight),
+                },
             }).unwrap();
 
             setPricingResult(result);
-
-        } catch {
-            alert(" An error occurred while calculating rate. Please try again.");
-
+        } catch (error: any) {
+            setErrorMessage(
+                error?.data?.message ||
+                "An error occurred while calculating rate. Please try again."
+            );
         }
     };
 
-    // Helper function to convert cca2 to emoji
+    // Helper: Country code to emoji
     const countryCodeToEmoji = (cca2?: string) => {
         if (!cca2) return "";
         return cca2
             .toUpperCase()
-            .replace(/./g, (char) =>
-                String.fromCodePoint(char.charCodeAt(0) + 127397)
-            );
+            .replace(/./g, (char) => String.fromCodePoint(char.charCodeAt(0) + 127397));
     };
 
-    //Map the country list for the dropdown
-    const mappedCountries = countryList?.map((item) => ({
-        _id: item._id,
-        name: `${item.cca2 ? countryCodeToEmoji(item.cca2) + " " : ""}${item.name}`,
-        value: item.name,
-        cca2: item.cca2,
-        flagUrl: item.flagUrl,
-    })) || [];
+    const mappedCountries =
+        countryList?.map((item) => ({
+            _id: item._id,
+            name: `${item.cca2 ? countryCodeToEmoji(item.cca2) + " " : ""}${item.name}`,
+            value: item.name,
+            cca2: item.cca2,
+            flagUrl: item.flagUrl,
+        })) || [];
 
-
-    //Refresh Handler
+    // Refresh handler
     const onRefresh = useCallback(() => {
         setRefreshing(true);
-        setTimeout(() => {
-            setRefreshing(false);
-        }, 1500);
+        setTimeout(() => setRefreshing(false), 1500);
     }, []);
 
-    //Reset the pricng form 
+    // Reset form on screen focus
     useFocusEffect(
         useCallback(() => {
             return () => {
                 reset({
                     origin: "Nepal",
-                    destination: { name: "Afghanistan" },
+                    destination: { name: "Afghanistan", value: "Afghanistan" },
                     shipmentType: null,
                     serviceType: null,
                     weight: "",
@@ -122,9 +114,9 @@ const PricingScreen = () => {
         }, [reset])
     );
 
-    //Prefills the message in contact screen message
+    // Prefill contact message
     const handleOrder = () => {
-        const destination = watch("destination")?.name || "";
+        const destination = watch("destination")?.value || "";
         const serviceType = watch("serviceType")?.name || "";
         const weight = watch("weight") || "";
         const estimatedPrice = pricingResult?.data?.finalRate || "";
@@ -135,28 +127,19 @@ const PricingScreen = () => {
             screen: "Contact",
             params: {
                 screen: "ContactScreen",
-                 prefillMessage: message
-                 },
+                prefillMessage: message,
+            },
         });
     };
-
 
     return (
         <ThemedView style={{ flex: 1, backgroundColor: theme.colors.background }}>
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
-                refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                        tintColor={theme.colors.brandColor}
-                    />
-                }
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={theme.colors.brandColor} />}
             >
-                <ThemedText style={[styles.title, { color: theme.colors.brandColor }]}>
-                    International Courier Pricing
-                </ThemedText>
+                <ThemedText style={[styles.title, { color: theme.colors.brandColor }]}>International Courier Pricing</ThemedText>
 
                 <ThemedCard
                     isCard
@@ -178,9 +161,7 @@ const PricingScreen = () => {
                             borderColor: theme.dark ? "#FFFFFF" : theme.colors.border,
                             backgroundColor: "transparent",
                         }}
-                        inputStyle={{
-                            color: theme.dark ? "#FFFFFF" : "#000000",
-                        }}
+                        inputStyle={{ color: theme.dark ? "#FFFFFF" : "#000000" }}
                         placeholder="Nepal"
                         placeholderTextColor={theme.dark ? "#FFFFFF" : "#999999"}
                     />
@@ -193,26 +174,19 @@ const PricingScreen = () => {
                         storeFullObject
                         options={mappedCountries}
                         placeholder="Select country name"
+                        rules={{ required: "Please select a destination country" }}
                     />
-
                     {/* SHIPMENT TYPE */}
                     <CustomFormDropdown
                         control={control}
                         name="shipmentType"
                         label="Shipment Type"
                         options={ShipmentType}
-                        defaultValue=""
-                        placeholder="Select Shipment Type"
                         storeFullObject
-                        containerStyle={{ marginBottom: 0 }}
+                        placeholder="Select Shipment Type"
+                        rules={{ required: "Please select a shipment type" }}
                     />
-                    <ThemedText
-                        style={{
-                            color: theme.colors.textSecondary,
-                            marginBottom: 12,
-                            fontSize: 10,
-                        }}
-                    >
+                    <ThemedText style={{ color: theme.colors.textSecondary, marginBottom: 12, fontSize: 10 }}>
                         Choose what are you sending
                     </ThemedText>
 
@@ -223,18 +197,11 @@ const PricingScreen = () => {
                         label="Service Type"
                         options={serviceOptions}
                         storeFullObject
-                        defaultValue=""
-                        placeholder="Select Shipment Type"
+                        placeholder="Select Service Type"
                         disabled={!selectedShipmentType}
-                        containerStyle={{ marginBottom: 0 }}
+                        rules={{ required: "Please select a service type" }}
                     />
-                    <ThemedText
-                        style={{
-                            color: theme.colors.textSecondary,
-                            marginBottom: 12,
-                            fontSize: 10,
-                        }}
-                    >
+                    <ThemedText style={{ color: theme.colors.textSecondary, marginBottom: 12, fontSize: 10 }}>
                         {selectedShipmentType ? "Choose delivery speed" : "Select Shipment Type first"}
                     </ThemedText>
 
@@ -247,7 +214,9 @@ const PricingScreen = () => {
                         isNumber
                         min={0.5}
                         step={0.5}
-                        rules={{ required: "Weight is required" }}
+                        rules={{
+                            required: "Weight is required",
+                        }}
                     />
 
                     {/* BUTTON */}
@@ -258,44 +227,100 @@ const PricingScreen = () => {
                         disabled={isLoading}
                         onPress={handleSubmit(onSubmit)}
                     />
-
                 </ThemedCard>
-                {pricingResult?.success && (
-                    <ThemedCard
-                        isCard
-                        radius
-                        padding="md"
-                        style={{
-                            backgroundColor: "#FFE6EA",
-                            marginTop: 16,
-                        }}
+
+                {/* RESULT MODAL */}
+                <Modal visible={!!pricingResult?.success} transparent animationType="fade">
+                    <Pressable style={styles.overlay} onPress={() => setPricingResult(null)}>
+                        <Pressable
+                            style={[
+                                styles.rateCard,
+                                { backgroundColor: theme.colors.card, borderWidth: theme.dark ? 1 : 0, borderColor: theme.dark ? "#FFFFFF20" : "transparent" },
+                            ]}
+                            onPress={() => { }}
+                        >
+                            {/* CLOSE */}
+                            <Pressable style={styles.closeButton} onPress={() => setPricingResult(null)}>
+                                <Ionicons name="close" size={20} color={theme.colors.textSecondary} />
+                            </Pressable>
+
+                            {/* PRICE */}
+                            <ThemedText style={[styles.cardTitle, { color: theme.colors.secondaryText }]}>TOTAL ESTIMATED RATE</ThemedText>
+                            <ThemedText style={[styles.totalPrice, { color: theme.colors.text }]}>₹ {pricingResult?.data?.finalRate}</ThemedText>
+
+                            {/* INFO */}
+                            <ThemedView style={[styles.infoBox, { backgroundColor: theme.dark ? "#1F2933" : "#F3F4F6" }]}>
+                                <Ionicons name="information-circle-outline" size={16} color={theme.colors.textSecondary} />
+                                <ThemedText style={[styles.infoText, { color: theme.colors.secondaryText }]}>
+                                    Additional surcharges, remote area fees, or customs duties may apply based on destination.
+                                </ThemedText>
+                            </ThemedView>
+
+                            {/* SEND ORDER */}
+                            <ThemedButton buttonName="Send Your Order →" style={[
+                                styles.orderButton,
+                                { backgroundColor: theme.colors.brandColor }]}
+                                onPress={handleOrder} isLoading={false} loadingText="" />
+                        </Pressable>
+                    </Pressable>
+                </Modal>
+
+                {/* ERROR MODAL */}
+                <Modal visible={!!errorMessage} transparent animationType="fade">
+                    <Pressable
+                        style={styles.overlay}
+                        onPress={() => setErrorMessage(null)}
                     >
-                        <ThemedText
-                            style={{
-                                color: "#D7263D",
-                                fontSize: 16,
-                                fontFamily: "Montserrat-SemiBold",
-                            }}
+                        <Pressable
+                            style={[
+                                styles.rateCard,
+                                {
+                                    backgroundColor: theme.colors.card,
+                                    borderWidth: theme.dark ? 1 : 0,
+                                    borderColor: theme.dark ? "#FFFFFF20" : "transparent",
+                                    alignItems: "center",
+                                },
+                            ]}
+                            onPress={() => { }}
                         >
-                            Rate: ₹ {pricingResult.data.finalRate}
-                        </ThemedText>
+                            {/* CLOSE */}
+                            <Pressable
+                                style={styles.closeButton}
+                                onPress={() => setErrorMessage(null)}
+                            >
+                                <Ionicons
+                                    name="close"
+                                    size={20}
+                                    color={theme.colors.textSecondary}
+                                />
+                            </Pressable>
 
-                        <ThemedText
-                            style={{
-                                fontSize: 11,
-                                color: theme.colors.textSecondary,
-                                marginTop: 6,
-                            }}
-                        >
-                            * Additional surcharges, remote area fees, or customs duties may apply based on destination and service type.
-                        </ThemedText>
+                            {/* ERROR ICON */}
+                            <Ionicons
+                                name="alert-circle-outline"
+                                size={26}
+                                color="#DC2626"
+                                style={{ marginBottom: 10, marginTop: 12 }}
+                            />
 
-                        <ThemedButton
-                            buttonName="Send Your Order"
-                            style={{ marginTop: 10 }} isLoading={false} loadingText={""}
-                            onPress={handleOrder} />
-                    </ThemedCard>
-                )}
+                            {/* ERROR TEXT */}
+                            <ThemedText
+                                style={{
+                                    fontSize: 14,
+                                    lineHeight: 20,
+                                    color: theme.colors.text,
+                                    fontFamily: "Montserrat-Medium",
+                                    textAlign: "center",
+                                    paddingHorizontal: 12,
+                                }}
+                            >
+                                {errorMessage}
+                            </ThemedText>
+                        </Pressable>
+                    </Pressable>
+                </Modal>
+
+
             </ScrollView>
         </ThemedView>
     );
@@ -313,11 +338,58 @@ const styles = StyleSheet.create({
         textAlign: "center",
         marginTop: 20,
     },
-    textField: {
-        marginBottom: 10,
-        borderWidth: 1,
-        borderRadius: 5,
+    overlay: {
+        flex: 1,
+        backgroundColor: "rgba(0,0,0,0.4)",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 16,
     },
+    rateCard: {
+        width: "100%",
+        maxWidth: 360,
+        backgroundColor: "#FFFFFF",
+        borderRadius: 16,
+        padding: 20,
+    },
+    closeButton: {
+        position: "absolute",
+        top: 14,
+        right: 14,
+        zIndex: 10,
+    },
+    cardTitle: {
+        fontSize: 11,
+        textAlign: "center",
+        letterSpacing: 1,
+        marginBottom: 8,
+        fontFamily: "Montserrat-Medium",
+    },
+    totalPrice: {
+        fontSize: 32,
+        fontFamily: "Montserrat-Bold",
+        textAlign: "center",
+        marginBottom: 12,
+    },
+    infoBox: {
+        flexDirection: "row",
+        backgroundColor: "#F3F4F6",
+        padding: 10,
+        borderRadius: 10,
+        marginBottom: 16,
+        gap: 8,
+    },
+    infoText: {
+        fontSize: 11,
+        flex: 1,
+    },
+    orderButton: {
+        marginTop: 14,
+        borderRadius: 12,
+        padding: 5,
+    },
+
 });
+
 
 export default PricingScreen;  

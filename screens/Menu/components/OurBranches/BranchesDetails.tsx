@@ -21,11 +21,9 @@ const BranchesDetails = () => {
     const { branchId } = route.params as { branchId: string };
     const { data: branchResponse, isLoading, isError } = useGetBranchByIdQuery(branchId);
     const branch = branchResponse?.data;
-
     const hasWorkingHours = !!branch?.workingHours && branch.workingHours.length > 0;
     const services = branchResponse?.services ?? [];
     const hasServices = services.length > 0;
-
     const coordinates = branch?.coordinates;
     const lat = coordinates?.lat;
     const long = coordinates?.long;
@@ -33,8 +31,8 @@ const BranchesDetails = () => {
     const hasLocation =
         typeof lat === "number" &&
         typeof long === "number";
-    //Refresh Handler
 
+    //Refresh Handler
     const onRefresh = useCallback(() => {
         setRefreshing(true);
         setTimeout(() => {

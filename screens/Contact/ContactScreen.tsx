@@ -9,6 +9,7 @@ import { useTheme } from "@/theme/ThemeProvider";
 import ThemedKeyboardView from "@/components/themed/ThemedKeyboardView";
 import { ThemedView } from "@/components/themed/ThemedView";
 import { useRoute, useFocusEffect } from "@react-navigation/native";
+import { useCreateLeadMutation } from "@/store/slices/contact";
 
 interface FormData {
   fullName: string;
@@ -21,6 +22,7 @@ interface FormData {
 const ContactScreen = () => {
   const { theme } = useTheme();
   const [refreshing, setRefreshing] = useState(false);
+  const [messageResult, setMessageResult] = useState<{ text: string; type: "success" | "error" } | null>(null); // updated
   const route = useRoute<any>();
   const { control, handleSubmit, reset } = useForm<FormData>({
     defaultValues: {
@@ -32,9 +34,28 @@ const ContactScreen = () => {
     },
   });
 
-  const onSubmit = (data: FormData) => {
-    console.log("Form submitted:", data);
-    reset();
+  const [createLead, { isLoading }] = useCreateLeadMutation();
+
+  const onSubmit = async (data: FormData) => {
+    try {
+      await createLead({
+        payload: {
+          name: data.fullName,
+          phone: data.phone,
+          email: data.email,
+          description: data.message,
+          inquiryOf: "General",
+        }
+      }).unwrap();
+
+      setMessageResult({ text: "Message sent successfully!", type: "success" });
+      reset();
+      setTimeout(() => setMessageResult(null), 3000);
+
+    } catch {
+      setMessageResult({ text: "Failed to send message. Please try again.", type: "error" });
+      setTimeout(() => setMessageResult(null), 3000);
+    }
   };
 
   // Pull-to-refresh handler
@@ -48,16 +69,13 @@ const ContactScreen = () => {
       email: "",
       message: route.params?.prefillMessage ?? "",
     });
-
-    setTimeout(() => {
-      setRefreshing(false);
-    }, 600);
+    setMessageResult(null);
+    setTimeout(() => setRefreshing(false), 600);
   }, [reset, route.params]);
 
   // Reset form when screen is focused
   useFocusEffect(
     useCallback(() => {
-      // On screen focus, set default values
       reset({
         fullName: "",
         subject: "",
@@ -65,8 +83,7 @@ const ContactScreen = () => {
         email: "",
         message: route.params?.prefillMessage ?? "",
       });
-
-      // Cleanup: reset message when leaving this screen
+      setMessageResult(null);
       return () => {
         reset({
           fullName: "",
@@ -75,10 +92,10 @@ const ContactScreen = () => {
           email: "",
           message: "",
         });
+        setMessageResult(null);
       };
     }, [route.params, reset])
   );
-
 
   return (
     <ThemedKeyboardView
@@ -139,7 +156,6 @@ const ContactScreen = () => {
           placeholder="Subject"
           label="Subject"
           placeholderTextColor={theme.colors.textSecondary}
-          rules={{ required: "Subject is required" }}
         />
         <ThemedTextField
           control={control}
@@ -161,7 +177,6 @@ const ContactScreen = () => {
           keyboardType="email-address"
           placeholderTextColor={theme.colors.textSecondary}
           rules={{
-            required: "Email is required",
             pattern: { value: /^\S+@\S+\.\S+$/, message: "Invalid email" },
           }}
         />
@@ -177,14 +192,29 @@ const ContactScreen = () => {
         />
         <ThemedButton
           buttonName="Send"
-          isLoading={false}
+          isLoading={isLoading}
           loadingText="Sending..."
           onPress={handleSubmit(onSubmit)}
         />
+
+        {/* Success/Error Message */}
+        {messageResult && (
+          <ThemedText
+            style={{
+              marginTop: 10,
+              marginLeft: 60,
+              color: messageResult.type === "success" ? theme.colors.green : theme.colors.brandColor,
+              fontSize: 13,
+            }}
+          >
+            {messageResult.text}
+          </ThemedText>
+        )}
       </ThemedView>
     </ThemedKeyboardView>
   );
 };
+
 
 const styles = StyleSheet.create({
   container: {

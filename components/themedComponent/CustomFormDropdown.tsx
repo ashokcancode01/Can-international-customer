@@ -20,10 +20,10 @@ import {
 } from "@expo/vector-icons";
 
 import { useThemeColor } from "@/hooks/useThemeColor";
-import ThemedTouchableOpacity from "../themed/ThemedTouchableOpacity";
+import { ThemedTouchableOpacity } from "../themed/ThemedTouchableOpacity";
 import ThemedText from "../themed/ThemedText";
-import ThemedIcon from "../themed/ThemedIcon";
-import ThemedView from "../themed/ThemedView";
+import { ThemedIcon } from "../themed/ThemedIcon";
+import { ThemedView } from "../themed/ThemedView";
 import { useTheme } from "@/theme/ThemeProvider";
 
 interface Option {
@@ -51,10 +51,10 @@ interface CustomFormDropdownProps<T extends FieldValues> {
   containerStyle?: ViewStyle;
   searchable?: boolean;
   defaultValue?:
-    | string
-    | boolean
-    | SelectedValue
-    | (string | boolean | SelectedValue)[];
+  | string
+  | boolean
+  | SelectedValue
+  | (string | boolean | SelectedValue)[];
   dependentNoOptionText?: string;
   requireSearchToShow?: boolean;
   onAddNewItem?: (searchText: string) => void;
@@ -74,13 +74,15 @@ const DropdownOption = memo(
     item,
     isSelected,
     onSelect,
+    borderColor,
   }: {
     item: Option;
     isSelected: boolean;
     onSelect: () => void;
+    borderColor?: string;
   }) => (
     <ThemedTouchableOpacity
-      style={[styles.option, isSelected && styles.selectedOption]}
+      style={[styles.option, { borderBottomColor: borderColor }, isSelected && styles.selectedOption]}
       onPress={onSelect}
     >
       <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -256,20 +258,20 @@ function CustomFormDropdownBase<T extends FieldValues>(
     ) => {
       const isSelected = isMultiSelect
         ? Array.isArray(value) &&
-          value.some((v: any) =>
-            storeFullObject ? v._id === item._id : v === item._id
-          )
+        value.some((v: any) =>
+          storeFullObject ? v._id === item._id : v === item._id
+        )
         : storeFullObject
-        ? value?._id === item._id
-        : value === item._id;
+          ? value?._id === item._id
+          : value === item._id;
 
       const handleSelect = () => {
         if (isMultiSelect) {
           const currentValues = Array.isArray(value) ? value : [];
           const newValues = isSelected
             ? currentValues.filter((v: any) =>
-                storeFullObject ? v._id !== item._id : v !== item._id
-              )
+              storeFullObject ? v._id !== item._id : v !== item._id
+            )
             : [...currentValues, storeFullObject ? { ...item } : item._id];
           onChange(newValues?.length > 0 ? newValues : null);
         } else {
@@ -279,15 +281,17 @@ function CustomFormDropdownBase<T extends FieldValues>(
         setSearchText("");
       };
 
+    const borderColor = theme.dark ? "#222" : "#eee";
       return (
         <DropdownOption
           item={item}
           isSelected={isSelected}
           onSelect={handleSelect}
+          borderColor={borderColor}
         />
       );
     },
-    [isMultiSelect, storeFullObject]
+    [isMultiSelect, storeFullObject, theme.dark]
   );
 
   const renderEmptyList = useCallback(

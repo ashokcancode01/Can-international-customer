@@ -3,38 +3,29 @@ import { baseApi } from "@/api/baseApi";
 export interface PricingItem {
     success: boolean;
     message: string;
-    data: {
-        type: string;
-        service: string;
-        physicalWeight: number;
-        requestedWeight: number;
-        matchedWeight: number;
-        baseRate: number;
+    data?: {
         finalRate: number;
-        collectionUsed: string;
     };
 }
+
+export type getPricing = {
+    destination: string;
+    type: string;
+    service: string;
+    weight: number;
+};
+
 
 export const pricingApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         getPricing: builder.mutation<
             PricingItem,
-            {
-                destination: string;
-                shipmentType: string;
-                serviceType: string;
-                weight: number;
-            }
+            { payload: getPricing }
         >({
-            query: ({ destination, shipmentType, serviceType, weight }) => ({
+            query: ({ payload }) => ({
                 url: "/public/rates",
                 method: "POST",
-                body: {
-                    destination,
-                    type: shipmentType.toLowerCase(), 
-                    service: serviceType.toLowerCase(), 
-                    weight,
-                },
+                body: payload,
             }),
         }),
     }),
