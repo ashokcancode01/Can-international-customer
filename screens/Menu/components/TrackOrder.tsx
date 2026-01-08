@@ -133,13 +133,13 @@ const TrackOrderScreen = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <ScrollView
         style={[styles.container, { backgroundColor: theme.colors.background }]} contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled"
-         refreshControl={
-                           <RefreshControl
-                               refreshing={refreshing}
-                               onRefresh={onRefresh}
-                               tintColor={theme.colors.brandColor}
-                           />
-                       }
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={theme.colors.brandColor}
+          />
+        }
       >
         {/* TRACKING CARD */}
         <Card>

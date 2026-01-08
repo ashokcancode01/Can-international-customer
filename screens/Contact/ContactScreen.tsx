@@ -99,12 +99,16 @@ const ContactScreen = () => {
   );
 
   //Helper to open phone  dialer with the given
-  const handleCall = (phoneNumber: string) => {
-    const url = `tel:${phoneNumber}`;
-    Linking.canOpenURL(url)
-      .then((supported) => { if (supported) Linking.openURL(url); })
-      .then((err) => console.log("Error opening dialer", err))
+  const handleCall = async (phoneNumber: string) => {
+  const url = `tel:${phoneNumber}`;
+
+  try {
+    await Linking.openURL(url);
+  } catch (error) {
+    console.log("Error opening dialer:", error);
   }
+};
+
 
   return (
     <ThemedKeyboardView

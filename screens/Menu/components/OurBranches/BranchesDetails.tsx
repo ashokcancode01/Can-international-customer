@@ -102,12 +102,15 @@ const BranchesDetails = () => {
         });
     };
 
-    const handleCall = (phoneNumber: string) => {
+    const handleCall = async (phoneNumber: string) => {
         const url = `tel:${phoneNumber}`;
-        Linking.canOpenURL(url)
-            .then((supported) => { if (supported) Linking.openURL(url); })
-            .catch((err) => console.error("Error opening dialer", err));
+        try {
+            await Linking.openURL(url);
+        } catch (error) {
+            console.log("Error opening dialer:", error);
+        }
     };
+
 
     //Helper because api is returning HTML inisde a string
     const stripHtml = (text?: string) => {
