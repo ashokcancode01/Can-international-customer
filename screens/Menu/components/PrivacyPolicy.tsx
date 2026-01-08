@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { ScrollView, StyleSheet, Text, Linking, View, RefreshControl } from "react-native";
+import { ScrollView, StyleSheet, Text, Linking, View, RefreshControl, Platform } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import { ThemedView } from "@/components/themed/ThemedView";
 import ThemedText from "@/components/themed/ThemedText";
 import Card from "./Card";
-import { Entypo } from "@expo/vector-icons";
+import { Entypo, MaterialCommunityIcons } from "@expo/vector-icons";
 import LoadingIndicator from "@/components/LoadingIndicator";
 
 const PrivacyPolicy = () => {
@@ -37,6 +37,7 @@ const PrivacyPolicy = () => {
         <ThemedView style={{ flex: 1, backgroundColor: theme.colors.background }}>
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}
@@ -48,6 +49,11 @@ const PrivacyPolicy = () => {
                 <Card>
                     {/* Entire Privacy Policy Text */}
                     <ThemedText style={[styles.heading, { color: theme.colors.brandColor }]}>
+                        <MaterialCommunityIcons
+                            name="shield-lock"
+                            size={20}
+                            color={theme.colors.brandColor}
+                        />{" "}
                         Privacy Policy
                     </ThemedText>
                     <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify", }]}>
@@ -64,6 +70,11 @@ const PrivacyPolicy = () => {
                 </Card>
                 <Card>
                     <ThemedText style={[styles.subheading, { color: theme.colors.brandColor, fontSize: 16 }]}>
+                        <MaterialCommunityIcons
+                            name="book-open"
+                            size={20}
+                            color={theme.colors.brandColor}
+                        />{" "}
                         Interpretation and Definitions
                     </ThemedText>
                     <ThemedText style={styles.textHeading}>Interpretation</ThemedText>
@@ -136,6 +147,11 @@ const PrivacyPolicy = () => {
                 </Card>
                 <Card>
                     <ThemedText style={[styles.subheading, { color: theme.colors.brandColor, fontSize: 16 }]}>
+                        <MaterialCommunityIcons
+                            name="shield-account"
+                            size={20}
+                            color={theme.colors.brandColor}
+                        />{" "}
                         Collecting and Using your Personal Data
                     </ThemedText>
                     <ThemedText style={[styles.subheading, { color: theme.colors.brandColor }]}>
@@ -220,6 +236,11 @@ const PrivacyPolicy = () => {
 
                 <Card>
                     <ThemedText style={[styles.subheading, { color: theme.colors.brandColor }]}>
+                        <MaterialCommunityIcons
+                            name="cookie"
+                            size={20}
+                            color={theme.colors.brandColor}
+                        />{" "}
                         Tracking Technologies and Cookies
                     </ThemedText>
                     <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify", }]}>
@@ -299,6 +320,11 @@ const PrivacyPolicy = () => {
                 </Card>
                 <Card>
                     <ThemedText style={[styles.subheading, { color: theme.colors.brandColor }]}>
+                        <MaterialCommunityIcons
+                            name="account-arrow-right"
+                            size={20}
+                            color={theme.colors.brandColor}
+                        />{" "}
                         Use of your Personal Data
                     </ThemedText>
                     <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify", }]}>
@@ -475,11 +501,11 @@ const PrivacyPolicy = () => {
                         The Company may disclose Your Personal Data in the good faith belief that such action is necessary to:
                     </ThemedText>
                     <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify" }]}>
-                        <Entypo name="dot-single" size={16} color={theme.colors.brandColor} /> Comply with all applicable legal obligations.{'\n'}
-                        <Entypo name="dot-single" size={16} color={theme.colors.brandColor} /> Protect and uphold the rights and property of the Company.{'\n'}
-                        <Entypo name="dot-single" size={16} color={theme.colors.brandColor} /> Prevent or investigate any potential misconduct related to the Service.{'\n'}
-                        <Entypo name="dot-single" size={16} color={theme.colors.brandColor} /> Safeguard the personal safety of Users or the general public.{'\n'}
-                        <Entypo name="dot-single" size={16} color={theme.colors.brandColor} /> Mitigate and protect against potential legal liabilities.{'\n'}
+                        <Entypo name="dot-single" size={16} color={theme.colors.brandColor} /> Comply with a legal obligation{'\n'}
+                        <Entypo name="dot-single" size={16} color={theme.colors.brandColor} /> Protect and defend the rights or property of the Company{'\n'}
+                        <Entypo name="dot-single" size={16} color={theme.colors.brandColor} /> Prevent or investigate possible wrongdoing in connection with the Service{'\n'}
+                        <Entypo name="dot-single" size={16} color={theme.colors.brandColor} /> Protect the personal safety of Users of the Service or the public{'\n'}
+                        <Entypo name="dot-single" size={16} color={theme.colors.brandColor} /> Protect against legal liability{'\n'}
                     </ThemedText>
                 </Card>
 
@@ -494,6 +520,11 @@ const PrivacyPolicy = () => {
 
                 <Card>
                     <ThemedText style={[styles.subheading, { color: theme.colors.brandColor }]}>
+                        <MaterialCommunityIcons
+                            name="account-child"
+                            size={20}
+                            color={theme.colors.brandColor}
+                        />{" "}
                         Children&apos;s Privacy
                     </ThemedText>
                     <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify", }]}>
@@ -509,6 +540,11 @@ const PrivacyPolicy = () => {
 
                 <Card>
                     <ThemedText style={[styles.subheading, { color: theme.colors.brandColor }]}>
+                        <MaterialCommunityIcons
+                            name="open-in-new"
+                            size={20}
+                            color={theme.colors.brandColor}
+                        />{" "}
                         Links to Other Websites
                     </ThemedText>
                     <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify", }]}>
@@ -522,6 +558,11 @@ const PrivacyPolicy = () => {
 
                 <Card>
                     <ThemedText style={[styles.subheading, { color: theme.colors.brandColor }]}>
+                        <MaterialCommunityIcons
+                            name="update"
+                            size={20}
+                            color={theme.colors.brandColor}
+                        />{" "}
                         Changes to this Privacy Policy
                     </ThemedText>
                     <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify", }]}>
@@ -539,6 +580,11 @@ const PrivacyPolicy = () => {
 
                 <Card>
                     <ThemedText style={[styles.subheading, { color: theme.colors.brandColor }]}>
+                        <MaterialCommunityIcons
+                            name="phone"
+                            size={18}
+                            color={theme.colors.brandColor}
+                        />{" "}
                         Contact Us
                     </ThemedText>
                     <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify", }]}>
@@ -592,6 +638,14 @@ const styles = StyleSheet.create({
         fontSize: 13,
         lineHeight: 20,
         marginBottom: 8,
-        fontFamily: "Montserrat-Regular",
+        ...Platform.select({
+            ios: {
+                letterSpacing: -0.5,
+            },
+            android: {
+                letterSpacing: 0,
+                includeFontPadding: false,
+            },
+        }),
     },
 });

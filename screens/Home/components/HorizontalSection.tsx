@@ -24,7 +24,7 @@ const HorizontalSection = <T,>({
   contentContainerStyle,
   cardStyle,
 }: HorizontalSectionProps<T>) => {
-  const { theme } = useTheme(); // Dark/Light mode
+  const { theme } = useTheme(); 
 
   return (
     <View style={[styles.sectionContainer, containerStyle]}>

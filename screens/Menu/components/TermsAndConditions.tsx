@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { ScrollView, StyleSheet, Text, Linking, View, RefreshControl } from "react-native";
+import { ScrollView, StyleSheet, Text, Linking, View, RefreshControl, Platform } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import { ThemedView } from "@/components/themed/ThemedView";
 import ThemedText from "@/components/themed/ThemedText";
 import Card from "./Card";
 import LoadingIndicator from "@/components/LoadingIndicator";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 
 const TermsAndConditions = () => {
     const { theme } = useTheme();
@@ -32,11 +33,11 @@ const TermsAndConditions = () => {
             </View>
         );
     }
-
     return (
         <ThemedView style={{ flex: 1, backgroundColor: theme.colors.background }}>
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}
@@ -48,26 +49,43 @@ const TermsAndConditions = () => {
                 <Card>
                     {/* Entire Terms & Conditions Text */}
                     <ThemedText style={[styles.heading, { color: theme.colors.brandColor }]}>
+                        <MaterialCommunityIcons
+                            name="file-document"
+                            size={22}
+                            color={theme.colors.brandColor}
+                        />{" "}
                         Terms and Conditions
                     </ThemedText>
+
                     <ThemedText style={[styles.text, { color: theme.colors.text }]}>
                         Last updated: November 17, 2025
                     </ThemedText>
+
                     <ThemedText style={[styles.text, { color: theme.colors.text }]}>
                         Please read these terms and conditions carefully before using Our Service.
                     </ThemedText>
                 </Card>
 
-                <Card>
+                <Card style={{ flexShrink: 1, overflow: 'visible' }} >
                     <ThemedText style={[styles.subheading, { color: theme.colors.brandColor, fontSize: 16 }]}>
+                        <MaterialCommunityIcons
+                            name="book-open"
+                            size={20}
+                            color={theme.colors.brandColor}
+                        />{" "}
                         Interpretation and Definitions
                     </ThemedText>
-                    <ThemedText style={styles.textHeading}>Interpretation</ThemedText>
-                    <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify", }]}>
+
+                    <ThemedText style={styles.textHeading}>
+                        Interpretation
+                    </ThemedText>
+
+                    <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify" }]}>
                         The words of which the initial letter is capitalized have meanings defined under the following conditions.
                         The following definitions shall have the same meaning regardless of whether they appear in singular or in plural.
                     </ThemedText>
                 </Card>
+
                 <Card>
                     <ThemedText style={styles.textHeading}>Definitions</ThemedText>
                     <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify", }]}>
@@ -80,11 +98,11 @@ const TermsAndConditions = () => {
                         Country refers to: Nepal
                     </ThemedText>
 
-                    <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify" }]}>
+                    <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify", }]}>
                         Company (referred to as either &ldquo;the Company&quot;, &quot;We&quot;, &quot;Us&quot; or &quot;Our&quot; in this Agreement)
-                        refers to Can International,Muni Bhairab Marg, Kathmandu 44600
+                        refers to Can International, Muni Bhairab Marg, Kathmandu 44600
                     </ThemedText>
-                    <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify" }]}>
+                    <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify", }]}>
                         Device means any device that can access the Service such as a computer, a cellphone or a digital tablet.
                     </ThemedText>
                     <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify" }]}>
@@ -99,7 +117,7 @@ const TermsAndConditions = () => {
                         Third-party Social Media Servicemeans any services or content (including data, information, products or services) provided by a third-party
                         that may be displayed, included or made available by the Service.
                     </ThemedText>
-                    <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify" }]}>
+                    <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify", }]}>
                         <Text>
                             Website refers to Can International, accessible from{' '}
                             <Text
@@ -117,6 +135,11 @@ const TermsAndConditions = () => {
                 </Card>
                 <Card>
                     <ThemedText style={[styles.subheading, { color: theme.colors.brandColor }]}>
+                        <MaterialCommunityIcons
+                            name="check-circle"
+                            size={20}
+                            color={theme.colors.brandColor}
+                        />{' '}
                         Acknowledgment
                     </ThemedText>
                     <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify" }]}>
@@ -142,6 +165,11 @@ const TermsAndConditions = () => {
 
                 <Card>
                     <ThemedText style={[styles.subheading, { color: theme.colors.brandColor }]}>
+                        <MaterialCommunityIcons
+                            name="open-in-new"
+                            size={16}
+                            color={theme.colors.brandColor}
+                        />{" "}
                         Links to Other Websites
                     </ThemedText>
                     <ThemedText style={[styles.text, { color: theme.colors.text }]}>
@@ -160,6 +188,11 @@ const TermsAndConditions = () => {
 
                 <Card>
                     <ThemedText style={[styles.subheading, { color: theme.colors.brandColor }]}>
+                        <MaterialCommunityIcons
+                            name="close-circle"
+                            size={20}
+                            color={theme.colors.brandColor}
+                        />{" "}
                         Termination
                     </ThemedText>
                     <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify" }]}>
@@ -173,6 +206,11 @@ const TermsAndConditions = () => {
 
                 <Card>
                     <ThemedText style={[styles.subheading, { color: theme.colors.brandColor }]}>
+                        <MaterialCommunityIcons
+                            name="alert-circle"
+                            size={20}
+                            color={theme.colors.brandColor}
+                        />{" "}
                         Limitation of Liability
                     </ThemedText>
                     <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify" }]}>
@@ -180,7 +218,7 @@ const TermsAndConditions = () => {
                         this Terms and Your exclusive remedy for all of the foregoing shall be limited to the amount actually paid by You through the Service or
                         100 USD if You haven&apos;t purchased anything through the Service.
                     </ThemedText>
-                    <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify" }]}>
+                    <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify", letterSpacing: -0.5 }]}>
                         To the maximum extent permitted by applicable law, in no event shall the Company or its suppliers be liable for any special, incidental,
                         indirect, or consequential damages whatsoever (including, but not limited to, damages for loss of profits, loss of data or other information,
                         for business interruption, for personal injury, loss of privacy arising out of or in any way related to the use of or inability to use the Service,
@@ -196,6 +234,11 @@ const TermsAndConditions = () => {
 
                 <Card>
                     <ThemedText style={[styles.subheading, { color: theme.colors.brandColor }]}>
+                        <MaterialCommunityIcons
+                            name="shield-alert"
+                            size={20}
+                            color={theme.colors.brandColor}
+                        />{" "}
                         &quot;AS IS&quot; and &quot;AS AVAILABLE&quot; Disclaimer
                     </ThemedText>
                     <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify" }]}>
@@ -224,6 +267,11 @@ const TermsAndConditions = () => {
 
                 <Card>
                     <ThemedText style={[styles.subheading, { color: theme.colors.brandColor }]}>
+                        <MaterialCommunityIcons
+                            name="gavel"
+                            size={20}
+                            color={theme.colors.brandColor}
+                        />{" "}
                         Governing Law
                     </ThemedText>
                     <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify" }]}>
@@ -234,6 +282,11 @@ const TermsAndConditions = () => {
 
                 <Card>
                     <ThemedText style={[styles.subheading, { color: theme.colors.brandColor }]}>
+                        <MaterialCommunityIcons
+                            name="handshake"
+                            size={20}
+                            color={theme.colors.brandColor}
+                        />{" "}
                         Disputes Resolution
                     </ThemedText>
                     <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify" }]}>
@@ -243,6 +296,11 @@ const TermsAndConditions = () => {
 
                 <Card>
                     <ThemedText style={[styles.subheading, { color: theme.colors.brandColor }]}>
+                        <MaterialCommunityIcons
+                            name="flag"
+                            size={20}
+                            color={theme.colors.brandColor}
+                        />{" "}
                         For European Union (EU) Users
                     </ThemedText>
                     <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify" }]}>
@@ -252,6 +310,12 @@ const TermsAndConditions = () => {
 
                 <Card>
                     <ThemedText style={[styles.subheading, { color: theme.colors.brandColor }]}>
+                        <MaterialCommunityIcons
+                            name="account-tie"
+                            size={20}
+                            color={theme.colors.brandColor}
+                        />{" "}
+
                         United States Legal Compliance
                     </ThemedText>
                     <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify" }]}>
@@ -263,6 +327,11 @@ const TermsAndConditions = () => {
 
                 <Card>
                     <ThemedText style={[styles.subheading, { color: theme.colors.brandColor }]}>
+                        <MaterialCommunityIcons
+                            name="file-check"
+                            size={20}
+                            color={theme.colors.brandColor}
+                        />{" "}
                         Severability and Waiver
                     </ThemedText>
                     <ThemedText style={styles.textHeading}>Severability</ThemedText>
@@ -305,13 +374,18 @@ const TermsAndConditions = () => {
                     </ThemedText>
                 </Card>
                 <Card>
-                    <ThemedText style={styles.textHeading}>Contact Us</ThemedText>
+                    <ThemedText style={styles.textHeading}>
+                        <MaterialCommunityIcons
+                            name="phone"
+                            size={16}
+                            color={theme.colors.text}
+                        />{" "}Contact Us</ThemedText>
                     <ThemedText style={[styles.text, { color: theme.colors.text, textAlign: "justify" }]}>
                         If you have any questions about these Terms and Conditions, You can contact us:
                     </ThemedText>
                     <ThemedText style={[styles.text, { color: theme.colors.text }]}>
                         By email: support@international.nepalcan.com
-
+                        {"\n"}
                         By phone number: 01-5970736
                     </ThemedText>
                 </Card>
@@ -358,6 +432,15 @@ const styles = StyleSheet.create({
         fontSize: 13,
         lineHeight: 20,
         marginBottom: 8,
+        ...Platform.select({
+            ios: {
+                letterSpacing: -0.5,
+            },
+            android: {
+                letterSpacing: 0,
+                includeFontPadding: false,
+            },
+        }),
     },
 });
 

@@ -133,12 +133,13 @@ const TrackOrderScreen = () => {
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <ScrollView
         style={[styles.container, { backgroundColor: theme.colors.background }]} contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled"
-        refreshControl={
-          <RefreshControl
-            refreshing={refreshing}
-            onRefresh={onRefresh}
-            tintColor={theme.colors.brandColor}   
-          />}
+         refreshControl={
+                           <RefreshControl
+                               refreshing={refreshing}
+                               onRefresh={onRefresh}
+                               tintColor={theme.colors.brandColor}
+                           />
+                       }
       >
         {/* TRACKING CARD */}
         <Card>
@@ -173,7 +174,7 @@ const TrackOrderScreen = () => {
               onFocus={() => setIsFocused(true)}
               onBlur={() => setIsFocused(false)}
             />
-            <ThemedTouchableOpacity onPress={()=> navigation.navigate("ScannerScreen")}>
+            <ThemedTouchableOpacity onPress={() => navigation.navigate("ScannerScreen")}>
               <Ionicons name="qr-code-outline" size={20} color="#888" />
             </ThemedTouchableOpacity>
           </View>
