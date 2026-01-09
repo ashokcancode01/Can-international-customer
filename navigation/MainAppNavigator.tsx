@@ -11,7 +11,7 @@ import { useTheme } from "../theme/ThemeProvider";
 // import { tabCountManager } from "../utils/tabCountManager";
 import { PublicStackParamList, PublicTabParamList } from "../types/publicTypes";
 import DashboardScreen from "@/screens/Home/DashboardScreen";
-import MenuScreen  from "@/screens/Menu/MenuScreen";
+import MenuScreen from "@/screens/Menu/MenuScreen";
 import AppearanceScreen from "@/screens/Menu/components/AppearanceScreen";
 // import QRScannerScreen from "@/screens/Menu/components/TrackOrder";
 import TrackOrderScreen from "@/screens/Menu/components/TrackOrder";
@@ -67,7 +67,7 @@ const MainTabNavigator = () => {
   // const navigation = useNavigation();
 
   // Fixed tabs: Home, Pricing, TrackOrder, Menu
-  const visibleTabs = ["Home", "Pricing", "TrackOrder", "Contact","Menu"];
+  const visibleTabs = ["Home", "Pricing", "TrackOrder", "Contact", "Menu"];
 
   return (
     <Tab.Navigator
@@ -114,14 +114,14 @@ const MainTabNavigator = () => {
               name === "Home"
                 ? DashboardScreen
                 : name === "Pricing"
-                ? PricingScreen
-                : name === "TrackOrder"
-                ? TrackOrderScreen
-                : name === "Menu"
-                ? MenuScreen
-                : name === "Contact"
-                ? ContactScreen
-                : DashboardScreen
+                  ? PricingScreen
+                  : name === "TrackOrder"
+                    ? TrackOrderScreen
+                    : name === "Menu"
+                      ? MenuScreen
+                      : name === "Contact"
+                        ? ContactScreen
+                        : DashboardScreen
             }
             options={{
               title: config.title,
@@ -188,88 +188,94 @@ const MainAppNavigator = () => {
         <Stack.Screen
           name="QRScanner"
           component={TrackOrderScreen}
-          options={{ title: "Track Order"}}
+          options={{ title: "Track Order" }}
         />
         <Stack.Screen
           name="OurTrustedProviders"
           component={TrustedProvidersScreen}
-          options={{ title: "Our Trusted Providers"}}
+          options={{ title: "Our Trusted Providers" }}
         />
         <Stack.Screen
           name="AboutUs"
           component={AboutUs}
-          options={{ title: "About Us"}}
+          options={{ title: "About Us" }}
         />
         <Stack.Screen
           name="OurBranches"
           component={OurBranches}
-          options={{ title: "Our Branches"}}
+          options={{ title: "Our Branches" }}
         />
         <Stack.Screen
           name="FAQs"
           component={FAQs}
-          options={{ title: "FAQs"}}
+          options={{ title: "FAQs" }}
         />
         <Stack.Screen
           name="AirFreight"
           component={AirFreight}
-          options={{ title: "Air Freight"}}
+          options={{ title: "Air Freight" }}
         />
         <Stack.Screen
           name="OceanFreight"
           component={OceanFreight}
-          options={{ title: "Ocean Freight"}}
+          options={{ title: "Ocean Freight" }}
         />
         <Stack.Screen
           name="LandTransport"
           component={LandTransport}
-          options={{ title: "Land Transport"}}
+          options={{ title: "Land Transport" }}
         />
         <Stack.Screen
           name="CustomsClearance"
           component={CustomsClearance}
-          options={{ title: "Customs Clearance"}}
+          options={{ title: "Customs Clearance" }}
         />
         <Stack.Screen
           name="CustomerSupport"
           component={CustomerSupport}
-          options={{ title: " 24/7 Customer Support"}}
+          options={{ title: " 24/7 Customer Support" }}
         />
         <Stack.Screen
           name="RealTimeTracking"
           component={RealTimeTracking}
-          options={{ title: "Real-Time Tracking"}}
+          options={{ title: "Real-Time Tracking" }}
         />
         <Stack.Screen
           name="WhyChooseUs"
           component={WhyChooseUS}
-          options={{ title: "Why Choose Us"}}
-        /> 
+          options={{ title: "Why Choose Us" }}
+        />
         <Stack.Screen
           name="BranchesDetails"
           component={BranchesDetails}
-          options={{ title: "Branch Details"}}
+          options={{ title: "Branch Details" }}
         />
         <Stack.Screen
           name="TermsAndConditions"
           component={TermsAndConditions}
-          options={{ title: "Terms & Conditions"}}
+          options={{ title: "Terms & Conditions" }}
         />
         <Stack.Screen
           name="PrivacyPolicy"
           component={PrivacyPolicy}
-          options={{ title: "Privacy Policy"}}
+          options={{ title: "Privacy Policy" }}
         />
-        <Stack.Screen 
+        <Stack.Screen
           name="ScannerScreen"
           component={ScannerScreen}
-          options={{ title: "Scan"}}
+          options={{ title: "Scan" }}
         />
-        <Stack.Screen 
+        <Stack.Screen
           name="ScannedOrderDetails"
           component={ScannedOrderDetails}
-          options={{ title: "Order Details"}}
+          options={{ title: "Order Details" }}
         />
+        <Stack.Screen
+          name="ContactStack"
+          component={ContactScreen}
+          options={{ title: "Contact Us" }}
+        />
+
 
         {/* <Stack.Screen
           name="CampaignDetail"

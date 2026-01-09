@@ -39,9 +39,7 @@ const BranchCard: React.FC<{ branch: Branch }> = ({ branch }) => {
             await Share.share({
                 message: `Branch: ${branch.name}\nCode: ${branch.code}\nAddress: ${branch.address}\nPhone: ${branch.phone}`,
             });
-        } catch (error) {
-            console.error("Error sharing branch details:", error);
-        }
+        } catch {}
     };
 
     return (

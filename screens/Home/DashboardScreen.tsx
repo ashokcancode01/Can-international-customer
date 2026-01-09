@@ -9,6 +9,7 @@ import {
   FlatList,
   ColorValue,
   RefreshControl,
+  Image
 } from "react-native";
 import { useTheme } from "../../theme/ThemeProvider";
 import ThemedText from "@/components/themed/ThemedText";
@@ -39,7 +40,7 @@ const QUICK_ACTIONS = [
   {
     label: "Fast & Reliable",
     description: "Experience quick, efficient and dependable shipping every time.",
-    icon: (color: string) => <FontAwesome5 name="truck" size={36} color={color} />,
+    icon: (color: string) => <FontAwesome5 name="truck" size={36} color={color} />
   },
   {
     label: "Worldwide Delivery",
@@ -142,22 +143,14 @@ const DashboardHeader = () => {
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
       <ThemedView style={[styles.flex, { backgroundColor: theme.colors.background }]}>
-        {/* Header */}
-        <View style={[styles.topHeader, { backgroundColor: theme.colors.card }]}>
-          <View style={[styles.headerRow, { marginLeft: 16 }]}>
-            <View style={styles.profileContainer}>
-              <Ionicons name="person-circle-outline" size={48} color={theme.colors.brandColor!} />
-              <View style={styles.textContainer}>
-                <ThemedText style={[styles.greetingText, { color: theme.colors.textSecondary }]}>
-                  {getGreeting()},
-                </ThemedText>
-                <ThemedText style={[styles.nameText, { color: theme.colors.text }]}>
-                  Guest User
-                </ThemedText>
-              </View>
-            </View>
-          </View>
+        <View style={[styles.HeaderBackground, { backgroundColor: theme.colors.cardBackground }]}>
+          <Image
+            source={require("../../assets/app/appBar.png")}
+            resizeMode="cover"
+            style={styles.HeaderImage}
+          />
         </View>
+
         <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
@@ -166,25 +159,41 @@ const DashboardHeader = () => {
               refreshing={refreshing}
               onRefresh={onRefresh}
               tintColor={theme.colors.brandColor}
+              progressViewOffset={60}
             />
           }
         >
-          {/* Welcome Section */}
-          <View style={styles.welcomeContainer}>
-            <ThemedText style={[styles.WelcomeTitle, { color: theme.colors.text }]}>
-              Welcome to{" "}
-              <ThemedText style={[styles.WelcomeTitle, { color: theme.colors.brandColor!, fontWeight: '700' }]}>
-                Nepal Can{'\n'}International
+          {/* Header */}
+          <View style={[styles.topHeader, { backgroundColor: theme.colors.card }]}>
+            <View style={[styles.headerRow, { marginLeft: 16 }]}>
+              <View style={styles.profileContainer}>
+                <Ionicons name="person-circle-outline" size={48} color={theme.colors.brandColor!} />
+                <View style={styles.textContainer}>
+                  <ThemedText style={[styles.greetingText, { color: theme.colors.textSecondary }]}>
+                    {getGreeting()},
+                  </ThemedText>
+                  <ThemedText style={[styles.nameText, { color: theme.colors.text }]}>
+                    Guest User
+                  </ThemedText>
+                </View>
+              </View>
+            </View>
+            {/* Welcome Section */}
+            <View style={styles.welcomeContainer}>
+              <ThemedText style={[styles.WelcomeTitle, { color: theme.colors.text }]}>
+                Welcome to{" "}
+                <ThemedText style={[styles.WelcomeTitle, { color: theme.colors.brandColor!, fontWeight: '700' }]}>
+                  Nepal Can{'\n'}International
+                </ThemedText>
               </ThemedText>
-            </ThemedText>
-            <ThemedText style={{ color: theme.colors.textSecondary, marginTop: 8, fontSize: 12, lineHeight: 20 }}>
-              We make international shipping easier with a smart management system that streamlines the movement of goods worldwide.
-            </ThemedText>
-            <ThemedText style={{ color: theme.colors.textSecondary, fontSize: 12, lineHeight: 20, marginTop: 6 }}>
-              One solution to simplify all your global logistics.
-            </ThemedText>
+              <ThemedText style={{ color: theme.colors.textSecondary, marginTop: 8, fontSize: 12, lineHeight: 20 }}>
+                We make international shipping easier with a smart management system that streamlines the movement of goods worldwide.
+              </ThemedText>
+              <ThemedText style={{ color: theme.colors.textSecondary, fontSize: 12, lineHeight: 20, marginTop: 6 }}>
+                One solution to simplify all your global logistics.
+              </ThemedText>
+            </View>
           </View>
-
 
           {/* Our Services */}
           <HorizontalSection
@@ -320,7 +329,22 @@ const styles = StyleSheet.create({
     paddingBottom: 30,
   },
   topHeader: {
-    paddingBottom: 10,
+    paddingVertical: 10,
+    borderRadius: 16,
+    marginHorizontal: 12,
+    marginTop: 80
+  },
+  HeaderBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 60,
+    zIndex: 10,
+  },
+  HeaderImage: {
+    width: '100%',
+    height: '100%',
   },
   headerRow: {
     flexDirection: "row",

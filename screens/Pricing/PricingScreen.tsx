@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { ScrollView, StyleSheet, RefreshControl, View, Pressable } from "react-native";
+import { ScrollView, StyleSheet, RefreshControl, View, Pressable, Image } from "react-native";
 import { useForm } from "react-hook-form";
 import { useTheme } from "../../theme/ThemeProvider";
 import ThemedText from "@/components/themed/ThemedText";
@@ -133,6 +133,13 @@ const PricingScreen = () => {
 
     return (
         <ThemedView style={{ flex: 1, backgroundColor: theme.colors.background }}>
+            <View style={[styles.HeaderBackground, { backgroundColor: theme.colors.cardBackground }]}>
+                <Image
+                    source={require("../../assets/app/appBar.png")}
+                    resizeMode="cover"
+                    style={styles.HeaderImage}
+                />
+            </View>
             <ScrollView
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
@@ -141,6 +148,7 @@ const PricingScreen = () => {
                         refreshing={refreshing}
                         onRefresh={onRefresh}
                         tintColor={theme.colors.brandColor}
+                        progressViewOffset={60}
                     />
                 }
             >
@@ -308,9 +316,9 @@ const PricingScreen = () => {
                             onPress={() => setErrorMessage(null)}
                             style={{
                                 position: "absolute",
-                                top: 8, 
-                                right: 8, 
-                                padding: 6, 
+                                top: 8,
+                                right: 8,
+                                padding: 6,
                                 zIndex: 10,
                             }}
                         >
@@ -344,12 +352,24 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         paddingHorizontal: 16,
     },
+    HeaderBackground: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 60,
+        zIndex: 10,
+    },
+    HeaderImage: {
+        width: '100%',
+        height: '100%',
+    },
     title: {
         fontSize: 18,
         fontFamily: "Montserrat-Bold",
         marginBottom: 20,
         textAlign: "center",
-        marginTop: 20,
+        marginTop: 80
     },
     cardTitle: {
         fontSize: 11,

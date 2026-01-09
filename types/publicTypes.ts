@@ -18,6 +18,7 @@ export type PublicStackParamList = {
   PrivacyPolicy: undefined;
   ScannerScreen: undefined;
   ScannedOrderDetails: undefined;
+  Appearance: undefined;
 };
 
 export type PublicTabParamList = {

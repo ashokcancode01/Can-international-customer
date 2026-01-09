@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { View, StyleSheet, RefreshControl, Linking } from "react-native";
+import { View, StyleSheet, RefreshControl, Linking, Image } from "react-native";
 import { useForm } from "react-hook-form";
 import { Entypo, MaterialIcons } from "@expo/vector-icons";
 import ThemedTextField from "@/components/themedComponent/ThemedTextField";
@@ -100,133 +100,158 @@ const ContactScreen = () => {
 
   //Helper to open phone  dialer with the given
   const handleCall = async (phoneNumber: string) => {
-  const url = `tel:${phoneNumber}`;
+    const url = `tel:${phoneNumber}`;
 
-  try {
-    await Linking.openURL(url);
-  } catch (error) {
-    console.log("Error opening dialer:", error);
+    try {
+      await Linking.openURL(url);
+    } catch (error) {
+      console.log("Error opening dialer:", error);
+    }
+  };
+
+  //Helper to open email client
+  const handleEmail = async (email: string) => {
+    const url = `mailto:${email}`;
+
+    try {
+      await Linking.openURL(url);
+    } catch { }
   }
-};
-
 
   return (
-    <ThemedKeyboardView
-      scrollEnabled
-      fullWidth
-      style={styles.container}
-      backgroundColor={theme.colors.background}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={onRefresh}
-          tintColor={theme.colors.brandColor}
+    <ThemedView style={{ flex: 1 }}>
+      <View style={[styles.HeaderBackground, { backgroundColor: theme.colors.cardBackground }]}>
+        <Image
+          source={require("../../assets/app/appBar.png")}
+          resizeMode="cover"
+          style={styles.HeaderImage}
         />
-      }
-    >
-      {/* Contact Info Card */}
-      <ThemedView style={[styles.cardContainer, { backgroundColor: theme.colors.card }]}>
-        <ThemedText type="label" style={[styles.heading, { color: theme.colors.text }]}>
-          Contact Us
-        </ThemedText>
-        <ThemedTouchableOpacity onPress={() => handleCall("01-5970736")} style={{ backgroundColor: "transparent" }}>
+      </View>
+      <ThemedKeyboardView
+        scrollEnabled
+        fullWidth
+        style={styles.container}
+        backgroundColor={theme.colors.background}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={theme.colors.brandColor}
+            progressViewOffset={60}
+          />
+        }
+      >
+        {/* Contact Info Card */}
+        <ThemedView style={[styles.cardContainer, { backgroundColor: theme.colors.card, marginTop:80 }]}>
+          <ThemedText type="label" style={[styles.heading, { color: theme.colors.text }]}>
+            Contact Us
+          </ThemedText>
+          <ThemedTouchableOpacity onPress={() => handleCall("01-5970736")} style={{ backgroundColor: "transparent" }}>
+            <View style={styles.infoRow}>
+              <Entypo name="phone" size={20} color={theme.colors.brandColor!} />
+              <ThemedText style={[styles.infoText, { color: theme.colors.textSecondary }]}>
+                01-5970736
+              </ThemedText>
+            </View>
+          </ThemedTouchableOpacity>
           <View style={styles.infoRow}>
-            <Entypo name="phone" size={20} color={theme.colors.brandColor!} />
+            <Entypo name="location-pin" size={20} color={theme.colors.brandColor!} />
             <ThemedText style={[styles.infoText, { color: theme.colors.textSecondary }]}>
-              01-5970736
+              Nepal Can International, Tinkune, Muni Bhairab Marg, Kathmandu 44600
             </ThemedText>
           </View>
-        </ThemedTouchableOpacity>
-        <View style={styles.infoRow}>
-          <Entypo name="location-pin" size={20} color={theme.colors.brandColor!} />
-          <ThemedText style={[styles.infoText, { color: theme.colors.textSecondary }]}>
-            Nepal Can International, Tinkune, Muni Bhairab Marg, Kathmandu 44600
-          </ThemedText>
-        </View>
-        <View style={styles.infoRow}>
-          <MaterialIcons name="email" size={20} color={theme.colors.brandColor!} />
-          <ThemedText style={[styles.infoText, { color: theme.colors.textSecondary }]}>
-            support@international.nepalcan.com
-          </ThemedText>
-        </View>
-      </ThemedView>
 
-      {/* Form Card */}
-      <ThemedView style={[styles.cardContainer, { backgroundColor: theme.colors.card }]}>
-        <ThemedText type="label" style={[styles.heading, { color: theme.colors.text }]}>
-          Send a Message
-        </ThemedText>
-        <ThemedTextField
-          control={control}
-          name="fullName"
-          placeholder="Full Name"
-          label="Full Name"
-          placeholderTextColor={theme.colors.textSecondary}
-          rules={{ required: "Full Name is required" }}
-        />
-        <ThemedTextField
-          control={control}
-          name="subject"
-          placeholder="Subject"
-          label="Subject"
-          placeholderTextColor={theme.colors.textSecondary}
-        />
-        <ThemedTextField
-          control={control}
-          name="phone"
-          placeholder="Phone"
-          label="Phone"
-          keyboardType="phone-pad"
-          placeholderTextColor={theme.colors.textSecondary}
-          rules={{
-            required: "Phone is required",
-            pattern: { value: /^[0-9]+$/, message: "Phone must be numeric" },
-          }}
-        />
-        <ThemedTextField
-          control={control}
-          name="email"
-          placeholder="Email"
-          label="Email"
-          keyboardType="email-address"
-          placeholderTextColor={theme.colors.textSecondary}
-          rules={{
-            pattern: { value: /^\S+@\S+\.\S+$/, message: "Invalid email" },
-          }}
-        />
-        <ThemedTextField
-          control={control}
-          name="message"
-          placeholder="Message"
-          label="Message"
-          multiline
-          scrollEnabled={true}
-          clearButton={false}
-          placeholderTextColor={theme.colors.textSecondary}
-          rules={{ required: "Message is required" }}
-        />
-        <ThemedButton
-          buttonName="Send"
-          isLoading={isLoading}
-          loadingText="Sending..."
-          onPress={handleSubmit(onSubmit)}
-        />
-
-        {/* Success/Error Message */}
-        {messageResult && (
-          <ThemedText
-            style={{
-              marginTop: 10,
-              marginLeft: 60,
-              color: messageResult.type === "success" ? theme.colors.green : theme.colors.brandColor,
-              fontSize: 13,
-            }}
+          <ThemedTouchableOpacity
+            onPress={() => handleEmail("support@international.nepalcan.com")}
+            style={{ backgroundColor: "transparent" }}
           >
-            {messageResult.text}
+            <View style={styles.infoRow}>
+              <MaterialIcons name="email" size={20} color={theme.colors.brandColor!} />
+              <ThemedText style={[styles.infoText, { color: theme.colors.textSecondary }]}>
+                support@international.nepalcan.com
+              </ThemedText>
+            </View>
+          </ThemedTouchableOpacity>
+
+        </ThemedView>
+
+        {/* Form Card */}
+        <ThemedView style={[styles.cardContainer, { backgroundColor: theme.colors.card }]}>
+          <ThemedText type="label" style={[styles.heading, { color: theme.colors.text }]}>
+            Send a Message
           </ThemedText>
-        )}
-      </ThemedView>
-    </ThemedKeyboardView>
+          <ThemedTextField
+            control={control}
+            name="fullName"
+            placeholder="Full Name"
+            label="Full Name"
+            placeholderTextColor={theme.colors.textSecondary}
+            rules={{ required: "Full Name is required" }}
+          />
+          <ThemedTextField
+            control={control}
+            name="subject"
+            placeholder="Subject"
+            label="Subject"
+            placeholderTextColor={theme.colors.textSecondary}
+          />
+          <ThemedTextField
+            control={control}
+            name="phone"
+            placeholder="Phone"
+            label="Phone"
+            keyboardType="phone-pad"
+            placeholderTextColor={theme.colors.textSecondary}
+            rules={{
+              required: "Phone is required",
+              pattern: { value: /^[0-9]+$/, message: "Phone must be numeric" },
+            }}
+          />
+          <ThemedTextField
+            control={control}
+            name="email"
+            placeholder="Email"
+            label="Email"
+            keyboardType="email-address"
+            placeholderTextColor={theme.colors.textSecondary}
+            rules={{
+              pattern: { value: /^\S+@\S+\.\S+$/, message: "Invalid email" },
+            }}
+          />
+          <ThemedTextField
+            control={control}
+            name="message"
+            placeholder="Message"
+            label="Message"
+            multiline
+            scrollEnabled={true}
+            clearButton={false}
+            placeholderTextColor={theme.colors.textSecondary}
+            rules={{ required: "Message is required" }}
+          />
+          <ThemedButton
+            buttonName="Send"
+            isLoading={isLoading}
+            loadingText="Sending..."
+            onPress={handleSubmit(onSubmit)}
+          />
+
+          {/* Success/Error Message */}
+          {messageResult && (
+            <ThemedText
+              style={{
+                marginTop: 10,
+                marginLeft: 60,
+                color: messageResult.type === "success" ? theme.colors.green : theme.colors.brandColor,
+                fontSize: 13,
+              }}
+            >
+              {messageResult.text}
+            </ThemedText>
+          )}
+        </ThemedView>
+      </ThemedKeyboardView>
+    </ThemedView>
   );
 };
 
@@ -234,6 +259,18 @@ const ContactScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  HeaderBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 60,
+    zIndex: 10,
+  },
+  HeaderImage: {
+    width: '100%',
+    height: '100%',
   },
   scrollContent: {
     padding: 16,
