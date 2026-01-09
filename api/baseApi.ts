@@ -18,12 +18,18 @@ export const baseApi = createApi({
       return headers;
     },
   }),
-  tagTypes: ["Home", "TrackOrder", "Menu", "Profile" , "Branches"],
+  tagTypes: ["Home", "TrackOrder", "Menu", "Profile", "Branches"],
   endpoints: () => ({}),
 });
 
 export const invalidateAllTags = () => {
-  return baseApi.util.invalidateTags(["Home", "TrackOrder", "Menu", "Profile", "TrackOrder", "Branches"]);
+  return baseApi.util.invalidateTags([
+    "Home",
+    "Menu",
+    "Profile",
+    "TrackOrder",
+    "Branches",
+  ]);
 };
 
 export const { resetApiState: resetBaseApiState } = baseApi.util;

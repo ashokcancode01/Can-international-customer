@@ -4,7 +4,7 @@
     "slug": "can-international-customer",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/app/canLogo1.png",
+    "icon": "./assets/app/nepal-can-intl-logo.png",
     "scheme": "can-international-customer",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -22,9 +22,9 @@
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/app/canLogo1.png",
-        "backgroundImage": "./assets/app/canLogo1.png",
-        "monochromeImage": "./assets/app/canLogo1.png"
+        "foregroundImage": "./assets/app/nepal-can-intl-logo.png",
+        "backgroundImage": "./assets/app/nepal-can-intl-logo.png",
+        "monochromeImage": "./assets/app/nepal-can-intl-logo.png"
       },
       "versionCode": 2,
       "package": "com.canlogistic.internationalcustomer",
@@ -41,17 +41,17 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/app/canLogo1.png"
+      "favicon": "./assets/app/nepal-can-intl-logo.png"
     },
     "plugins": [
       [
         "expo-splash-screen",
         {
-          "image": "./assets/app/canLogo1.png",
+          "image": "./assets/app/nepal-can-intl-logo.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "dark": {
-            "image": "./assets/app/canLogo1.png",
+            "image": "./assets/app/nepal-can-intl-logo.png",
             "backgroundColor": "#000000"
           },
           "backgroundColor": "#232323"
