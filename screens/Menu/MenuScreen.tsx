@@ -8,10 +8,10 @@ import {
   RefreshControl,
   ActivityIndicator,
   Linking,
+  Image,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
-// import {  FontAwesome5 } from "@expo/vector-icons";
 import { useTheme } from "../../theme/ThemeProvider";
 import { useSelector } from "react-redux";
 import { useNavigation } from "@react-navigation/native";
@@ -28,7 +28,6 @@ import {
 import { toastManager } from "../../utils/toastManager";
 import type { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import type { PublicStackParamList } from "../../types/publicTypes";
-
 
 type MenuScreenNavigationProp = NativeStackNavigationProp<PublicStackParamList>;
 
@@ -52,7 +51,6 @@ const MenuScreen = () => {
   const [uploadDoSpace] = useUploadToDoSpaceMutation();
   const [deleteDoSpace] = useDeleteFromDoSpaceMutation();
   const [updateProfile] = useChangeProfileImageMutation();
-
 
   const isInitialLoading = isProfileFetching || isProfileLoading;
 
@@ -151,9 +149,9 @@ const MenuScreen = () => {
         navigation.navigate("WhyChooseUs");
         break;
       case "Career":
-        Linking.openURL("https://bayupayu.com/vacancy/NCG?page=1").catch(err =>
-        console.error("Failed to open URL:", err)
-      );
+        Linking.openURL("https://bayupayu.com/vacancy/NCG?page=1").catch(
+          (err) => console.error("Failed to open URL:", err)
+        );
         break;
       case "Terms & Conditions":
         navigation.navigate("TermsAndConditions");
@@ -202,7 +200,9 @@ const MenuScreen = () => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContainer}
@@ -215,12 +215,28 @@ const MenuScreen = () => {
           />
         }
       >
-        {/* Welcome */}
-        {/* <View style={styles.welcomeSection}>
-          <Text style={[styles.welcomeSubtitle, { color: theme.colors.textSecondary }]}>
-            Hello, Welcome to CAN International!
-          </Text>
-        </View> */}
+        <View
+          style={[
+            styles.headerCard,
+            { backgroundColor: theme.colors.brandColor },
+          ]}
+        >
+          <View style={styles.headerRow}>
+            <View style={styles.headerIconContainer}>
+              <Image
+                source={require("../../assets/app/favWhite.png")}
+                style={styles.headerIconImage}
+                resizeMode="contain"
+              />
+            </View>
+            <View style={styles.headerTextContainer}>
+              <Text style={styles.headerTitle}>CAN International</Text>
+              <Text style={styles.headerSubtitle}>
+                Manage your shipments and services in one place.
+              </Text>
+            </View>
+          </View>
+        </View>
 
         {/* Auth Buttons */}
         {/* <View style={styles.authSection}>
@@ -260,74 +276,223 @@ const MenuScreen = () => {
           </View>
         </View> */}
 
-        {/* Accounts & Activity Card */}
-        <View style={[styles.card, { backgroundColor: theme.colors.card, marginTop: 12 }]}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.textSecondary }]}>
-            Accounts & Activity
-          </Text>
+        <View
+          style={[
+            styles.card,
+            { backgroundColor: theme.colors.card, marginTop: 16 },
+          ]}
+        >
+          <View style={styles.sectionHeaderRow}>
+            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              Quick access
+            </Text>
+            <Text
+              style={[
+                styles.sectionSubtitle,
+                { color: theme.colors.textSecondary },
+              ]}
+            >
+              Most used actions for customers
+            </Text>
+          </View>
           {[
-            // { title: "Profile Settings", subtitle: "Address, Payment, Security", icon: "person-outline", color: theme.colors.brandColor },
-            { title: "Track Order", subtitle: "Track your orders using QR codes", icon: "qr-code-outline", color: theme.colors.brandColor},
+            {
+              title: "Track Order",
+              subtitle: "Track your orders using QR codes",
+              icon: "qr-code-outline",
+              color: theme.colors.brandColor,
+            },
           ].map((item, index) => (
             <TouchableOpacity
               key={index}
-              style={[styles.actionItem, { backgroundColor: theme.colors.card }]}
+              style={[
+                styles.actionItem,
+                {
+                  backgroundColor: theme.colors.card,
+                  borderColor: theme.colors.border,
+                },
+              ]}
               onPress={() => handleLogisticsNavigation(item.title)}
             >
-              <View style={[styles.actionIconContainer, { backgroundColor: item.color + "12" }]}>
-                <Ionicons name={item.icon as any} size={18} color={item.color} />
+              <View
+                style={[
+                  styles.actionIconContainer,
+                  { backgroundColor: item.color + "12" },
+                ]}
+              >
+                <Ionicons
+                  name={item.icon as any}
+                  size={18}
+                  color={item.color}
+                />
               </View>
               <View style={styles.actionContent}>
-                <Text style={[styles.actionTitle, { color: theme.colors.text }]}>{item.title}</Text>
-                <Text style={[styles.actionSubtitle, { color: theme.colors.textSecondary }]}>{item.subtitle}</Text>
+                <Text
+                  style={[styles.actionTitle, { color: theme.colors.text }]}
+                >
+                  {item.title}
+                </Text>
+                <Text
+                  style={[
+                    styles.actionSubtitle,
+                    { color: theme.colors.textSecondary },
+                  ]}
+                >
+                  {item.subtitle}
+                </Text>
               </View>
-              <View style={[styles.chevronContainer, { backgroundColor: theme.colors.background + "50" }]}>
-                <Ionicons name="chevron-forward" size={16} color={theme.colors.text} />
+              <View
+                style={[
+                  styles.chevronContainer,
+                  { backgroundColor: theme.colors.background + "50" },
+                ]}
+              >
+                <Ionicons
+                  name="chevron-forward"
+                  size={16}
+                  color={theme.colors.text}
+                />
               </View>
             </TouchableOpacity>
           ))}
         </View>
 
-        {/* Other Features Card */}
-        <View style={[styles.card, { backgroundColor: theme.colors.card, marginTop: 12 }]}>
-          <Text style={[styles.sectionTitle, { color: theme.colors.textSecondary }]}>
-            Other Features
-          </Text>
+        <View
+          style={[
+            styles.card,
+            { backgroundColor: theme.colors.card, marginTop: 16 },
+          ]}
+        >
+          <View style={styles.sectionHeaderRow}>
+            <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
+              Services and info
+            </Text>
+            <Text
+              style={[
+                styles.sectionSubtitle,
+                { color: theme.colors.textSecondary },
+              ]}
+            >
+              Explore services, branches and important details
+            </Text>
+          </View>
           {[
-            { title: "Switch Theme", subtitle: "Change app appearance", icon: "moon-outline", color: theme.colors.brandColor },
-            { title: "About Us", subtitle: "Company overview and mission", icon: "information-circle-outline", color: theme.colors.brandColor },
-            { title: "Our Branches", subtitle: null, icon: "location-outline", color: theme.colors.brandColor },
-            { title: "Our Services", subtitle: null, icon: "briefcase-outline", color: theme.colors.brandColor, isDropdown: true },
-            { title: "FAQs", subtitle: null, icon: "help-circle-outline", color: theme.colors.brandColor },
-            { title: "Why Choose Us", subtitle: null, icon: "shield-checkmark-outline", color: theme.colors.brandColor },
-            { title: "Career", subtitle: null, icon: "briefcase-outline", color: theme.colors.brandColor },
-            { title: "Terms & Conditions", subtitle: null, icon: "document-text-outline", color: theme.colors.brandColor },
-            { title: "Privacy Policy", subtitle: null, icon: "lock-closed-outline", color: theme.colors.brandColor },
-
+            {
+              title: "Switch Theme",
+              subtitle: "Change app appearance",
+              icon: "moon-outline",
+              color: theme.colors.brandColor,
+            },
+            {
+              title: "About Us",
+              subtitle: "Company overview and mission",
+              icon: "information-circle-outline",
+              color: theme.colors.brandColor,
+            },
+            {
+              title: "Our Branches",
+              subtitle: "Find our global offices and locations",
+              icon: "location-outline",
+              color: theme.colors.brandColor,
+            },
+            {
+              title: "Our Services",
+              subtitle: "See all logistics services we provide",
+              icon: "briefcase-outline",
+              color: theme.colors.brandColor,
+              isDropdown: true,
+            },
+            {
+              title: "FAQs",
+              subtitle: "Common questions and quick answers",
+              icon: "help-circle-outline",
+              color: theme.colors.brandColor,
+            },
+            {
+              title: "Why Choose Us",
+              subtitle: "Key benefits of choosing CAN International",
+              icon: "shield-checkmark-outline",
+              color: theme.colors.brandColor,
+            },
+            {
+              title: "Career",
+              subtitle: "Explore open positions and opportunities",
+              icon: "briefcase-outline",
+              color: theme.colors.brandColor,
+            },
+            {
+              title: "Terms & Conditions",
+              subtitle: "Please read our service terms carefully",
+              icon: "document-text-outline",
+              color: theme.colors.brandColor,
+            },
+            {
+              title: "Privacy Policy",
+              subtitle: "How we protect and use your data",
+              icon: "lock-closed-outline",
+              color: theme.colors.brandColor,
+            },
           ].map((item, index) => (
             <View key={index}>
               <TouchableOpacity
-                style={[styles.actionItem, { backgroundColor: theme.colors.card }]}
+                style={[
+                  styles.actionItem,
+                  {
+                    backgroundColor: theme.colors.card,
+                    borderColor: theme.colors.border,
+                  },
+                ]}
                 onPress={() => {
                   if (item.isDropdown) {
-                    setServicesDropdownOpen(prev => !prev);
+                    setServicesDropdownOpen((prev) => !prev);
                   } else {
                     handleLogisticsNavigation(item.title);
                   }
                 }}
               >
-                <View style={[styles.actionIconContainer, { backgroundColor: item.color + "12" }]}>
-                  <Ionicons name={item.icon as any} size={18} color={item.color} />
+                <View
+                  style={[
+                    styles.actionIconContainer,
+                    { backgroundColor: item.color + "12" },
+                  ]}
+                >
+                  <Ionicons
+                    name={item.icon as any}
+                    size={18}
+                    color={item.color}
+                  />
                 </View>
-                <View style={[styles.actionContent, !item.subtitle && { justifyContent: "center" }]}>
-                  <Text style={[styles.actionTitle, { color: theme.colors.text }]}>{item.title}</Text>
+                <View style={styles.actionContent}>
+                  <Text
+                    style={[styles.actionTitle, { color: theme.colors.text }]}
+                  >
+                    {item.title}
+                  </Text>
                   {item.subtitle && (
-                    <Text style={[styles.actionSubtitle, { color: theme.colors.textSecondary }]}>{item.subtitle}</Text>
+                    <Text
+                      style={[
+                        styles.actionSubtitle,
+                        { color: theme.colors.textSecondary },
+                      ]}
+                    >
+                      {item.subtitle}
+                    </Text>
                   )}
                 </View>
-                <View style={[styles.chevronContainer, { backgroundColor: theme.colors.background + "50" }]}>
+                <View
+                  style={[
+                    styles.chevronContainer,
+                    { backgroundColor: theme.colors.background + "50" },
+                  ]}
+                >
                   <Ionicons
-                    name={item.isDropdown ? (servicesDropdownOpen ? "chevron-up" : "chevron-down") : "chevron-forward"}
+                    name={
+                      item.isDropdown
+                        ? servicesDropdownOpen
+                          ? "chevron-up"
+                          : "chevron-down"
+                        : "chevron-forward"
+                    }
                     size={16}
                     color={theme.colors.text}
                   />
@@ -336,43 +501,109 @@ const MenuScreen = () => {
 
               {/* Dropdown submenu */}
               {item.isDropdown && servicesDropdownOpen && (
-                <View style={{ marginBottom: 8, paddingLeft: 10 }}>
+                <View style={styles.dropdownContainer}>
                   {[
-                    { title: "Air Freight", subtitle: null, icon: "airplane-outline", color: theme.colors.brandColor },
-                    { title: "Ocean Freight", subtitle: null, icon: "water-outline", color: theme.colors.brandColor },
-                    { title: "Land Transport", subtitle: null, icon: "bus-outline", color: theme.colors.brandColor },
-                    { title: "Customs Clearance", subtitle: null, icon: "document-text-outline", color: theme.colors.brandColor },
-                    { title: "24/7 Customer Support", subtitle: null, icon: "headset-outline", color: theme.colors.brandColor },
-                    { title: "Real-Time Tracking", subtitle: null, icon: "locate-outline", color: theme.colors.brandColor},
+                    {
+                      title: "Air Freight",
+                      subtitle: "Fast shipping by air for urgent cargo",
+                      icon: "airplane-outline",
+                      color: theme.colors.brandColor,
+                    },
+                    {
+                      title: "Ocean Freight",
+                      subtitle: "Cost-effective sea freight solutions",
+                      icon: "water-outline",
+                      color: theme.colors.brandColor,
+                    },
+                    {
+                      title: "Land Transport",
+                      subtitle: "Reliable road transport network",
+                      icon: "bus-outline",
+                      color: theme.colors.brandColor,
+                    },
+                    {
+                      title: "Customs Clearance",
+                      subtitle: "Quick and compliant customs processing",
+                      icon: "document-text-outline",
+                      color: theme.colors.brandColor,
+                    },
+                    {
+                      title: "24/7 Customer Support",
+                      subtitle: "We are here to help anytime",
+                      icon: "headset-outline",
+                      color: theme.colors.brandColor,
+                    },
+                    {
+                      title: "Real-Time Tracking",
+                      subtitle: "Live status of your shipments",
+                      icon: "locate-outline",
+                      color: theme.colors.brandColor,
+                    },
                   ].map((subItem, subIndex) => {
-                    const screenName = submenuNavigationMap[subItem.title]; 
+                    const screenName = submenuNavigationMap[subItem.title];
                     return (
                       <TouchableOpacity
                         key={subIndex}
-                        style={[styles.actionItem, { backgroundColor: theme.colors.card }]}
+                        style={[
+                          styles.subActionItem,
+                          {
+                            backgroundColor: theme.colors.card,
+                            borderColor: theme.colors.border,
+                          },
+                        ]}
                         onPress={() => {
                           if (screenName) navigation.navigate<any>(screenName);
                         }}
                       >
-                        <View style={[styles.actionIconContainer, { backgroundColor: subItem.color + "12" }]}>
-                          <Ionicons name={subItem.icon as any} size={18} color={subItem.color} />
+                        <View
+                          style={[
+                            styles.subActionIconContainer,
+                            { backgroundColor: subItem.color + "12" },
+                          ]}
+                        >
+                          <Ionicons
+                            name={subItem.icon as any}
+                            size={18}
+                            color={subItem.color}
+                          />
                         </View>
                         <View style={styles.actionContent}>
-                          <Text style={[styles.actionTitle, { color: theme.colors.text }]}>{subItem.title}</Text>
+                          <Text
+                            style={[
+                              styles.actionTitle,
+                              { color: theme.colors.text },
+                            ]}
+                          >
+                            {subItem.title}
+                          </Text>
+                          <Text
+                            style={[
+                              styles.actionSubtitle,
+                              { color: theme.colors.textSecondary },
+                            ]}
+                          >
+                            {subItem.subtitle}
+                          </Text>
                         </View>
-                        <View style={[styles.chevronContainer, { backgroundColor: theme.colors.background + "50" }]}>
-                          <Ionicons name="chevron-forward" size={16} color={theme.colors.text} />
+                        <View
+                          style={[
+                            styles.chevronContainer,
+                            { backgroundColor: theme.colors.background + "50" },
+                          ]}
+                        >
+                          <Ionicons
+                            name="chevron-forward"
+                            size={16}
+                            color={theme.colors.text}
+                          />
                         </View>
                       </TouchableOpacity>
-                    )
+                    );
                   })}
                 </View>
               )}
-
-
             </View>
           ))}
-
         </View>
 
         {/* Logout */}
@@ -421,6 +652,44 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
+  },
+  headerCard: {
+    padding: 16,
+    borderRadius: 16,
+    marginBottom: 12,
+  },
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  headerIconContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: "rgba(255,255,255,0.16)",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  headerIconImage: {
+    width: 28,
+    height: 28,
+    borderRadius: 8,
+  },
+  headerTextContainer: {
+    flex: 1,
+  },
+  headerTitle: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontFamily: "Montserrat-Bold",
+    fontWeight: "700",
+    marginBottom: 4,
+  },
+  headerSubtitle: {
+    color: "rgba(255,255,255,0.9)",
+    fontSize: 12,
+    fontFamily: "Montserrat-Medium",
   },
   loader: {
     flex: 1,
@@ -506,31 +775,64 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   card: {
-    padding: 12,
+    paddingVertical: 10,
+    paddingHorizontal: 10,
     borderRadius: 12,
-    borderWidth: 1,
+    borderWidth: 0.5,
     borderColor: "rgba(0,0,0,0.05)",
   },
+  sectionHeaderRow: {
+    marginBottom: 8,
+  },
   sectionTitle: {
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "Montserrat-Bold",
     fontWeight: "700",
-    marginBottom: 8,
+    marginBottom: 2,
     paddingHorizontal: 4,
+  },
+  sectionSubtitle: {
+    fontSize: 11,
+    fontFamily: "Montserrat-Medium",
+    paddingHorizontal: 4,
+  },
+  dropdownContainer: {
+    marginBottom: 2,
+    paddingLeft: 10,
+    paddingTop: 4,
   },
   actionItem: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 8,
     borderRadius: 10,
-    borderWidth: 1,
-    borderColor: "rgba(0,0,0,0.05)",
+    backgroundColor: "transparent",
     marginBottom: 8,
+    borderWidth: 0.5,
+    borderColor: "transparent",
   },
   actionIconContainer: {
-    width: 30,
-    height: 30,
-    borderRadius: 4,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 8,
+  },
+  subActionItem: {
+    flexDirection: "row",
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    borderRadius: 10,
+    marginBottom: 6,
+    borderWidth: 0.5,
+    borderColor: "transparent",
+  },
+  subActionIconContainer: {
+    width: 28,
+    height: 28,
+    borderRadius: 14,
     justifyContent: "center",
     alignItems: "center",
     marginRight: 8,
@@ -545,7 +847,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   actionSubtitle: {
-    fontSize: 11,
+    fontSize: 10,
     fontFamily: "Montserrat-Medium",
     fontWeight: "500",
   },
@@ -569,7 +871,7 @@ const styles = StyleSheet.create({
   },
   logoutContent: {
     flex: 1,
-    alignItems: "center"
+    alignItems: "center",
   },
   logoutTitle: {
     fontSize: 15,
@@ -592,7 +894,6 @@ const styles = StyleSheet.create({
     fontFamily: "Montserrat-Medium",
     marginTop: 2,
   },
-
 });
 
 export default MenuScreen;
