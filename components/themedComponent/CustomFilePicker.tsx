@@ -13,7 +13,7 @@ import * as DocumentPicker from "expo-document-picker";
 import { Controller } from "react-hook-form";
 import { AntDesign, FontAwesome5, Ionicons } from "@expo/vector-icons";
 import ThemedText from "@/components/themed/ThemedText";
-import ThemedIcon from "@/components/themed/ThemedIcon";
+import { ThemedIcon } from "@/components/themed/ThemedIcon";
 import { useTheme } from "@/theme/ThemeProvider";
 import { useDeleteFromDoSpaceMutation } from "@/store/slices/doSpace";
 

@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, View, ScrollView } from "react-native";
+import { StyleSheet, View, ScrollView, Platform } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import ThemedText from "@/components/themed/ThemedText";
 import { ThemedTouchableOpacity } from "@/components/themed/ThemedTouchableOpacity";
@@ -128,10 +128,16 @@ const styles = StyleSheet.create({
   card: {
     padding: 16,
     borderRadius: 18,
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 5,
+    ...Platform.select({
+      ios: {
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+      },
+      android: {
+        elevation: 1,
+      }
+    })
   },
   providersContainer: {
     flexDirection: "row",

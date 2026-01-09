@@ -96,8 +96,7 @@ const MenuScreen = () => {
         }
 
         toastManager.success("Success", "Profile photo updated successfully");
-      } catch (err) {
-        console.error("Update image error:", err);
+      } catch {
         toastManager.error("Error", "Failed to update profile photo");
       } finally {
         setIsUpdatingImage(false);
@@ -150,7 +149,6 @@ const MenuScreen = () => {
         break;
       case "Career":
         Linking.openURL("https://bayupayu.com/vacancy/NCG?page=1").catch(
-          (err) => console.error("Failed to open URL:", err)
         );
         break;
       case "Terms & Conditions":
@@ -179,8 +177,7 @@ const MenuScreen = () => {
     try {
       await logout().unwrap();
       toastManager.success("Logged Out", "Successfully signed out");
-    } catch (err) {
-      console.error("Logout error:", err);
+    } catch {
       toastManager.error("Error", "Failed to sign out");
     }
   };
@@ -203,6 +200,13 @@ const MenuScreen = () => {
     <View
       style={[styles.container, { backgroundColor: theme.colors.background }]}
     >
+      <View style={[styles.HeaderBackground, { backgroundColor: theme.colors.cardBackground }]}>
+        <Image
+          source={require("../../assets/app/appBar.png")}
+          resizeMode="cover"
+          style={styles.HeaderImage}
+        />
+      </View>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContainer}
@@ -212,10 +216,11 @@ const MenuScreen = () => {
             onRefresh={handleRefresh}
             colors={[theme.colors.brandColor || "#dc1e3e"]}
             tintColor={theme.colors.brandColor || "#dc1e3e"}
+            progressViewOffset={60}
           />
         }
       >
-        <View
+        {/* <View
           style={[
             styles.headerCard,
             { backgroundColor: theme.colors.brandColor },
@@ -236,7 +241,7 @@ const MenuScreen = () => {
               </Text>
             </View>
           </View>
-        </View>
+        </View> */}
 
         {/* Auth Buttons */}
         {/* <View style={styles.authSection}>
@@ -279,7 +284,7 @@ const MenuScreen = () => {
         <View
           style={[
             styles.card,
-            { backgroundColor: theme.colors.card, marginTop: 16 },
+            { backgroundColor: theme.colors.card, marginTop: 80 },
           ]}
         >
           <View style={styles.sectionHeaderRow}>
@@ -650,6 +655,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     paddingTop: 20,
   },
+  HeaderBackground: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: 60,
+    zIndex: 10,
+  },
+  HeaderImage: {
+    width: '100%',
+    height: '100%',
+  },
   scrollContainer: {
     flexGrow: 1,
   },
@@ -657,6 +674,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 16,
     marginBottom: 12,
+    marginTop: 80,
   },
   headerRow: {
     flexDirection: "row",

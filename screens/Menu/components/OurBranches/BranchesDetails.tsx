@@ -96,9 +96,8 @@ const BranchesDetails = () => {
 
     //prefill the message box when navigated from branch details
     const handlePlaceOrder = () => {
-        navigation.navigate("PublicTabs", {
-            screen: "Contact",
-            params: { prefillMessage: `I want to inquire about sending parcel abroad from ${branch.name}` },
+        navigation.navigate("ContactStack", {
+            prefillMessage: `I want to inquire about sending parcel abroad from ${branch.name}`,
         });
     };
 
@@ -106,11 +105,8 @@ const BranchesDetails = () => {
         const url = `tel:${phoneNumber}`;
         try {
             await Linking.openURL(url);
-        } catch (error) {
-            console.log("Error opening dialer:", error);
-        }
+        } catch { }
     };
-
 
     //Helper because api is returning HTML inisde a string
     const stripHtml = (text?: string) => {
