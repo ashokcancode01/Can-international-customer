@@ -26,7 +26,7 @@
         "backgroundImage": "./assets/app/nepal-can-intl-logo.png",
         "monochromeImage": "./assets/app/nepal-can-intl-logo.png"
       },
-      "versionCode": 2,
+      "versionCode": 1,
       "package": "com.canlogistic.internationalcustomer",
       "permissions": [
         "android.permission.CAMERA",
