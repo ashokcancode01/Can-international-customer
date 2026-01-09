@@ -230,7 +230,7 @@ const MenuScreen = () => {
               />
             </View>
             <View style={styles.headerTextContainer}>
-              <Text style={styles.headerTitle}>CAN International</Text>
+              <Text style={styles.headerTitle}>Nepal CAN International</Text>
               <Text style={styles.headerSubtitle}>
                 Manage your shipments and services in one place.
               </Text>
