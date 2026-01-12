@@ -16,6 +16,9 @@ const WhyChooseUS = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  //Image
+  const networkImage = require("@/assets/app/network.webp")
+
   //Refresh Handler
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -74,11 +77,15 @@ const WhyChooseUS = () => {
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}
-          tintColor={theme.colors.brandColor}
-        />
-      }
+          tintColor={theme.dark ? "#fff" : "#000"}
+          style={{ backgroundColor: theme.colors.background }}
+        />}
     >
       <Card>
+        <Image
+          source={networkImage}
+          style={styles.cardImage}
+        />
         <View style={styles.headingRow}>
           <ThemedText
             style={[styles.heading, { color: theme.colors.brandColor }]}

@@ -59,7 +59,9 @@ const MenuScreen = () => {
     try {
       await refetchProfile();
     } finally {
-      setIsRefreshing(false);
+      setTimeout(() => {
+         setIsRefreshing(false);
+      }, 1500);
     }
   }, [refetchProfile]);
 
@@ -130,7 +132,7 @@ const MenuScreen = () => {
   const handleLogisticsNavigation = (title: string) => {
     switch (title) {
       case "Track Order":
-        navigation.navigate("QRScanner");
+        navigation.navigate("QRScanner", { hideAppBar: true });
         break;
       case "Switch Theme":
         navigation.navigate("Appearance");
@@ -196,6 +198,10 @@ const MenuScreen = () => {
     );
   }
 
+  function onRefresh(): void {
+    throw new Error("Function not implemented.");
+  }
+
   return (
     <View
       style={[styles.container, { backgroundColor: theme.colors.background }]}
@@ -214,11 +220,11 @@ const MenuScreen = () => {
           <RefreshControl
             refreshing={isRefreshing}
             onRefresh={handleRefresh}
-            colors={[theme.colors.brandColor || "#dc1e3e"]}
-            tintColor={theme.colors.brandColor || "#dc1e3e"}
-            progressViewOffset={60}
-          />
-        }
+            progressViewOffset={80}
+            tintColor={theme.colors.text}
+            colors={[theme.colors.text || "#fff"]}
+            style={{ backgroundColor: theme.colors.background, }}
+          />}
       >
         {/* <View
           style={[
@@ -284,7 +290,7 @@ const MenuScreen = () => {
         <View
           style={[
             styles.card,
-            { backgroundColor: theme.colors.card, marginTop: 80 },
+            { backgroundColor: theme.colors.card },
           ]}
         >
           <View style={styles.sectionHeaderRow}>
@@ -653,7 +659,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 12,
-    paddingTop: 20,
   },
   HeaderBackground: {
     position: 'absolute',
@@ -669,6 +674,7 @@ const styles = StyleSheet.create({
   },
   scrollContainer: {
     flexGrow: 1,
+    marginTop: 80,
   },
   headerCard: {
     padding: 16,

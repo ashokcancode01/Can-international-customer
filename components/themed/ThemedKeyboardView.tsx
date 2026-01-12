@@ -5,6 +5,7 @@ import {
   Platform,
   ScrollView,
   ScrollViewProps,
+  StyleProp,
   StyleSheet,
   View,
   ViewStyle,
@@ -14,7 +15,7 @@ interface ThemedKeyboardViewProps extends ScrollViewProps {
   children: React.ReactNode;
   centerContent?: boolean;
   backgroundColor?: string;
-  style?: ViewStyle;
+  style?:  StyleProp<ViewStyle>;
   scrollEnabled?: boolean;
   fullWidth?: boolean;
 }

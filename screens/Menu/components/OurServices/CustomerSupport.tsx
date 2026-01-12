@@ -23,6 +23,9 @@ const CustomerSupport = () => {
     "Quick resolution of issues",
   ];
 
+  //Image
+  const CustomerSupportImage = require("@/assets/app/customer_support-removebg-preview.png")
+
   //Refresh Handler
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -60,13 +63,18 @@ const CustomerSupport = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={theme.colors.brandColor}
-          />
-        }
+            tintColor={theme.dark ? "#fff" : "#000"}
+            style={{ backgroundColor: theme.colors.background }}
+          />}
       >
         {/* Image */}
         <Card>
-          <View style={styles.imageWrapper}></View>
+          <View style={styles.imageWrapper}>
+            <Image 
+            source={CustomerSupportImage}
+            style={styles.image}
+            />
+          </View>
           <Text
             style={[styles.subtitle, { color: theme.colors.textSecondary }]}
           >
@@ -138,9 +146,10 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: 200,
+    height: 180,
     borderRadius: 12,
     alignSelf: "center",
+    resizeMode: "contain",
   },
   subtitle: {
     fontSize: 14,

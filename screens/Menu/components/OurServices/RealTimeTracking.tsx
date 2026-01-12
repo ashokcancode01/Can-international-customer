@@ -5,6 +5,7 @@ import {
   ScrollView,
   StyleSheet,
   RefreshControl,
+  Image
 } from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
@@ -21,6 +22,9 @@ const RealTimeTracking = () => {
     "Customizable reporting tools",
     "24/7 customer support",
   ];
+
+  //Image
+  const realTimeTrackingImage = require("@/assets/app/real_time_tracking-removebg-preview.png");
 
   //Refresh Handler
   const onRefresh = useCallback(() => {
@@ -59,13 +63,19 @@ const RealTimeTracking = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={theme.colors.brandColor}
-          />
-        }
+            tintColor={theme.colors.text}
+            colors={[theme.colors.text || "#fff"]}
+            style={{ backgroundColor: theme.colors.background, }}
+          />}
       >
         {/* Image */}
         <Card>
-          <View style={styles.imageWrapper}></View>
+          <View style={styles.imageWrapper}>
+            <Image 
+              source={realTimeTrackingImage}
+              style={styles.image}
+            />
+          </View>
 
           <Text
             style={[styles.subtitle, { color: theme.colors.textSecondary }]}
@@ -142,6 +152,7 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 12,
     alignSelf: "center",
+    resizeMode: "contain",
   },
   subtitle: {
     fontSize: 14,

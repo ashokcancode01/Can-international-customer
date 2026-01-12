@@ -1,6 +1,6 @@
 export type PublicStackParamList = {
   PublicTabs: undefined;
-  QRScanner: undefined;
+  QRScanner: { hideAppBar?: boolean };
   OurTrustedProviders: undefined;
   AboutUs: undefined;
   OurBranches: undefined;

@@ -61,9 +61,9 @@ const FAQs = () => {
         <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}
-          tintColor={theme.colors.brandColor}
-        />
-      }
+          tintColor={theme.dark ? "#fff" : "#000"}
+          style={{ backgroundColor: theme.colors.background }}
+        />}
     >
       {/* Header */}
       <View style={styles.sectionHeader}>

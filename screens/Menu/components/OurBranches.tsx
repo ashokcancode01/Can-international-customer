@@ -39,7 +39,7 @@ const BranchCard: React.FC<{ branch: Branch }> = ({ branch }) => {
             await Share.share({
                 message: `Branch: ${branch.name}\nCode: ${branch.code}\nAddress: ${branch.address}\nPhone: ${branch.phone}`,
             });
-        } catch {}
+        } catch { }
     };
 
     return (
@@ -287,9 +287,9 @@ const OurBranches: React.FC = () => {
                         <RefreshControl
                             refreshing={refreshing}
                             onRefresh={onRefresh}
-                            tintColor={theme.colors.brandColor}
-                        />
-                    }
+                            tintColor={theme.dark ? "#fff" : "#000"}
+                            style={{ backgroundColor: theme.colors.background }}
+                        />}
                 />
             )}
         </View>

@@ -147,10 +147,11 @@ const PricingScreen = () => {
                     <RefreshControl
                         refreshing={refreshing}
                         onRefresh={onRefresh}
-                        tintColor={theme.colors.brandColor}
-                        progressViewOffset={60}
-                    />
-                }
+                        progressViewOffset={80} 
+                        tintColor={theme.colors.text}
+                        colors={[theme.colors.text || "#fff"]}
+                        style={{ backgroundColor: theme.colors.background }}
+                    />}
             >
                 <ThemedText style={[styles.title, { color: theme.colors.brandColor }]}>
                     International Courier Pricing
@@ -341,7 +342,6 @@ const PricingScreen = () => {
                         </View>
                     </ThemedCard>
                 )}
-
             </ScrollView>
         </ThemedView>
     );
@@ -351,6 +351,7 @@ const styles = StyleSheet.create({
     scrollContent: {
         paddingVertical: 20,
         paddingHorizontal: 16,
+        marginTop: 80,
     },
     HeaderBackground: {
         position: 'absolute',
@@ -369,7 +370,6 @@ const styles = StyleSheet.create({
         fontFamily: "Montserrat-Bold",
         marginBottom: 20,
         textAlign: "center",
-        marginTop: 80
     },
     cardTitle: {
         fontSize: 11,

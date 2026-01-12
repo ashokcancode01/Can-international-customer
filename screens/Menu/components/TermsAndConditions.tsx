@@ -42,9 +42,9 @@ const TermsAndConditions = () => {
                     <RefreshControl
                         refreshing={refreshing}
                         onRefresh={onRefresh}
-                        tintColor={theme.colors.brandColor}
-                    />
-                }
+                        tintColor={theme.dark ? "#fff" : "#000"}
+                        style={{ backgroundColor: theme.colors.background }}
+                    />}
             >
                 <Card>
                     {/* Entire Terms & Conditions Text */}

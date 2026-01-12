@@ -25,6 +25,9 @@ const CustomsClearance = () => {
     "Reduced risk of customs violations",
   ];
 
+  //Image
+  const customsClearanceImage = require("@/assets/app/custom_clearance.png");
+
   //Refresh Handler
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -62,12 +65,17 @@ const CustomsClearance = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={theme.colors.brandColor}
-          />
-        }
+            tintColor={theme.colors.text}
+            colors={[theme.colors.text || "#fff"]}
+            style={{ backgroundColor: theme.colors.background, }}
+          />}
       >
         {/* Image */}
         <Card>
+          <Image
+            source={customsClearanceImage}
+            style={styles.image}
+          />
           <Text
             style={[styles.subtitle, { color: theme.colors.textSecondary }]}
           >
@@ -134,10 +142,11 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: 200,
+    height: 180,
     borderRadius: 12,
     marginBottom: 12,
     alignSelf: "center",
+    resizeMode: "contain"
   },
   subtitle: {
     fontSize: 14,

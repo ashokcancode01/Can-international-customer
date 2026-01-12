@@ -25,6 +25,7 @@ const ContactScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [messageResult, setMessageResult] = useState<{ text: string; type: "success" | "error" } | null>(null); // updated
   const route = useRoute<any>();
+  const hideAppBar = route.params?.hideAppBar ?? false;
   const { control, handleSubmit, reset } = useForm<FormData>({
     defaultValues: {
       fullName: "",
@@ -120,13 +121,15 @@ const ContactScreen = () => {
 
   return (
     <ThemedView style={{ flex: 1 }}>
-      <View style={[styles.HeaderBackground, { backgroundColor: theme.colors.cardBackground }]}>
-        <Image
-          source={require("../../assets/app/appBar.png")}
-          resizeMode="cover"
-          style={styles.HeaderImage}
-        />
-      </View>
+      {!hideAppBar && (
+        <View style={[styles.HeaderBackground, { backgroundColor: theme.colors.cardBackground }]}>
+          <Image
+            source={require("../../assets/app/appBar.png")}
+            resizeMode="cover"
+            style={styles.HeaderImage}
+          />
+        </View>
+      )}
       <ThemedKeyboardView
         scrollEnabled
         fullWidth
@@ -136,13 +139,14 @@ const ContactScreen = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={theme.colors.brandColor}
-            progressViewOffset={60}
-          />
-        }
+            progressViewOffset={80}
+            tintColor={theme.colors.text}
+            colors={[theme.colors.text || "#fff"]}
+            style={{ backgroundColor: theme.colors.background, }}
+          />}
       >
         {/* Contact Info Card */}
-        <ThemedView style={[styles.cardContainer, { backgroundColor: theme.colors.card, marginTop:80 }]}>
+        <ThemedView style={[styles.cardContainer, { backgroundColor: theme.colors.card, marginTop: hideAppBar? 20 : 80 }]}>
           <ThemedText type="label" style={[styles.heading, { color: theme.colors.text }]}>
             Contact Us
           </ThemedText>
@@ -254,7 +258,6 @@ const ContactScreen = () => {
     </ThemedView>
   );
 };
-
 
 const styles = StyleSheet.create({
   container: {
