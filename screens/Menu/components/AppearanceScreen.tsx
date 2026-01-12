@@ -34,7 +34,7 @@ const THEME_OPTIONS = [
 
 const AppearanceScreen = () => {
   const { theme, themeMode, setTheme } = useTheme();
-  const [ refreshing, setRefreshing ] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
   const colors = theme.colors;
   const [isLoading, setIsLoading] = useState(false);
   const [loadingTheme, setLoadingTheme] = useState<string | null>(null);
@@ -186,12 +186,12 @@ const AppearanceScreen = () => {
       showsVerticalScrollIndicator={false}
       contentContainerStyle={styles.contentContainer}
       refreshControl={
-        <RefreshControl 
+        <RefreshControl
           refreshing={refreshing}
           onRefresh={onRefresh}
-          tintColor={theme.colors.brandColor}
-        />
-      }
+          tintColor={theme.dark ? "#fff" : "#000"}
+          style={{ backgroundColor: theme.colors.background }}
+        />}
     >
       <View style={styles.sectionHeader}>
         <ThemedText style={[styles.sectionTitle, { color: colors.text }]}>

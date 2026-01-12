@@ -18,6 +18,10 @@ const AboutUs = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [loading, setLoading] = useState(true);
 
+  //Images
+  const aboutImage = require("@/assets/app/warehouse.png");
+  const aboutImage1 = require("@/assets/app/cargo-container-harbor.jpg")
+
   // Simulate loading
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 1500);
@@ -76,12 +80,16 @@ const AboutUs = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={theme.colors.brandColor}
-          />
-        }
+            tintColor={theme.dark ? "#fff" : "#000"} 
+            style={{ backgroundColor: theme.colors.background }}
+          />}
       >
         {/* Company Overview */}
         <Card>
+          <Image
+            source={aboutImage}
+            style={styles.aboutImage}
+          />
           <View style={styles.headingRow}>
             <MaterialIcons
               name="business"
@@ -111,6 +119,10 @@ const AboutUs = () => {
 
         {/* Our Mission */}
         <Card>
+          <Image
+            source={aboutImage1}
+            style={styles.aboutImage}
+          />
           <View style={styles.headingRow}>
             <MaterialIcons
               name="emoji-objects"
@@ -151,11 +163,12 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingVertical: 20,
   },
-  cardImage: {
+  aboutImage: {
     width: "100%",
     height: 180,
     borderRadius: 10,
     marginBottom: 12,
+    resizeMode: "cover",
   },
   headingRow: {
     flexDirection: "row",

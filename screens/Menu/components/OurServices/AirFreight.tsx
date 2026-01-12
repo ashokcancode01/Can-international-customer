@@ -25,6 +25,9 @@ const AirFreight = () => {
     "Custom documentation assistance",
   ];
 
+  //Images
+  const airFreightRemovebg= require("@/assets/app/airfreight-removebg-preview.png");
+
   //Refresh Handler
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -62,12 +65,16 @@ const AirFreight = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={theme.colors.brandColor}
-          />
-        }
+            tintColor={theme.dark ? "#fff" : "#000"} 
+            style={{ backgroundColor: theme.colors.background }}
+          />}
       >
         {/* Image */}
         <Card>
+          <Image 
+           source={airFreightRemovebg}
+           style={styles.image}
+          />
           <Text
             style={[styles.subtitle, { color: theme.colors.textSecondary }]}
           >
@@ -136,10 +143,11 @@ const styles = StyleSheet.create({
   },
   image: {
     width: "100%",
-    height: 200,
+    height: 180,
     borderRadius: 12,
     marginBottom: 12,
     alignSelf: "center",
+    resizeMode: "contain"
   },
   subtitle: {
     fontSize: 14,

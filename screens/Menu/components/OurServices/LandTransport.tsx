@@ -25,6 +25,9 @@ const LandTransport = () => {
     "Flexible pickup and delivery schedules",
   ];
 
+  //Image
+  const landTransportImage = require("@/assets/app/land_transport-removebg-preview.png")
+
   //Refresh Handler
   const onRefresh = useCallback(() => {
     setRefreshing(true);
@@ -62,13 +65,20 @@ const LandTransport = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor={theme.colors.brandColor}
-          />
-        }
+            progressViewOffset={80}
+            tintColor={theme.colors.text}
+            colors={[theme.colors.text || "#fff"]}
+            style={{ backgroundColor: theme.colors.background, }}
+          />}
       >
         {/* Image */}
         <Card>
-          <View style={styles.imageWrapper}></View>
+          <View style={styles.imageWrapper}>
+            <Image
+              source={landTransportImage}
+              style={styles.image}
+            />
+          </View>
 
           <Text
             style={[styles.subtitle, { color: theme.colors.textSecondary }]}
@@ -148,6 +158,7 @@ const styles = StyleSheet.create({
     height: 200,
     borderRadius: 12,
     alignSelf: "center",
+    resizeMode: "contain",
   },
   subtitle: {
     fontSize: 14,

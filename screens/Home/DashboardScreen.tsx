@@ -158,10 +158,11 @@ const DashboardHeader = () => {
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor={theme.colors.brandColor}
-              progressViewOffset={60}
-            />
-          }
+              progressViewOffset={80}
+              tintColor={theme.colors.text}
+              colors={[theme.colors.text || "#fff"]}
+              style={{ backgroundColor: theme.colors.background, }}
+            />}
         >
           {/* Header */}
           <View style={[styles.topHeader, { backgroundColor: theme.colors.card }]}>

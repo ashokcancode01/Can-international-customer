@@ -98,6 +98,7 @@ const BranchesDetails = () => {
     const handlePlaceOrder = () => {
         navigation.navigate("ContactStack", {
             prefillMessage: `I want to inquire about sending parcel abroad from ${branch.name}`,
+            hideAppBar: true,
         });
     };
 
@@ -121,7 +122,8 @@ const BranchesDetails = () => {
                     <RefreshControl
                         refreshing={refreshing}
                         onRefresh={onRefresh}
-                        tintColor={theme.colors.brandColor}
+                        tintColor={theme.dark ? "#fff" : "#000"}
+                        style={{ backgroundColor: theme.colors.background }}
                     />}
             >
                 {/* Header Card */}

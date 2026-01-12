@@ -6,9 +6,9 @@ import ThemedText from "@/components/themed/ThemedText";
 import { FontAwesome5, Ionicons, MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import { useGetTrackOrderQuery, TrackOrderResponse, OrderNote } from "@/store/slices/trackorder";
 import ThemedButton from "@/components/themedComponent/ThemedButton";
-import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import { ThemedTouchableOpacity } from "@/components/themed/ThemedTouchableOpacity";
-import ThemedView from "@/components/themed/ThemedView";
+import { ThemedView } from "@/components/themed/ThemedView";
 
 
 // Tracking steps
@@ -62,6 +62,8 @@ type ReturnStatus = keyof typeof RETURN_STATUS_TO_STEP_MAPPING;
 
 const TrackOrderScreen = () => {
   const { theme } = useTheme();
+  const route = useRoute<any>();
+  const hideAppBar = route.params?.hideAppBar ?? false;
   const navigation = useNavigation<any>();
   const [refreshing, setRefreshing] = useState(false);
   const [trackingNumber, setTrackingNumber] = useState("");
@@ -129,27 +131,30 @@ const TrackOrderScreen = () => {
 
   return (
     <ThemedView style={{ flex: 1 }}>
-      <View style={[styles.HeaderBackground, { backgroundColor: theme.colors.cardBackground }]}>
-        <Image
-          source={require("../../../assets/app/appBar.png")}
-          resizeMode="cover"
-          style={styles.HeaderImage}
-        />
-      </View>
+      {!hideAppBar && (
+        <View style={[styles.HeaderBackground, { backgroundColor: theme.colors.cardBackground }]}>
+          <Image
+            source={require("../../../assets/app/appBar.png")}
+            resizeMode="cover"
+            style={styles.HeaderImage}
+          />
+        </View>
+      )}
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <ScrollView
-          style={[styles.container, { backgroundColor: theme.colors.background }]} contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled"
+          style={[styles.container, { backgroundColor: theme.colors.background}]} contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled"
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
               onRefresh={onRefresh}
-              tintColor={theme.colors.brandColor}
-              progressViewOffset={60}
-            />
-          }
+              progressViewOffset={80}
+              tintColor={theme.colors.text}
+              colors={[theme.colors.text || "#fff"]}
+              style={{ backgroundColor: theme.colors.background, }}
+            />}
         >
           {/* TRACKING CARD */}
-          <Card>
+          <Card  style={{marginTop: hideAppBar ? 20 : 80}}>
             <View style={[styles.iconContainer, { backgroundColor: theme.colors.brandColor + "20" }]}>
               <FontAwesome5 name="truck" size={36} color={theme.colors.brandColor} />
             </View>
@@ -477,7 +482,6 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 16,
     paddingVertical: 20,
-    marginTop: 80
   },
   HeaderBackground: {
     position: 'absolute',
