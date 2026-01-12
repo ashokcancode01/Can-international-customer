@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Text, ScrollView, Image, StyleSheet, RefreshControl } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  Image,
+  StyleSheet,
+  RefreshControl,
+} from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
 import Card from "../Card";
@@ -26,7 +33,7 @@ const AirFreight = () => {
     }, 1500);
   }, []);
 
-  // simulate loading 
+  // simulate loading
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 1500);
     return () => clearTimeout(timer);
@@ -34,14 +41,21 @@ const AirFreight = () => {
 
   if (loading) {
     return (
-      <View style={[styles.fullScreenLoader, { backgroundColor: theme.colors.background }]}>
+      <View
+        style={[
+          styles.fullScreenLoader,
+          { backgroundColor: theme.colors.background },
+        ]}
+      >
         <LoadingIndicator size={60} color={theme.colors.brandColor} />
       </View>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
       <ScrollView
         contentContainerStyle={{ paddingVertical: 20 }}
         refreshControl={
@@ -54,13 +68,11 @@ const AirFreight = () => {
       >
         {/* Image */}
         <Card>
-          <Image
-            source={require("../../../../assets/app/airfreight.png")}
-            style={styles.image}
-            resizeMode="contain"
-          />
-          <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-            Fast and reliable air cargo solutions for time-sensitive international shipments.
+          <Text
+            style={[styles.subtitle, { color: theme.colors.textSecondary }]}
+          >
+            Fast and reliable air cargo solutions for time-sensitive
+            international shipments.
           </Text>
         </Card>
 
@@ -69,17 +81,42 @@ const AirFreight = () => {
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
             Service Overview
           </Text>
-          <Text style={[styles.sectionContent, { color: theme.colors.textSecondary }]}>
-            Our Air Freight service provides rapid and secure transportation for your high-priority goods across global destinations. With partnerships across major airlines, optimized routes, and advanced handling processes, we ensure your cargo arrives safely and on schedule.
+          <Text
+            style={[
+              styles.sectionContent,
+              { color: theme.colors.textSecondary },
+            ]}
+          >
+            Our Air Freight service provides rapid and secure transportation for
+            your high-priority goods across global destinations. With
+            partnerships across major airlines, optimized routes, and advanced
+            handling processes, we ensure your cargo arrives safely and on
+            schedule.
           </Text>
 
-          <Text style={[styles.sectionTitle, { color: theme.colors.brandColor, marginTop: 16 }]}>
+          <Text
+            style={[
+              styles.sectionTitle,
+              { color: theme.colors.brandColor, marginTop: 16 },
+            ]}
+          >
             Key Features
           </Text>
           {features.map((feature, idx) => (
             <View style={styles.featureItem} key={idx}>
-              <Ionicons name="checkmark-circle-outline" size={20} color={theme.colors.brandColor} />
-              <Text style={[styles.featureText, { color: theme.colors.textSecondary }]}>{feature}</Text>
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={20}
+                color={theme.colors.brandColor}
+              />
+              <Text
+                style={[
+                  styles.featureText,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
+                {feature}
+              </Text>
             </View>
           ))}
         </Card>

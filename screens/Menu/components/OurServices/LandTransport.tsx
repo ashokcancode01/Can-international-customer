@@ -1,5 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Text, ScrollView, StyleSheet, Image, RefreshControl } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  Image,
+  RefreshControl,
+} from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
 import Card from "../Card";
@@ -26,7 +33,7 @@ const LandTransport = () => {
     }, 1500);
   }, []);
 
-  // simulate loading 
+  // simulate loading
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 1500);
     return () => clearTimeout(timer);
@@ -34,14 +41,21 @@ const LandTransport = () => {
 
   if (loading) {
     return (
-      <View style={[styles.fullScreenLoader, { backgroundColor: theme.colors.background }]}>
+      <View
+        style={[
+          styles.fullScreenLoader,
+          { backgroundColor: theme.colors.background },
+        ]}
+      >
         <LoadingIndicator size={60} color={theme.colors.brandColor} />
       </View>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
       <ScrollView
         contentContainerStyle={{ paddingVertical: 20 }}
         refreshControl={
@@ -54,17 +68,13 @@ const LandTransport = () => {
       >
         {/* Image */}
         <Card>
-          <View style={styles.imageWrapper}>
-            <Image
-              source={require("../../../../assets/app/landtransport.png")}
-              style={styles.image}
-              resizeMode="contain"
-              accessibilityLabel="Illustration of land transport service"
-            />
-          </View>
+          <View style={styles.imageWrapper}></View>
 
-          <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-            Efficient domestic and cross-border road transport for all types of goods.
+          <Text
+            style={[styles.subtitle, { color: theme.colors.textSecondary }]}
+          >
+            Efficient domestic and cross-border road transport for all types of
+            goods.
           </Text>
         </Card>
 
@@ -74,11 +84,16 @@ const LandTransport = () => {
             Service Overview
           </Text>
 
-          <Text style={[styles.sectionContent, { color: theme.colors.textSecondary }]}>
-            Our Land Transport service ensures smooth movement of cargo through a
-            well-managed fleet and strategic route planning. Whether for domestic
-            distribution or cross-border deliveries, we provide reliable trucking
-            solutions.
+          <Text
+            style={[
+              styles.sectionContent,
+              { color: theme.colors.textSecondary },
+            ]}
+          >
+            Our Land Transport service ensures smooth movement of cargo through
+            a well-managed fleet and strategic route planning. Whether for
+            domestic distribution or cross-border deliveries, we provide
+            reliable trucking solutions.
           </Text>
 
           <Text
@@ -97,7 +112,12 @@ const LandTransport = () => {
                 size={20}
                 color={theme.colors.brandColor}
               />
-              <Text style={[styles.featureText, { color: theme.colors.textSecondary }]}>
+              <Text
+                style={[
+                  styles.featureText,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 {feature}
               </Text>
             </View>

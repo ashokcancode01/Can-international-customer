@@ -1,6 +1,5 @@
 export type PublicStackParamList = {
   PublicTabs: undefined;
-
   QRScanner: undefined;
   OurTrustedProviders: undefined;
   AboutUs: undefined;

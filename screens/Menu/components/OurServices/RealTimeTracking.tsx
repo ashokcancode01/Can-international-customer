@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, Text, ScrollView, StyleSheet, Image, RefreshControl } from "react-native";
+import {
+  View,
+  Text,
+  ScrollView,
+  StyleSheet,
+  RefreshControl,
+} from "react-native";
 import { useTheme } from "@/theme/ThemeProvider";
 import { Ionicons } from "@expo/vector-icons";
 import Card from "../Card";
@@ -24,7 +30,7 @@ const RealTimeTracking = () => {
     }, 1500);
   }, []);
 
-  // simulate loading 
+  // simulate loading
   useEffect(() => {
     const timer = setTimeout(() => setLoading(false), 1500);
     return () => clearTimeout(timer);
@@ -32,14 +38,21 @@ const RealTimeTracking = () => {
 
   if (loading) {
     return (
-      <View style={[styles.fullScreenLoader, { backgroundColor: theme.colors.background }]}>
+      <View
+        style={[
+          styles.fullScreenLoader,
+          { backgroundColor: theme.colors.background },
+        ]}
+      >
         <LoadingIndicator size={60} color={theme.colors.brandColor} />
       </View>
     );
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+    <View
+      style={[styles.container, { backgroundColor: theme.colors.background }]}
+    >
       <ScrollView
         contentContainerStyle={{ paddingVertical: 20 }}
         refreshControl={
@@ -52,17 +65,13 @@ const RealTimeTracking = () => {
       >
         {/* Image */}
         <Card>
-          <View style={styles.imageWrapper}>
-            <Image
-              source={require("../../../../assets/app/realtimetracking.png")}
-              style={styles.image}
-              resizeMode="contain"
-              accessibilityLabel="Illustration of real-time tracking service"
-            />
-          </View>
+          <View style={styles.imageWrapper}></View>
 
-          <Text style={[styles.subtitle, { color: theme.colors.textSecondary }]}>
-            Monitor your shipments in real time with our advanced tracking technology.
+          <Text
+            style={[styles.subtitle, { color: theme.colors.textSecondary }]}
+          >
+            Monitor your shipments in real time with our advanced tracking
+            technology.
           </Text>
         </Card>
 
@@ -71,18 +80,38 @@ const RealTimeTracking = () => {
           <Text style={[styles.sectionTitle, { color: theme.colors.text }]}>
             Service Overview
           </Text>
-          <Text style={[styles.sectionContent, { color: theme.colors.textSecondary }]}>
-            Our Real-Time Tracking system uses GPS and IoT sensors to provide live
-            updates on your shipment, including alerts for delays or route deviations.
+          <Text
+            style={[
+              styles.sectionContent,
+              { color: theme.colors.textSecondary },
+            ]}
+          >
+            Our Real-Time Tracking system uses GPS and IoT sensors to provide
+            live updates on your shipment, including alerts for delays or route
+            deviations.
           </Text>
 
-          <Text style={[styles.sectionTitle, { color: theme.colors.brandColor, marginTop: 16 }]}>
+          <Text
+            style={[
+              styles.sectionTitle,
+              { color: theme.colors.brandColor, marginTop: 16 },
+            ]}
+          >
             Key Features
           </Text>
           {features.map((feature, idx) => (
             <View style={styles.featureItem} key={idx}>
-              <Ionicons name="checkmark-circle-outline" size={20} color={theme.colors.brandColor} />
-              <Text style={[styles.featureText, { color: theme.colors.textSecondary }]}>
+              <Ionicons
+                name="checkmark-circle-outline"
+                size={20}
+                color={theme.colors.brandColor}
+              />
+              <Text
+                style={[
+                  styles.featureText,
+                  { color: theme.colors.textSecondary },
+                ]}
+              >
                 {feature}
               </Text>
             </View>
