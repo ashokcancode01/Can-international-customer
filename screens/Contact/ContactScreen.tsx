@@ -50,7 +50,7 @@ const ContactScreen = () => {
         }
       }).unwrap();
 
-      setMessageResult({ text: "Message sent successfully!", type: "success" });
+      setMessageResult({ text: "Thank you! We will contact you shortly.", type: "success" });
       reset();
       setTimeout(() => setMessageResult(null), 3000);
 
@@ -102,22 +102,18 @@ const ContactScreen = () => {
   //Helper to open phone  dialer with the given
   const handleCall = async (phoneNumber: string) => {
     const url = `tel:${phoneNumber}`;
-
     try {
       await Linking.openURL(url);
-    } catch (error) {
-      console.log("Error opening dialer:", error);
-    }
+    } catch { }
   };
 
   //Helper to open email client
   const handleEmail = async (email: string) => {
     const url = `mailto:${email}`;
-
     try {
       await Linking.openURL(url);
     } catch { }
-  }
+  };
 
   return (
     <ThemedView style={{ flex: 1 }}>
@@ -146,7 +142,7 @@ const ContactScreen = () => {
           />}
       >
         {/* Contact Info Card */}
-        <ThemedView style={[styles.cardContainer, { backgroundColor: theme.colors.card, marginTop: hideAppBar? 20 : 80 }]}>
+        <ThemedView style={[styles.cardContainer, { backgroundColor: theme.colors.card, marginTop: hideAppBar ? 20 : 80 }]}>
           <ThemedText type="label" style={[styles.heading, { color: theme.colors.text }]}>
             Contact Us
           </ThemedText>
@@ -188,7 +184,16 @@ const ContactScreen = () => {
             control={control}
             name="fullName"
             placeholder="Full Name"
-            label="Full Name"
+            leftIcon={{
+              name: "person",
+              color: theme.colors.brandColor,
+            }}
+            label={
+              <ThemedText>
+                Full Name{" "}
+                <ThemedText style={{ color: theme.colors.brandColor }}>*</ThemedText>
+              </ThemedText>
+            }
             placeholderTextColor={theme.colors.textSecondary}
             rules={{ required: "Full Name is required" }}
           />
@@ -196,6 +201,10 @@ const ContactScreen = () => {
             control={control}
             name="subject"
             placeholder="Subject"
+            leftIcon={{
+              name: "edit",
+              color: theme.colors.brandColor,
+            }}
             label="Subject"
             placeholderTextColor={theme.colors.textSecondary}
           />
@@ -203,7 +212,16 @@ const ContactScreen = () => {
             control={control}
             name="phone"
             placeholder="Phone"
-            label="Phone"
+            leftIcon={{
+              name: "phone",
+              color: theme.colors.brandColor,
+            }}
+            label={
+              <ThemedText>
+                Phone{" "}
+                <ThemedText style={{ color: theme.colors.brandColor }}>*</ThemedText>
+              </ThemedText>
+            }
             keyboardType="phone-pad"
             placeholderTextColor={theme.colors.textSecondary}
             rules={{
@@ -215,6 +233,10 @@ const ContactScreen = () => {
             control={control}
             name="email"
             placeholder="Email"
+            leftIcon={{
+              name: "email",
+              color: theme.colors.brandColor,
+            }}
             label="Email"
             keyboardType="email-address"
             placeholderTextColor={theme.colors.textSecondary}
@@ -226,7 +248,12 @@ const ContactScreen = () => {
             control={control}
             name="message"
             placeholder="Message"
-            label="Message"
+            label={
+              <ThemedText>
+                Message{" "}
+                <ThemedText style={{ color: theme.colors.brandColor }}>*</ThemedText>
+              </ThemedText>
+            }
             multiline
             scrollEnabled={true}
             clearButton={false}

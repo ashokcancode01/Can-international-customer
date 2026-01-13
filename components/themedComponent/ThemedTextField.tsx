@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ReactNode, useState } from "react";
 import {
   View,
   TextInput,
@@ -31,7 +31,7 @@ interface CustomTextFieldProps<T extends FieldValues = any>
   onClear?: () => void;
   containerStyle?: ViewStyle;
   inputStyle?: TextStyle;
-  label?: string;
+  label?: string| ReactNode;
   labelStyle?: TextStyle;
   errorStyle?: TextStyle;
   isNumber?: boolean;
