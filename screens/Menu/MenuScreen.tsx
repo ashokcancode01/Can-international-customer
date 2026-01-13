@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
   Linking,
   Image,
+  Platform,
 } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { Ionicons } from "@expo/vector-icons";
@@ -60,7 +61,7 @@ const MenuScreen = () => {
       await refetchProfile();
     } finally {
       setTimeout(() => {
-         setIsRefreshing(false);
+        setIsRefreshing(false);
       }, 1500);
     }
   }, [refetchProfile]);
@@ -675,6 +676,11 @@ const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
     marginTop: 80,
+    paddingBottom: Platform.select({
+      ios: 20,
+      android: 90,
+      default: 20,
+    }),
   },
   headerCard: {
     padding: 16,
