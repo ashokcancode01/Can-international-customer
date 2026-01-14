@@ -14,7 +14,7 @@ const FAQs = () => {
   const faqs = [
     {
       question: "How can I track my shipment?",
-      answer: "You can track your shipment in real time using the 'Track My Order' button in the navigation bar.",
+      answer: "You can track your shipment in real time using the 'Track Order' tab in the bottom navigation .",
     },
     {
       question: "What areas do you provide logistics services in?",
