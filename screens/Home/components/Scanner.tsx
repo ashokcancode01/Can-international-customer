@@ -29,11 +29,31 @@ export default function ScannerScreen({ navigation }: any) {
   const [showGalleryModal, setShowGalleryModal] = useState(false);
   const [pickedImage, setPickedImage] = useState<string | null>(null);
   const [showCamera, setShowCamera] = useState(true);
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+
+  const showAlertModal = (message: string) => {
+    setAlertMessage(message);
+    setAlertVisible(true);
+  };
+
+  const resetScanner = useCallback(() => {
+    setScanned(false);
+    setPickedImage(null);
+    setShowCamera(false);
+
+    // Small delay fixes Android camera freeze
+    setTimeout(() => {
+      setShowCamera(true);
+    }, 100);
+  }, []);
+
 
   // Animation values
   const scanLineAnim = useRef(new Animated.Value(0)).current;
   const cornerAnim = useRef(new Animated.Value(1)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
+  
 
   // Scanning line animation
   useEffect(() => {
@@ -97,13 +117,9 @@ export default function ScannerScreen({ navigation }: any) {
 
   useFocusEffect(
     useCallback(() => {
-      setPickedImage(null);
-      setScanned(false);
-      if (Platform.OS === "android") {
-        const timeout = setTimeout(() => setShowCamera(true), 100);
-        return () => clearTimeout(timeout);
-      }
-    }, [])
+      resetScanner();
+      return () => { };
+    }, [resetScanner])
   );
 
   useEffect(() => {
@@ -118,9 +134,9 @@ export default function ScannerScreen({ navigation }: any) {
 
   const handleBarcodeScanned = ({ data }: { data: string }) => {
     if (scanned) return;
+
     setScanned(true);
     navigation.navigate("ScannedOrderDetails", { orderId: data });
-    setTimeout(() => setScanned(false), 1000);
   };
 
   const handlePickedImage = async (uri: string) => {
@@ -135,16 +151,17 @@ export default function ScannerScreen({ navigation }: any) {
       ]);
 
       if (results.length > 0) {
-        const qrData = results[0].data;
-        navigation.navigate("ScannedOrderDetails", { orderId: qrData });
+        navigation.navigate("ScannedOrderDetails", {
+          orderId: results[0].data,
+        });
       } else {
-        alert("No QR code found in this image");
+        showAlertModal("No QR code found in this image");
       }
-    } catch (error) {
-      console.log("QR scan error:", error);
-      alert("Could not scan QR code from this image");
+    } catch {
+      showAlertModal("Could not scan QR code from this image");
     }
   };
+
 
   const pickImageFromGallery = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -155,8 +172,7 @@ export default function ScannerScreen({ navigation }: any) {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       quality: 1,
-      allowsEditing: true,
-      aspect: [1, 1],
+      allowsEditing: Platform.OS === "ios",
     });
     if (!result.canceled && result.assets.length > 0) {
       handlePickedImage(result.assets[0].uri);
@@ -447,6 +463,61 @@ export default function ScannerScreen({ navigation }: any) {
                 ]}
               >
                 Maybe Later
+              </ThemedText>
+            </ThemedTouchableOpacity>
+          </ThemedView>
+        </View>
+      </Modal>
+
+      {/*Error message modal*/}
+      <Modal
+        visible={alertVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setAlertVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <ThemedView style={styles.permissionCard}>
+            <View
+              style={[
+                styles.modalIconContainer,
+                { backgroundColor: theme.colors.brandColor + "20" },
+              ]}
+            >
+              <MaterialIcons
+                name="error-outline"
+                size={48}
+                color={theme.colors.brandColor}
+              />
+            </View>
+
+            <ThemedText
+              style={[styles.permissionTitle, { color: theme.colors.text }]}
+            >
+              Scan Failed
+            </ThemedText>
+
+            <ThemedText
+              style={[
+                styles.permissionSubtitle,
+                { color: theme.colors.textSecondary },
+              ]}
+            >
+              {alertMessage}
+            </ThemedText>
+
+            <ThemedTouchableOpacity
+              style={[
+                styles.permissionButton,
+                { backgroundColor: theme.colors.brandColor },
+              ]}
+              onPress={() => {
+                setAlertVisible(false);
+                resetScanner();
+              }}
+            >
+              <ThemedText style={styles.permissionButtonText}>
+                OK
               </ThemedText>
             </ThemedTouchableOpacity>
           </ThemedView>

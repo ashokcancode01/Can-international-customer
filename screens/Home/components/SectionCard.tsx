@@ -110,9 +110,10 @@ const styles = StyleSheet.create({
     fontSize: 10,
     marginRight: 6,
   },
-
   card: {
     borderRadius: 16,
+    borderColor: "rgba(0,0,0,0.05)",
+    borderWidth: 1,
     padding: 16,
     ...Platform.select({
       ios: {
@@ -122,7 +123,7 @@ const styles = StyleSheet.create({
         shadowRadius: 6,
       },
       android: {
-        elevation: 3,
+        elevation: 0,
       }
     })
   },

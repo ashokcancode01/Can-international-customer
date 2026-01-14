@@ -4,8 +4,8 @@ import ThemedText from "@/components/themed/ThemedText";
 import { useTheme } from "../../../theme/ThemeProvider";
 
 interface HorizontalSectionProps<T> {
-  icon: React.ReactNode;              
-  title: string;                       
+  icon: React.ReactNode;
+  title: string;
   subtitle?: string;
   data: T[];
   renderItem: (item: T, index: number) => React.ReactNode;
@@ -24,7 +24,7 @@ const HorizontalSection = <T,>({
   contentContainerStyle,
   cardStyle,
 }: HorizontalSectionProps<T>) => {
-  const { theme } = useTheme(); 
+  const { theme } = useTheme();
 
   return (
     <View style={[styles.sectionContainer, containerStyle]}>
@@ -54,7 +54,12 @@ const HorizontalSection = <T,>({
             key={index}
             style={[
               styles.card,
-              { backgroundColor: theme.colors.card, borderColor: theme.dark ? "#333" : "#f1f1f1" },
+              {
+                backgroundColor: theme.colors.card,
+                borderColor: theme.dark
+                  ? "rgba(255,255,255,0.05)"
+                  : "rgba(0,0,0,0.05)",
+              },
               cardStyle
             ]}
           >
@@ -92,6 +97,7 @@ const styles = StyleSheet.create({
     marginRight: 12,
     justifyContent: "flex-start",
     position: "relative",
+    borderColor: "rgba(0,0,0,0.05)",
   },
 });
 

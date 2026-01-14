@@ -333,7 +333,9 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 16,
     marginHorizontal: 12,
-    marginTop: 80
+    marginTop: 80,
+    borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.05)",
   },
   HeaderBackground: {
     position: 'absolute',

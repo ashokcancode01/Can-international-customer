@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from "react";
-import { ScrollView, StyleSheet, RefreshControl, View, Pressable, Image } from "react-native";
+import React, { useCallback, useState, useRef } from "react";
+import { ScrollView, StyleSheet, RefreshControl, View, Pressable, Image, Platform } from "react-native";
 import { useForm } from "react-hook-form";
 import { useTheme } from "../../theme/ThemeProvider";
 import ThemedText from "@/components/themed/ThemedText";
@@ -28,6 +28,7 @@ const PricingScreen = () => {
     const [refreshing, setRefreshing] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [pricingResult, setPricingResult] = useState<any>(null);
+    const scrollRef = useRef<ScrollView>(null);
 
     const { control, handleSubmit, watch, reset } = useForm<FormData>({
         defaultValues: {
@@ -110,6 +111,7 @@ const PricingScreen = () => {
                 });
                 setPricingResult(null);
                 setErrorMessage(null);
+                scrollRef.current?.scrollTo({ x: 0, y: 0, animated: true });
             };
         }, [reset])
     );
@@ -141,13 +143,14 @@ const PricingScreen = () => {
                 />
             </View>
             <ScrollView
+                ref={scrollRef}
                 contentContainerStyle={styles.scrollContent}
                 showsVerticalScrollIndicator={false}
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}
                         onRefresh={onRefresh}
-                        progressViewOffset={80} 
+                        progressViewOffset={80}
                         tintColor={theme.colors.text}
                         colors={[theme.colors.text || "#fff"]}
                         style={{ backgroundColor: theme.colors.background }}
@@ -159,7 +162,7 @@ const PricingScreen = () => {
 
                 <ThemedCard
                     isCard
-                    borderColor={theme.dark ? "transparent" : theme.colors.brandColor}
+                    borderColor={"transparent"}
                     borderWidth={1}
                     radius
                     shadow="md"
@@ -240,6 +243,7 @@ const PricingScreen = () => {
 
                     {/* BUTTON */}
                     <ThemedButton
+                        leftIcon={{ name: "calculate", color: "#FFFFFF" }}
                         buttonName="Calculate Price"
                         loadingText="Calculating..."
                         isLoading={isLoading}
@@ -252,7 +256,7 @@ const PricingScreen = () => {
                 {pricingResult?.success && (
                     <ThemedCard
                         isCard
-                        borderColor={theme.dark ? "#FFFFFF20" : theme.colors.brandColor}
+                        borderColor={"transparent"}
                         borderWidth={1}
                         radius
                         shadow="md"
@@ -305,7 +309,7 @@ const PricingScreen = () => {
                 {errorMessage && (
                     <ThemedCard
                         isCard
-                        borderColor={theme.dark ? "#FFFFFF20" : theme.colors.brandColor}
+                        borderColor={"transparent"}
                         borderWidth={1}
                         radius
                         shadow="md"
@@ -352,6 +356,11 @@ const styles = StyleSheet.create({
         paddingVertical: 20,
         paddingHorizontal: 16,
         marginTop: 80,
+        paddingBottom: Platform.select({
+            ios: 20,
+            android: 90,
+            default: 20,
+        }),
     },
     HeaderBackground: {
         position: 'absolute',

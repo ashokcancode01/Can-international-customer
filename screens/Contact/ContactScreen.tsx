@@ -202,7 +202,7 @@ const ContactScreen = () => {
             name="subject"
             placeholder="Subject"
             leftIcon={{
-              name: "edit",
+              name: "subject",
               color: theme.colors.brandColor,
             }}
             label="Subject"
@@ -314,8 +314,10 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 4,
-    elevation: 3,
-    marginHorizontal: 12
+    elevation: 0,
+    marginHorizontal: 12,
+    borderColor: "rgba(0,0,0,0.05)",
+    borderWidth: 1,
   },
   heading: {
     fontSize: 15,

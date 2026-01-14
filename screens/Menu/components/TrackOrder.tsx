@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { View, TextInput, StyleSheet, TouchableWithoutFeedback, Keyboard, TouchableOpacity, ScrollView, Image, Text, RefreshControl } from "react-native";
+import { View, TextInput, StyleSheet, TouchableWithoutFeedback, Keyboard, ScrollView, Image, Text, RefreshControl } from "react-native";
 import { useTheme } from "../../../theme/ThemeProvider";
 import Card from "../components/Card";
 import ThemedText from "@/components/themed/ThemedText";
@@ -9,7 +9,6 @@ import ThemedButton from "@/components/themedComponent/ThemedButton";
 import { useFocusEffect, useNavigation, useRoute } from "@react-navigation/native";
 import { ThemedTouchableOpacity } from "@/components/themed/ThemedTouchableOpacity";
 import { ThemedView } from "@/components/themed/ThemedView";
-
 
 // Tracking steps
 const TRACKING_STEPS = [
@@ -68,7 +67,8 @@ const TrackOrderScreen = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [trackingNumber, setTrackingNumber] = useState("");
   const [submittedId, setSubmittedId] = useState<string | undefined>(undefined);
-  const [isFocused, setIsFocused] = useState(false);
+  const [previouslySearchedId, setPreviouslySearchedId] = useState<string | undefined>(undefined);
+  const [inputFocused, setInputFocused] = useState(false);
   const [orderData, setOrderData] = useState<TrackOrderResponse | null>(null);
 
   const formatDate = (dateStr?: string) => {
@@ -92,13 +92,16 @@ const TrackOrderScreen = () => {
     return Object.keys(RETURN_STATUS_TO_STEP_MAPPING).includes(orderStatus);
   };
 
-  const { data: TrackOrder, isLoading, error } = useGetTrackOrderQuery(submittedId!, {
+  const { data: TrackOrder, isLoading, error, refetch } = useGetTrackOrderQuery(submittedId!, {
     skip: !submittedId,
   });
 
   useEffect(() => {
-    if (TrackOrder) setOrderData(TrackOrder);
-  }, [TrackOrder]);
+    if (TrackOrder) {
+      setOrderData(TrackOrder);
+      setPreviouslySearchedId(submittedId);
+    }
+  }, [TrackOrder, submittedId]);
 
   const stripHtml = (text?: string) => {
     if (!text) return "";
@@ -119,9 +122,29 @@ const TrackOrderScreen = () => {
       setTrackingNumber("");
       setSubmittedId(undefined);
       setOrderData(null);
-      setIsFocused(false);
+      setInputFocused(false);
+      const timer = setTimeout(() => {
+        setTrackingNumber("");
+        setSubmittedId(undefined);
+        setOrderData(null);
+        setInputFocused(false);
+      }, 50);
+
+      return () => clearTimeout(timer);
     }, [])
   );
+
+  // Additional reset on mount and when component regains focus
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      setTrackingNumber("");
+      setSubmittedId(undefined);
+      setOrderData(null);
+      setInputFocused(false);
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   // Refresh handler
   const onRefresh = useCallback(() => {
@@ -142,7 +165,7 @@ const TrackOrderScreen = () => {
       )}
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <ScrollView
-          style={[styles.container, { backgroundColor: theme.colors.background}]} contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled"
+          style={[styles.container, { backgroundColor: theme.colors.background }]} contentContainerStyle={{ paddingBottom: 40 }} keyboardShouldPersistTaps="handled"
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -154,7 +177,7 @@ const TrackOrderScreen = () => {
             />}
         >
           {/* TRACKING CARD */}
-          <Card  style={{marginTop: hideAppBar ? 20 : 80}}>
+          <Card style={{ marginTop: hideAppBar ? 20 : 80 }}>
             <View style={[styles.iconContainer, { backgroundColor: theme.colors.brandColor + "20" }]}>
               <FontAwesome5 name="truck" size={36} color={theme.colors.brandColor} />
             </View>
@@ -171,8 +194,8 @@ const TrackOrderScreen = () => {
               style={[
                 styles.inputContainer,
                 {
-                  borderColor: isFocused ? theme.colors.brandColor : "#613b3b33",
-                  backgroundColor: isFocused ? "#FFFFFF20" : "#FFFFFF1A",
+                  borderColor: inputFocused ? theme.colors.brandColor : "#613b3b33",
+                  backgroundColor: inputFocused ? "#FFFFFF20" : "#FFFFFF1A",
                 },
               ]}
             >
@@ -183,44 +206,43 @@ const TrackOrderScreen = () => {
                 placeholderTextColor="#888"
                 value={trackingNumber}
                 onChangeText={setTrackingNumber}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
+                onFocus={() => setInputFocused(true)}
+                onBlur={() => setInputFocused(false)}
               />
               <ThemedTouchableOpacity onPress={() => navigation.navigate("ScannerScreen")} style={{ backgroundColor: "transparent" }}>
                 <Ionicons name="qr-code-outline" size={20} color="#888" />
               </ThemedTouchableOpacity>
             </View>
 
-            <TouchableOpacity
-              activeOpacity={0.8}
+            {/* TRACK BUTTON */}
+            <ThemedButton
+              rightIcon={{ name: "arrow-forward", color: "#fff", size: 18 }}
+              buttonName="Track"
+              loadingText="Tracking..."
+              isLoading={isLoading}
+              disabled={isLoading || !trackingNumber.trim()}
               onPress={() => {
                 const trimmed = trackingNumber.trim();
                 if (trimmed) {
-                  setSubmittedId(trimmed);
+                  if (previouslySearchedId === trimmed) {
+                    // Same ID as previously searched, trigger refetch
+                    setSubmittedId(trimmed);
+                    setTimeout(() => refetch(), 100);
+                  } else {
+                    setSubmittedId(trimmed);
+                  }
                 }
               }}
-            >
-              {/* TRACK BUTTON */}
-              <ThemedButton
-                buttonName="Track"
-                loadingText="Tracking..."
-                isLoading={isLoading}
-                disabled={isLoading || !trackingNumber.trim()}
-                onPress={() => {
-                  const trimmed = trackingNumber.trim();
-                  if (trimmed) setSubmittedId(trimmed);
-                }}
-                style={{
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  backgroundColor: theme.colors.brandColor,
-                  paddingVertical: 12,
-                  borderRadius: 10,
-                  marginTop: 12,
-                }}
-              />
-            </TouchableOpacity>
+              style={{
+                flexDirection: "row",
+                justifyContent: "center",
+                alignItems: "center",
+                backgroundColor: theme.colors.brandColor,
+                paddingVertical: 12,
+                borderRadius: 10,
+                marginTop: 12,
+              }}
+            />
 
             {error && (
               <ThemedText style={{ marginTop: 12, textAlign: "center", color: theme.colors.brandColor }}>

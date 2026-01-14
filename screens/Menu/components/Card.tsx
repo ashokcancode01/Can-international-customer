@@ -6,10 +6,10 @@ const screenWidth = Dimensions.get("window").width;
 
 type CardProps = {
   children: ReactNode;
-  style?: StyleProp<ViewStyle>; 
+  style?: StyleProp<ViewStyle>;
 };
 
-const Card: React.FC<CardProps> = ({ children, style }) => { 
+const Card: React.FC<CardProps> = ({ children, style }) => {
   const { theme } = useTheme();
 
   return (
@@ -20,9 +20,11 @@ const Card: React.FC<CardProps> = ({ children, style }) => {
           width: screenWidth - 24,
           alignSelf: "center",
           backgroundColor: theme.colors.card,
-          borderColor: theme.colors.border + "30",
+          borderColor: theme.dark
+            ? "rgba(0,0,0,0.05)"
+            : "rgba(0,0,0,0.05)",
         },
-        style, 
+        style,
       ]}
     >
       {children}
@@ -38,5 +40,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     marginBottom: 20,
     borderWidth: 1,
+    borderColor: "rgba(0,0,0,0.05)",
   },
 });
