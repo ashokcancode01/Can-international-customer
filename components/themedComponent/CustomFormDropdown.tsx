@@ -89,6 +89,15 @@ const DropdownOption = memo(
         {item.flag && (
           <Text style={{ marginRight: 8 }}>{item.flag}</Text>
         )}
+        {item.icon && !item.flag && (
+          <View style={{ marginRight: 8 }}>
+            <item.icon.as 
+              name={item.icon.name} 
+              size={item.icon.size || 16} 
+              color={item.icon.color || "#666"} 
+            />
+          </View>
+        )}
       </View>
       <ThemedText
         style={[styles.optionText, isSelected && styles.selectedOptionText]}
@@ -113,6 +122,15 @@ const SelectedBadge = memo(
   ({ item, onRemove }: { item: Option; onRemove: () => void }) => (
     <ThemedView style={styles.selectedBadge}>
       {item.flag && <Text style={{ marginRight: 4 }}>{item.flag}</Text>}
+      {item.icon && !item.flag && (
+        <View style={{ marginRight: 4 }}>
+          <item.icon.as 
+            name={item.icon.name} 
+            size={(item.icon.size || 16) * 0.75} 
+            color={item.icon.color || "#666"} 
+          />
+        </View>
+      )}
       <ThemedText style={styles.selectedBadgeText}>{item.name}</ThemedText>
       <TouchableOpacity onPress={onRemove} style={styles.badgeRemoveButton}>
         <ThemedIcon as={Ionicons} name="close" type="xsmall" color="#1976D2" />
