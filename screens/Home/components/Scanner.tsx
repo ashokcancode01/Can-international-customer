@@ -162,7 +162,6 @@ export default function ScannerScreen({ navigation }: any) {
     }
   };
 
-
   const pickImageFromGallery = async () => {
     const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
     if (status !== "granted") {

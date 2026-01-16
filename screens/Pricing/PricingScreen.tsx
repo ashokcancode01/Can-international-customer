@@ -1,5 +1,13 @@
-import React, { useCallback, useState, useRef } from "react";
-import { ScrollView, StyleSheet, RefreshControl, View, Pressable, Image, Platform } from "react-native";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import {
+    ScrollView,
+    StyleSheet,
+    RefreshControl,
+    View,
+    Pressable,
+    Image,
+    Platform,
+} from "react-native";
 import { useForm } from "react-hook-form";
 import { useTheme } from "../../theme/ThemeProvider";
 import ThemedText from "@/components/themed/ThemedText";
@@ -16,7 +24,12 @@ import { Ionicons } from "@expo/vector-icons";
 
 type FormData = {
     origin: string;
-    destination: { _id?: string; name: string; value: string } | null;
+    destination: {
+        _id?: string;
+        name: string;
+        value: string;
+        cca2?: string;
+    } | null;
     shipmentType: { _id: string; name: string } | null;
     serviceType: { _id: string; name: string } | null;
     weight: string;
@@ -25,41 +38,81 @@ type FormData = {
 const PricingScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<any>();
+    const scrollRef = useRef<ScrollView>(null);
     const [refreshing, setRefreshing] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const [pricingResult, setPricingResult] = useState<any>(null);
-    const scrollRef = useRef<ScrollView>(null);
 
-    const { control, handleSubmit, watch, reset } = useForm<FormData>({
+    /* FORM */
+    const { control, handleSubmit, watch, reset, setValue } = useForm<FormData>({
         defaultValues: {
-            origin: "Nepal",
-            destination: { name: "Afghanistan", value: "Afghanistan" },
+            origin: "🇳🇵 Nepal",
+            destination: null,
             shipmentType: null,
             serviceType: null,
             weight: "",
         },
     });
 
-    const selectedShipmentType = watch("shipmentType");
-    const serviceOptions = getServiceTypeOptions(selectedShipmentType);
+    /* HELPERS  */
+    const countryCodeToEmoji = (cca2?: string): string => {
+        if (!cca2) return "";
+        return cca2
+            .toUpperCase()
+            .replace(/./g, (char) =>
+                String.fromCodePoint(char.charCodeAt(0) + 127397)
+            );
+    };
+
+    /* API */
     const { data: countryList } = useGetCountryListQuery();
     const [getPricing, { isLoading }] = useGetPricingMutation();
 
-    // Submit handler
-    const onSubmit = async (formData: FormData) => {
-        const safeToLower = (str?: string) => (str ? str.toLowerCase() : "");
+    /* MAP COUNTRIES */
+    const mappedCountries =
+        countryList?.map((item) => ({
+            _id: item._id,
+            name: `${item.cca2 ? countryCodeToEmoji(item.cca2) + "" : ""}${item.name}`,
+            value: item.name,
+            cca2: item.cca2,
+            flagUrl: item.flagUrl,
+        })) || [];
 
+    /* DEFAULT DESTINATION  */
+    useEffect(() => {
+        if (!countryList?.length) return;
+
+        const afghanistan = countryList.find(
+            (c) => c.name === "Afghanistan"
+        );
+
+        if (afghanistan) {
+            setValue("destination", {
+                _id: afghanistan._id,
+                name: `${countryCodeToEmoji(afghanistan.cca2)}  ${afghanistan.name}`,
+                value: afghanistan.name ?? "Afghanistan",
+                cca2: afghanistan.cca2,
+            });
+        }
+    }, [countryList, setValue]);
+
+    /* WATCHERS */
+    const selectedShipmentType = watch("shipmentType");
+    const serviceOptions = getServiceTypeOptions(selectedShipmentType);
+
+    /* SUBMIT */
+    const onSubmit = async (formData: FormData) => {
         if (!formData.weight || Number(formData.weight) <= 0) return;
-        if (!formData.destination?.name) return;
-        if (!formData.shipmentType?.name) return;
-        if (!formData.serviceType?.name) return;
+        if (!formData.destination) return;
+        if (!formData.shipmentType) return;
+        if (!formData.serviceType) return;
 
         try {
             const result = await getPricing({
                 payload: {
                     destination: formData.destination.value,
-                    type: safeToLower(formData.shipmentType?.name),
-                    service: safeToLower(formData.serviceType?.name),
+                    type: formData.shipmentType.name.toLowerCase(),
+                    service: formData.serviceType.name.toLowerCase(),
                     weight: Number(formData.weight),
                 },
             }).unwrap();
@@ -75,36 +128,27 @@ const PricingScreen = () => {
         }
     };
 
-    // Helper: Country code to emoji
-    const countryCodeToEmoji = (cca2?: string) => {
-        if (!cca2) return "";
-        return cca2
-            .toUpperCase()
-            .replace(/./g, (char) => String.fromCodePoint(char.charCodeAt(0) + 127397));
-    };
-
-    const mappedCountries =
-        countryList?.map((item) => ({
-            _id: item._id,
-            name: `${item.cca2 ? countryCodeToEmoji(item.cca2) + " " : ""}${item.name}`,
-            value: item.name,
-            cca2: item.cca2,
-            flagUrl: item.flagUrl,
-        })) || [];
-
-    // Refresh handler
+    /* REFRESH  */
     const onRefresh = useCallback(() => {
         setRefreshing(true);
         setTimeout(() => setRefreshing(false), 1500);
     }, []);
 
-    // Reset form on screen focus
+    /* RESET ON BLUR  */
     useFocusEffect(
         useCallback(() => {
             return () => {
+                const afghanistan = countryList?.find(c => c.name === "Afghanistan");
                 reset({
-                    origin: "Nepal",
-                    destination: { name: "Afghanistan", value: "Afghanistan" },
+                    origin: "🇳🇵 Nepal",
+                    destination: afghanistan
+                        ? {
+                            _id: afghanistan._id,
+                            name: `${countryCodeToEmoji(afghanistan.cca2)}  ${afghanistan.name}`,
+                            value: afghanistan.name,
+                            cca2: afghanistan.cca2,
+                        }
+                        : null,
                     shipmentType: null,
                     serviceType: null,
                     weight: "",
@@ -113,15 +157,16 @@ const PricingScreen = () => {
                 setErrorMessage(null);
                 scrollRef.current?.scrollTo({ x: 0, y: 0, animated: true });
             };
-        }, [reset])
+        }, [reset, countryList])
     );
 
-    // Prefill contact message
+    /* CONTACT MESSAGE  */
     const handleOrder = () => {
-        const destination = watch("destination")?.value || "";
-        const serviceType = watch("serviceType")?.name || "";
-        const weight = watch("weight") || "";
-        const estimatedPrice = pricingResult?.data?.finalRate || "";
+        const destination = watch("destination")?.value ?? "";
+        const serviceType = watch("serviceType")?.name ?? "";
+        const weight = watch("weight") ?? "";
+        const estimatedPrice = pricingResult?.data?.finalRate ?? "";
+
         const message = `I am sending my parcel from Nepal to ${destination}, Service: ${serviceType}, Weight: ${weight}kg, Estimated Price: NPR ${estimatedPrice}`;
 
         navigation.navigate("PublicTabs", {
@@ -132,6 +177,7 @@ const PricingScreen = () => {
             },
         });
     };
+
 
     return (
         <ThemedView style={{ flex: 1, backgroundColor: theme.colors.background }}>
@@ -173,14 +219,14 @@ const PricingScreen = () => {
                         control={control}
                         name="origin"
                         label="Origin"
-                        value="Nepal"
+                        value="🇳🇵 Nepal"
                         editable={false}
                         containerStyle={{
                             borderWidth: 1,
                             borderColor: theme.dark ? "#FFFFFF" : theme.colors.border,
                             backgroundColor: "transparent",
                         }}
-                        inputStyle={{ color: theme.dark ? "#FFFFFF" : "#000000" }}
+                        inputStyle={{ color: theme.dark ? "#FFFFFF" : "#000000", paddingLeft: 0 }}
                         placeholder="Nepal"
                         placeholderTextColor={theme.dark ? "#FFFFFF" : "#999999"}
                     />
@@ -194,6 +240,7 @@ const PricingScreen = () => {
                         options={mappedCountries}
                         placeholder="Select country name"
                         rules={{ required: "Please select a destination country" }}
+                        textInputStyle={{ marginLeft: 0 }}
                     />
 
                     {/* SHIPMENT TYPE */}
@@ -205,6 +252,8 @@ const PricingScreen = () => {
                         storeFullObject
                         placeholder="Select Shipment Type"
                         rules={{ required: "Please select a shipment type" }}
+                        iconName="cube-sharp"
+                        as={Ionicons}
                     />
                     <ThemedText style={{ color: theme.colors.textSecondary, marginBottom: 12, fontSize: 10 }}>
                         Choose what you are sending
@@ -220,6 +269,8 @@ const PricingScreen = () => {
                         placeholder="Select Service Type"
                         disabled={!selectedShipmentType}
                         rules={{ required: "Please select a service type" }}
+                        iconName="briefcase"
+                        as={Ionicons}
                     />
                     <ThemedText style={{ color: theme.colors.textSecondary, marginBottom: 12, fontSize: 10 }}>
                         {selectedShipmentType ? "Choose delivery speed" : "Select Shipment Type first"}
@@ -238,6 +289,14 @@ const PricingScreen = () => {
                             required: "Weight is required",
                             validate: (value: number) =>
                                 value > 0 || "Please enter a valid weight"
+                        }}
+                        leftIcon={{
+                            name: "monitor-weight",
+                            color: theme.colors.brandColor,
+                            size: 16
+                        }}
+                        inputStyle={{
+                            paddingLeft: 5, 
                         }}
                     />
 

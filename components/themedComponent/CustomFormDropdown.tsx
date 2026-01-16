@@ -67,6 +67,7 @@ interface CustomFormDropdownProps<T extends FieldValues> {
   onSearch?: (searchText: string) => void;
   isLoading?: boolean;
   searchPromptMessage?: string;
+  textInputStyle?: ViewStyle;
 }
 
 const DropdownOption = memo(
@@ -172,6 +173,7 @@ function CustomFormDropdownBase<T extends FieldValues>(
     onSearch,
     isLoading = false,
     searchPromptMessage,
+    textInputStyle,
   } = props;
 
   const [isOpen, setIsOpen] = useState(false);
@@ -435,7 +437,8 @@ function CustomFormDropdownBase<T extends FieldValues>(
                 <ThemedIcon
                   as={as || MaterialIcons}
                   name={iconName}
-                  type="small"
+                  type="xmedium"
+                  color={theme.colors.brandColor} 
                 />
               )}
 
@@ -443,6 +446,7 @@ function CustomFormDropdownBase<T extends FieldValues>(
                 <ThemedText
                   style={[
                     styles.dropdownButtonText,
+                    textInputStyle,
                     (!value ||
                       (Array.isArray(value) && value?.length === 0)) && {
                       color: disabled ? "#fff" : placeholderColor,
